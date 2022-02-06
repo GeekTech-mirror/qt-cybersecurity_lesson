@@ -1,3 +1,2 @@
 [submodule "FreeRTOS"]
-	path = FreeRTOS
 	url = https://github.com/jameswalmsley/RaspberryPi-FreeRTOS.git

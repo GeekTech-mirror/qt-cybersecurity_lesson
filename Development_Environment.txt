@@ -5,8 +5,8 @@ Development Environment
 
 Software Environment
 
-+ Embedded Linux 
-+ QT5
++ Embedded Linux (yocto)
++ QT6
 
 Linux Environment
 

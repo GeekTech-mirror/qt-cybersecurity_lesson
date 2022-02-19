@@ -1,18 +1,18 @@
-Development Environment
-
+# Development Environment
 + qtcreator
 + android sdk
 
-Software Environment
-
+# Software Environment
 + Embedded Linux (yocto)
 + QT6
 
-Linux Environment
+# Yocto Environment
 
+# Release Packages
 
-Environmental Variables
+# Development Packages
 
-QT_QPA_EGLFS_INTEGRATION=1
-QT_QPA_EGLFS_PHYSICAL_WIDTH=800
-QT_QPA_EGLFS_PHYSICAL_HEIGHT=480
+# Environmental Variables
++ QT_QPA_EGLFS_INTEGRATION=1
++ QT_QPA_EGLFS_PHYSICAL_WIDTH=800
++ QT_QPA_EGLFS_PHYSICAL_HEIGHT=480

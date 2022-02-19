@@ -1,23 +1,9 @@
 # ninja log v5
-1	135	1644969186612322734	QT_Test_autogen/timestamp	136fc2d000514d
-135	1540	1644969188022314518	CMakeFiles/QT_Test.dir/main_window.cpp.o	cbc609f36cc76288
-1	135	1644969186612322734	QT_Test_autogen/mocs_compilation.cpp	136fc2d000514d
-1	135	1644969186612322734	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/timestamp	136fc2d000514d
-1	135	1644969186612322734	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/mocs_compilation.cpp	136fc2d000514d
-1540	1764	1644969188242313235	QT_Test	5849605f91e15b30
-135	1337	1644969187818982369	CMakeFiles/QT_Test.dir/QT_Test_autogen/mocs_compilation.cpp.o	89710b4c2daf42af
-135	1448	1644969187928981729	CMakeFiles/QT_Test.dir/main.cpp.o	578278a9e8771e27
-18	151	1644980555152870383	QT_Test_autogen/timestamp	136fc2d000514d
-18	151	1644980555152870383	QT_Test_autogen/mocs_compilation.cpp	136fc2d000514d
-18	151	1644980555152870383	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/timestamp	136fc2d000514d
-18	151	1644980555152870383	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/mocs_compilation.cpp	136fc2d000514d
-156	5876	1644980560882829835	CMakeFiles/QT_Test.dir/main.cpp.o	578278a9e8771e27
-153	6098	1644980561096161660	CMakeFiles/QT_Test.dir/QT_Test_autogen/mocs_compilation.cpp.o	89710b4c2daf42af
-156	6300	1644980561299493554	CMakeFiles/QT_Test.dir/main_window.cpp.o	cbc609f36cc76288
-6300	7514	1644980562519484916	QT_Test	5849605f91e15b30
 1	119	1644980628995679459	QT_Test_autogen/timestamp	136fc2d000514d
+121	4282	1644980633155649820	CMakeFiles/QT_Test.dir/main_window.cpp.o	cbc609f36cc76288
 1	119	1644980628995679459	QT_Test_autogen/mocs_compilation.cpp	136fc2d000514d
 1	119	1644980628995679459	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/timestamp	136fc2d000514d
 1	119	1644980628995679459	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/mocs_compilation.cpp	136fc2d000514d
-121	4282	1644980633155649820	CMakeFiles/QT_Test.dir/main_window.cpp.o	cbc609f36cc76288
 4282	4850	1644980633712312517	QT_Test	5849605f91e15b30
+153	6098	1644980561096161660	CMakeFiles/QT_Test.dir/QT_Test_autogen/mocs_compilation.cpp.o	89710b4c2daf42af
+156	5876	1644980560882829835	CMakeFiles/QT_Test.dir/main.cpp.o	578278a9e8771e27

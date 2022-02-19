@@ -24,3 +24,7 @@ bitbake core-image-minimal
 
 # Optionally build qemuarm64
 runqemu qemuarm64
+
+
+# yocto tools
++ recipetool appendfile

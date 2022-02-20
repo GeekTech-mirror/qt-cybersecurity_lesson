@@ -1,10 +1,10 @@
-# Development Environment
-+ qtcreator
-+ android sdk
-
 # Software Environment
 + Embedded Linux (yocto)
++ EGLFS
 + QT6
+
+# Development Environment
++ qtcreator
 
 # Yocto Environment
 
@@ -13,7 +13,6 @@
 + qtcreator-debug
 
 ## Distro Features
-+ opengl
 - x11
 - wayland
 - vulkan

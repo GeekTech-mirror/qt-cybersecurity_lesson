@@ -1,5 +1,5 @@
  
-# Build SDK in yocto
+# Build QT SDK in yocto
 + bitbake meta-toolchain-qt6
 
 ## REQUIRES A LOT OF RAM ##

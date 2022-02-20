@@ -18,9 +18,6 @@ bitbake-layers add-layer ../meta-qt6
 
 // Add `MACHINE ?= "raspberrypi4"` to build/conf/local.conf
 
-// Add `DISTRO_FEATURES:remove = "X11 wayland"` to build/conf/local.conf
-// Add `DISTRO_FEATURES:append = "EGLFS"` to build/conf/local.conf
-
 bitbake core-image-minimal
 
 # Optionally build qemuarm64

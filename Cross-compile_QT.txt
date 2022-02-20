@@ -1,9 +1,0 @@
- 
-
-./configure -release -opengl es2 -platform linux-aarch64-gnu-g++ -sysroot /Drive/.git_repo/Capstone/tools/qemuarm64/sysroot  -prefix /Drive/.git_repo/Capstone/tools/qemuarm64/qt6 -extprefix /Drive/.git_repo/Capstone/tools/qemuarm64/qt6 -skip qtwebengine
-cmake --build . --parallel
-cmake --install
-
-# Build SDK in yocto
-
-# Add the following to conf/local.conf in yocto build

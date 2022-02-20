@@ -83,7 +83,7 @@ build CMakeFiles/QT_Test.dir/main_window.cpp.o: CXX_COMPILER__QT_Test_Debug /Dri
 
 build QT_Test: CXX_EXECUTABLE_LINKER__QT_Test_Debug CMakeFiles/QT_Test.dir/QT_Test_autogen/mocs_compilation.cpp.o CMakeFiles/QT_Test.dir/main.cpp.o CMakeFiles/QT_Test.dir/main_window.cpp.o | /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Widgets.so.6.2.3 /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Gui.so.6.2.3 /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Core.so.6.2.3 /usr/lib/libGLX.so /usr/lib/libOpenGL.so || QT_Test_autogen QT_Test_autogen_timestamp_deps
   FLAGS = -g
-  LINK_LIBRARIES = -Wl,-rpath,/home/troytjh/Qt/6.2.3/gcc_64/lib  /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Widgets.so.6.2.3  /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Gui.so.6.2.3  /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Core.so.6.2.3  /usr/lib/libGLX.so  /usr/lib/libOpenGL.so
+  LINK_LIBRARIES = -Wl,-rpath,/home/troytjh/Qt/6.2.3/gcc_64/lib:  /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Widgets.so.6.2.3  /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Gui.so.6.2.3  /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Core.so.6.2.3  /usr/lib/libGLX.so  /usr/lib/libOpenGL.so
   OBJECT_DIR = CMakeFiles/QT_Test.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -116,6 +116,48 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 
 #############################################
+# Utility command for list_install_components
+
+build list_install_components: phony
+
+
+#############################################
+# Utility command for install
+
+build CMakeFiles/install.util: CUSTOM_COMMAND all
+  COMMAND = cd /Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug && /usr/bin/cmake -P cmake_install.cmake
+  DESC = Install the project...
+  pool = console
+  restat = 1
+
+build install: phony CMakeFiles/install.util
+
+
+#############################################
+# Utility command for install/local
+
+build CMakeFiles/install/local.util: CUSTOM_COMMAND all
+  COMMAND = cd /Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug && /usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+  DESC = Installing only the local directory...
+  pool = console
+  restat = 1
+
+build install/local: phony CMakeFiles/install/local.util
+
+
+#############################################
+# Utility command for install/strip
+
+build CMakeFiles/install/strip.util: CUSTOM_COMMAND all
+  COMMAND = cd /Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug && /usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+  DESC = Installing the project stripped...
+  pool = console
+  restat = 1
+
+build install/strip: phony CMakeFiles/install/strip.util
+
+
+#############################################
 # Utility command for QT_Test_autogen_timestamp_deps
 
 build QT_Test_autogen_timestamp_deps: phony CMakeFiles/QT_Test_autogen_timestamp_deps
@@ -140,7 +182,7 @@ build QT_Test_autogen/timestamp QT_Test_autogen/mocs_compilation.cpp | ${cmake_n
 #############################################
 # Phony custom command for CMakeFiles/QT_Test_autogen_timestamp_deps
 
-build CMakeFiles/QT_Test_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/QT_Test_autogen_timestamp_deps: phony /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Widgets.so.6.2.3 /home/troytjh/Qt/6.2.3/gcc_64/./libexec/moc /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Core.so.6.2.3 /home/troytjh/Qt/6.2.3/gcc_64/./libexec/uic
+build CMakeFiles/QT_Test_autogen_timestamp_deps | ${cmake_ninja_workdir}CMakeFiles/QT_Test_autogen_timestamp_deps: phony /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Widgets.so.6.2.3 /home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Core.so.6.2.3 /home/troytjh/Qt/6.2.3/gcc_64/./libexec/moc /home/troytjh/Qt/6.2.3/gcc_64/./libexec/uic
 
 
 #############################################

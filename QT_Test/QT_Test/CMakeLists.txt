@@ -57,3 +57,11 @@ set_target_properties(QT_Test PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(QT_Test)
 endif()
+
+set(INSTALL_DESTDIR "/home/root")
+
+install(TARGETS QT_Test
+    RUNTIME DESTINATION "${INSTALL_DESTDIR}"
+    BUNDLE DESTINATION "${INSTALL_DESTDIR}"
+    LIBRARY DESTINATION "${INSTALL_DESTDIR}"
+)

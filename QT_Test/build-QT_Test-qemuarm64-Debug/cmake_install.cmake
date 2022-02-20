@@ -34,12 +34,12 @@ endif()
 
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
-  set(CMAKE_CROSSCOMPILING "FALSE")
+  set(CMAKE_CROSSCOMPILING "TRUE")
 endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+  set(CMAKE_OBJDUMP "/Drive/.git_repo/qt6_toolchain/qemuarm64/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-objdump")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -57,15 +57,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/home/root" TYPE EXECUTABLE FILES "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test")
+  file(INSTALL DESTINATION "/home/root" TYPE EXECUTABLE FILES "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-Debug/QT_Test")
   if(EXISTS "$ENV{DESTDIR}/home/root/QT_Test" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}/home/root/QT_Test")
-    file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}/home/root/QT_Test"
-         OLD_RPATH "/home/troytjh/Qt/6.2.3/gcc_64/lib:"
-         NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/root/QT_Test")
+      execute_process(COMMAND "/Drive/.git_repo/qt6_toolchain/qemuarm64/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-strip" "$ENV{DESTDIR}/home/root/QT_Test")
     endif()
   endif()
 endif()
@@ -78,5 +74,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

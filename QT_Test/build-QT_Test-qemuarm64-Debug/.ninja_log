@@ -1,0 +1,16 @@
+# ninja log v5
+2	146	1645307815168224977	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-Debug/QT_Test_autogen/mocs_compilation.cpp	e44cefdfba8353f6
+2	146	1645307815168224977	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-Debug/QT_Test_autogen/timestamp	e44cefdfba8353f6
+2	146	1645307815168224977	QT_Test_autogen/mocs_compilation.cpp	e44cefdfba8353f6
+2	146	1645307815168224977	QT_Test_autogen/timestamp	e44cefdfba8353f6
+148	4806	1645307819831611392	CMakeFiles/QT_Test.dir/main_window.cpp.o	4819f784a4dd762d
+148	4268	1645307819294938617	CMakeFiles/QT_Test.dir/main.cpp.o	4f20e2948576391e
+141	1852	1645293547377639310	CMakeFiles/QT_Test.dir/QT_Test_autogen/mocs_compilation.cpp.o	6fb2dccf15a41e08
+1	7	0	CMakeFiles/install.util	dbb2b87a2b3629f6
+4807	5836	1645307820818289287	QT_Test	791eed005831e9e7
+1	41	0	CMakeFiles/install.util	dbb2b87a2b3629f6
+1	7	0	CMakeFiles/install.util	dbb2b87a2b3629f6
+1	7	0	CMakeFiles/install.util	dbb2b87a2b3629f6
+1	35	0	CMakeFiles/install.util	dbb2b87a2b3629f6
+2	9	0	CMakeFiles/install.util	dbb2b87a2b3629f6
+1	7	0	CMakeFiles/install.util	dbb2b87a2b3629f6

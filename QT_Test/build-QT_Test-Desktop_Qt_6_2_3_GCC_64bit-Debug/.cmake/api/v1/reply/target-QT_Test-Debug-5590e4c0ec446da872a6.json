@@ -14,6 +14,7 @@
 			"_qt_internal_create_executable",
 			"qt6_add_executable",
 			"qt_add_executable",
+			"install",
 			"target_link_libraries"
 		],
 		"files" : 
@@ -53,11 +54,17 @@
 			{
 				"command" : 4,
 				"file" : 1,
+				"line" : 63,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 1,
 				"line" : 47,
 				"parent" : 0
 			},
 			{
-				"command" : 4,
+				"command" : 5,
 				"file" : 0,
 				"line" : 524,
 				"parent" : 2
@@ -73,7 +80,7 @@
 					"fragment" : "-g"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"fragment" : "-fPIC"
 				},
 				{
@@ -83,15 +90,15 @@
 			"defines" : 
 			[
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"define" : "QT_CORE_LIB"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"define" : "QT_GUI_LIB"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"define" : "QT_WIDGETS_LIB"
 				}
 			],
@@ -108,27 +115,27 @@
 					"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/include"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"isSystem" : true,
 					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include/QtCore"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"isSystem" : true,
 					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include"
 				},
 				{
-					"backtrace" : 6,
+					"backtrace" : 7,
 					"isSystem" : true,
 					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/mkspecs/linux-g++"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"isSystem" : true,
 					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets"
 				},
 				{
-					"backtrace" : 5,
+					"backtrace" : 6,
 					"isSystem" : true,
 					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include/QtGui"
 				}
@@ -138,7 +145,7 @@
 			{
 				"backtraces" : 
 				[
-					6
+					7
 				],
 				"standard" : "17"
 			},
@@ -161,6 +168,20 @@
 		}
 	],
 	"id" : "QT_Test::@6890427a1f51a3e7e1df",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 5,
+				"path" : "/home/root"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
 	"link" : 
 	{
 		"commandFragments" : 
@@ -174,11 +195,11 @@
 				"role" : "flags"
 			},
 			{
-				"fragment" : "-Wl,-rpath,/home/troytjh/Qt/6.2.3/gcc_64/lib",
+				"fragment" : "-Wl,-rpath,/home/troytjh/Qt/6.2.3/gcc_64/lib:",
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 5,
+				"backtrace" : 6,
 				"fragment" : "/home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Widgets.so.6.2.3",
 				"role" : "libraries"
 			},
@@ -187,7 +208,7 @@
 				"role" : "libraries"
 			},
 			{
-				"backtrace" : 6,
+				"backtrace" : 7,
 				"fragment" : "/home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Core.so.6.2.3",
 				"role" : "libraries"
 			},

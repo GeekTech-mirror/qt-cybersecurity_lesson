@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.2, 2022-02-21T21:10:06. -->
+<!-- Written by QtCreator 6.0.2, 2022-02-21T21:38:23. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -59,6 +59,17 @@
  <data>
   <variable>ProjectExplorer.Project.PluginSettings</variable>
   <valuemap type="QVariantMap">
+   <valuemap type="QVariantMap" key="AutoApplication.ActiveFrameworks">
+    <value type="bool" key="AutoApplication.Framework.Boost">true</value>
+    <value type="bool" key="AutoApplication.Framework.CApplication">false</value>
+    <value type="bool" key="AutoApplication.Framework.Catch">true</value>
+    <value type="bool" key="AutoApplication.Framework.GApplication">true</value>
+    <value type="bool" key="AutoApplication.Framework.QtApplication">true</value>
+    <value type="bool" key="AutoApplication.Framework.QtQuickApplication">true</value>
+   </valuemap>
+   <valuemap type="QVariantMap" key="AutoApplication.CheckStates"/>
+   <value type="int" key="AutoApplication.RunAfterBuild">0</value>
+   <value type="bool" key="AutoApplication.UseGlobal">true</value>
    <valuemap type="QVariantMap" key="AutoTest.ActiveFrameworks">
     <value type="bool" key="AutoTest.Framework.Boost">true</value>
     <value type="bool" key="AutoTest.Framework.CTest">false</value>
@@ -108,7 +119,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -154,7 +165,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -198,7 +209,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-RelWithDebInfo</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-RelWithDebInfo</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -242,7 +253,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-MinSizeRel</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-MinSizeRel</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -299,15 +310,15 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QT_Test</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.QT_Test</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">QT_Test</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QT_Application</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.QT_Application</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">QT_Application</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>
@@ -331,7 +342,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -377,7 +388,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -421,7 +432,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-RelWithDebInfo</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-RelWithDebInfo</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -465,7 +476,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-MinSizeRel</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-MinSizeRel</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -508,7 +519,7 @@
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinux.MakeInstall</value>
       <value type="QString" key="RemoteLinux.MakeInstall.InstallRoot">/tmp/QtCreator-yzNYHo</value>
       <value type="QString" key="RemoteLinux.MakeInstall.Make">/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/cmake</value>
-      <value type="QString" key="RemoteLinux.MakeInstall.MakeArguments">--build /Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug --target install</value>
+      <value type="QString" key="RemoteLinux.MakeInstall.MakeArguments">--build /Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-Debug --target install</value>
       <value type="QString" key="RemoteLinux.MakeInstall.MakeCommand">/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/cmake</value>
      </valuemap>
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.1">
@@ -563,9 +574,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">1</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QT_Test (on %{Device:Name})</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinuxRunConfiguration:QT_Test</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">QT_Test</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QT_Application (on %{Device:Name})</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinuxRunConfiguration:QT_Application</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">QT_Application</value>
     <value type="int" key="RemoteLinux.EnvironmentAspect.Version">1</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
@@ -595,7 +606,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-Debug</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-qemuarm64-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -641,7 +652,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-Release</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-qemuarm64-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -685,7 +696,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-RelWithDebInfo</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-qemuarm64-RelWithDebInfo</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -729,7 +740,7 @@
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
 -DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-MinSizeRel</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-qemuarm64-MinSizeRel</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <valuelist type="QVariantList" key="CMakeProjectManager.MakeStep.BuildTargets">
@@ -772,7 +783,7 @@
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinux.MakeInstall</value>
       <value type="QString" key="RemoteLinux.MakeInstall.InstallRoot">/tmp/QtCreator-BXiZdF</value>
       <value type="QString" key="RemoteLinux.MakeInstall.Make">/Drive/.git_repo/qt6_toolchain/qemuarm64/sysroots/x86_64-pokysdk-linux/usr/bin/cmake</value>
-      <value type="QString" key="RemoteLinux.MakeInstall.MakeArguments">--build /Drive/.git_repo/Capstone/QT_Test/build-QT_Test-qemuarm64-Debug --target install</value>
+      <value type="QString" key="RemoteLinux.MakeInstall.MakeArguments">--build /Drive/.git_repo/Capstone/QT_Application/build-QT_Application-qemuarm64-Debug --target install</value>
       <value type="QString" key="RemoteLinux.MakeInstall.MakeCommand">/Drive/.git_repo/qt6_toolchain/qemuarm64/sysroots/x86_64-pokysdk-linux/usr/bin/cmake</value>
      </valuemap>
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.1">
@@ -827,9 +838,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">1</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QT_Test (on %{Device:Name})</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinuxRunConfiguration:QT_Test</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">QT_Test</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QT_Application (on %{Device:Name})</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinuxRunConfiguration:QT_Application</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">QT_Application</value>
     <value type="int" key="RemoteLinux.EnvironmentAspect.Version">1</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>

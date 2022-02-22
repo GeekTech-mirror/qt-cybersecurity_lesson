@@ -1,0 +1,9 @@
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/QT_Application.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/list_install_components.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/install.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/install/local.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/install/strip.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/QT_Application_autogen_timestamp_deps.dir
+/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Desktop_Qt_6_2_3_GCC_64bit-Debug/CMakeFiles/QT_Application_autogen.dir

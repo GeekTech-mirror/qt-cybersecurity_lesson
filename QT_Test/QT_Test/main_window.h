@@ -2,6 +2,7 @@
 #define MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <QStackedWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Main_Window; }
@@ -14,6 +15,17 @@ class Main_Window : public QMainWindow
 public:
     Main_Window (QWidget *parent = nullptr);
     ~Main_Window ();
+
+private slots:
+    void on_rubber_ducky_button_clicked ();
+
+    void on_wifi_jammer_button_clicked ();
+
+    void on_man_in_the_middle_button_clicked();
+
+    void on_war_driving_button_clicked();
+
+    void on_action_home_triggered();
 
 private:
     Ui::Main_Window *ui;

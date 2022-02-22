@@ -98,8 +98,11 @@ QT_Test_autogen/timestamp: \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtGui/qtransform.h \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtGui/qwindowdefs.h \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/QMainWindow \
+	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/QStackedWidget \
+	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/qframe.h \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/qmainwindow.h \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/qsizepolicy.h \
+	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/qstackedwidget.h \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/qtabwidget.h \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/qtwidgets-config.h \
 	/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets/qtwidgetsglobal.h \

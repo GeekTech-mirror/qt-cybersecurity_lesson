@@ -16,7 +16,7 @@ bitbake-layers add-layer ../meta-qt6
 
 // Remove line /meta-yocto-bsp from build/conf/bblayers.conf
 
-// Add `MACHINE ?= "raspberrypi4"` to build/conf/local.conf
+// Add `MACHINE ?= "raspberrypi4-64"` to build/conf/local.conf
 
 bitbake core-image-minimal
 

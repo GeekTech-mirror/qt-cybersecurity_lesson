@@ -1,4 +1,5 @@
- 
+# Set the desired MACHINE in local.conf
+
 # Build QT SDK in yocto
 + bitbake meta-toolchain-qt6
 

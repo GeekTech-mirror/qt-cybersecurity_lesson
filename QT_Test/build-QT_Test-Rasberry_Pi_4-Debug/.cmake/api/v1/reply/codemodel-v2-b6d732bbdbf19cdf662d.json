@@ -44,21 +44,21 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "QT_Test::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-QT_Test-Debug-5590e4c0ec446da872a6.json",
+					"jsonFile" : "target-QT_Test-Debug-719f5c9f71aef06361d8.json",
 					"name" : "QT_Test",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "QT_Test_autogen::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-QT_Test_autogen-Debug-31a5e0dbd44c4929c189.json",
+					"jsonFile" : "target-QT_Test_autogen-Debug-2b889f4703833c5fa865.json",
 					"name" : "QT_Test_autogen",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "QT_Test_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-QT_Test_autogen_timestamp_deps-Debug-27a6a6ca781fce2b620d.json",
+					"jsonFile" : "target-QT_Test_autogen_timestamp_deps-Debug-b02d00b4e4405546c503.json",
 					"name" : "QT_Test_autogen_timestamp_deps",
 					"projectIndex" : 0
 				}
@@ -68,7 +68,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug",
+		"build" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug",
 		"source" : "/Drive/.git_repo/Capstone/QT_Test/QT_Test"
 	},
 	"version" : 

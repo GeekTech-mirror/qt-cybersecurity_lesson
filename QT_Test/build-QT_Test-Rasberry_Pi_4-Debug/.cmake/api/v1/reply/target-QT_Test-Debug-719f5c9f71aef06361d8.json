@@ -19,7 +19,7 @@
 		],
 		"files" : 
 		[
-			"/home/troytjh/Qt/6.2.3/gcc_64/lib/cmake/Qt6Core/Qt6CoreMacros.cmake",
+			"/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/lib/cmake/Qt6Core/Qt6CoreMacros.cmake",
 			"CMakeLists.txt"
 		],
 		"nodes" : 
@@ -77,11 +77,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g"
-				},
-				{
-					"backtrace" : 7,
-					"fragment" : "-fPIC"
+					"fragment" : " -O2 -pipe -g -feliminate-unused-debug-types  -g"
 				},
 				{
 					"fragment" : "-std=gnu++17"
@@ -105,39 +101,34 @@
 			"includes" : 
 			[
 				{
-					"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug"
+					"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug"
 				},
 				{
 					"path" : "/Drive/.git_repo/Capstone/QT_Test/QT_Test"
 				},
 				{
 					"backtrace" : 0,
-					"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/include"
+					"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test_autogen/include"
 				},
 				{
 					"backtrace" : 7,
 					"isSystem" : true,
-					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include/QtCore"
+					"path" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/include/QtCore"
 				},
 				{
 					"backtrace" : 7,
 					"isSystem" : true,
-					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include"
-				},
-				{
-					"backtrace" : 7,
-					"isSystem" : true,
-					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/mkspecs/linux-g++"
+					"path" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/lib/mkspecs/linux-g++"
 				},
 				{
 					"backtrace" : 6,
 					"isSystem" : true,
-					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include/QtWidgets"
+					"path" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/include/QtWidgets"
 				},
 				{
 					"backtrace" : 6,
 					"isSystem" : true,
-					"path" : "/home/troytjh/Qt/6.2.3/gcc_64/include/QtGui"
+					"path" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/include/QtGui"
 				}
 			],
 			"language" : "CXX",
@@ -145,6 +136,7 @@
 			{
 				"backtraces" : 
 				[
+					7,
 					7
 				],
 				"standard" : "17"
@@ -154,7 +146,11 @@
 				0,
 				1,
 				2
-			]
+			],
+			"sysroot" : 
+			{
+				"path" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux"
+			}
 		}
 	],
 	"dependencies" : 
@@ -187,41 +183,41 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-g",
+				"fragment" : "-O2 -pipe -g -feliminate-unused-debug-types  -g",
 				"role" : "flags"
 			},
 			{
-				"fragment" : "",
+				"fragment" : "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed  -Wl,-z,relro,-z,now",
 				"role" : "flags"
-			},
-			{
-				"fragment" : "-Wl,-rpath,/home/troytjh/Qt/6.2.3/gcc_64/lib:",
-				"role" : "libraries"
 			},
 			{
 				"backtrace" : 6,
-				"fragment" : "/home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Widgets.so.6.2.3",
+				"fragment" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/lib/libQt6Widgets.so.6.2.3",
 				"role" : "libraries"
 			},
 			{
-				"fragment" : "/home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Gui.so.6.2.3",
+				"fragment" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/lib/libQt6Gui.so.6.2.3",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 7,
-				"fragment" : "/home/troytjh/Qt/6.2.3/gcc_64/lib/libQt6Core.so.6.2.3",
+				"fragment" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/lib/libQt6Core.so.6.2.3",
 				"role" : "libraries"
 			},
 			{
-				"fragment" : "/usr/lib/libGLX.so",
+				"fragment" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/lib/libGLESv2.so",
 				"role" : "libraries"
 			},
 			{
-				"fragment" : "/usr/lib/libOpenGL.so",
+				"fragment" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux/usr/lib/libEGL.so",
 				"role" : "libraries"
 			}
 		],
-		"language" : "CXX"
+		"language" : "CXX",
+		"sysroot" : 
+		{
+			"path" : "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux"
+		}
 	},
 	"name" : "QT_Test",
 	"nameOnDisk" : "QT_Test",
@@ -271,7 +267,7 @@
 			"backtrace" : 0,
 			"compileGroupIndex" : 0,
 			"isGenerated" : true,
-			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/mocs_compilation.cpp",
+			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test_autogen/mocs_compilation.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -299,19 +295,19 @@
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/include/ui_main_window.h",
+			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test_autogen/include/ui_main_window.h",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/timestamp",
+			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test_autogen/timestamp",
 			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 0,
 			"isGenerated" : true,
-			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Desktop_Qt_6_2_3_GCC_64bit-Debug/QT_Test_autogen/timestamp.rule",
+			"path" : "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test_autogen/timestamp.rule",
 			"sourceGroupIndex" : 3
 		}
 	],

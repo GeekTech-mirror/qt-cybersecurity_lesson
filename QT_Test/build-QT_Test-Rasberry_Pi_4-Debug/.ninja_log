@@ -1,0 +1,9 @@
+# ninja log v5
+0	140	1645456481648212042	QT_Test_autogen/timestamp	d5b58ff86c55a4ff
+0	140	1645456481648212042	QT_Test_autogen/mocs_compilation.cpp	d5b58ff86c55a4ff
+0	140	1645456481648212042	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test_autogen/timestamp	d5b58ff86c55a4ff
+0	140	1645456481648212042	/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test_autogen/mocs_compilation.cpp	d5b58ff86c55a4ff
+140	1357	1645456482861536318	CMakeFiles/QT_Test.dir/QT_Test_autogen/mocs_compilation.cpp.o	6cb517cf54f50a60
+140	1461	1645456482964868879	CMakeFiles/QT_Test.dir/main.cpp.o	17d5e0a330f051d3
+140	1864	1645456483371532510	CMakeFiles/QT_Test.dir/main_window.cpp.o	17cc9ca7d2af05d7
+1864	2072	1645456483581530942	QT_Test	884362df915173dd

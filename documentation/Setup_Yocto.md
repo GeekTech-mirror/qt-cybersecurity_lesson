@@ -11,7 +11,6 @@ Poky is a reference distribution  of the Yocto Project. Linux distributions are 
 ### *meta-openembedded*
 OpenEmbedded is responsible for the build system. OpenEmbedded is a widely used build framework for embedded linux. Yocto Project has incorpated OpenEmbedded into their own software stack to provide a robust build system.
 
-### *meta-qt6*
 
 
 ## Build

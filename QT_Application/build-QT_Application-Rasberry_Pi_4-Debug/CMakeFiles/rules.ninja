@@ -6,7 +6,7 @@
 # It is included in the main 'build.ninja'.
 
 # =============================================================================
-# Project: QT_Test
+# Project: QT_Application
 # Configurations: Debug
 # =============================================================================
 # =============================================================================
@@ -22,7 +22,7 @@ rule CUSTOM_COMMAND
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__QT_Test_Debug
+rule CXX_COMPILER__QT_Application_Debug
   depfile = $DEP_FILE
   deps = gcc
   command = /Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-g++ --sysroot=/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -32,7 +32,7 @@ rule CXX_COMPILER__QT_Test_Debug
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__QT_Test_Debug
+rule CXX_EXECUTABLE_LINKER__QT_Application_Debug
   command = $PRE_LINK && /Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-g++ --sysroot=/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/cortexa72-poky-linux $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -42,7 +42,7 @@ rule CXX_EXECUTABLE_LINKER__QT_Test_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/cmake --regenerate-during-build -S/Drive/.git_repo/Capstone/QT_Test/QT_Test -B/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug
+  command = /Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/cmake --regenerate-during-build -S/Drive/.git_repo/Capstone/QT_Application/QT_Application -B/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-Debug
   description = Re-running CMake...
   generator = 1
 

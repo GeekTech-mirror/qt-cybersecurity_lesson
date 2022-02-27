@@ -70,44 +70,6 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <pointsize>36</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color: rgb(220, 225, 232);</string>
-          </property>
-          <property name="text">
-           <string>Cybersecurity</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="font">
-           <font>
-            <pointsize>36</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color: rgb(220, 225, 232);</string>
-          </property>
-          <property name="text">
-           <string>Course</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
          <spacer name="horizontalSpacer_7">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -119,6 +81,26 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <family>DejaVu Serif</family>
+            <pointsize>45</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(220, 225, 232);</string>
+          </property>
+          <property name="text">
+           <string>Cybercraft</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="horizontalSpacer_4">
@@ -148,13 +130,10 @@
         </item>
         <item>
          <widget class="QPushButton" name="rubber_ducky_button">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
           <property name="minimumSize">
            <size>
             <width>419</width>
-            <height>110</height>
+            <height>100</height>
            </size>
           </property>
           <property name="font">
@@ -162,12 +141,6 @@
             <pointsize>26</pointsize>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-	color: rgb(209, 213, 218);
-	background-color: rgb(40, 44, 52);
-}</string>
           </property>
           <property name="text">
            <string>Rubber Ducky</string>
@@ -192,7 +165,7 @@
           <property name="minimumSize">
            <size>
             <width>419</width>
-            <height>110</height>
+            <height>100</height>
            </size>
           </property>
           <property name="font">
@@ -230,7 +203,7 @@
           <property name="minimumSize">
            <size>
             <width>419</width>
-            <height>110</height>
+            <height>100</height>
            </size>
           </property>
           <property name="font">
@@ -268,7 +241,7 @@
           <property name="minimumSize">
            <size>
             <width>419</width>
-            <height>110</height>
+            <height>100</height>
            </size>
           </property>
           <property name="font">

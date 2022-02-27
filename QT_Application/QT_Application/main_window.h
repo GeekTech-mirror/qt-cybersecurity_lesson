@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-#include <QIcon>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Main_Window; }
@@ -31,4 +31,5 @@ private slots:
 private:
     Ui::Main_Window *ui;
 };
+
 #endif // MAIN_WINDOW_H

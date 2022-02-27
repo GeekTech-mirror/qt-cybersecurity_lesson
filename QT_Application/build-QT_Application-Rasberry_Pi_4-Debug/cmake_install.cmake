@@ -1,4 +1,4 @@
-# Install script for directory: /Drive/.git_repo/Capstone/QT_Test/QT_Test
+# Install script for directory: /Drive/.git_repo/Capstone/QT_Application/QT_Application
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -43,25 +43,25 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/home/root/QT_Test" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/root/QT_Test")
+  if(EXISTS "$ENV{DESTDIR}/home/root/QT_Application" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/root/QT_Application")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/home/root/QT_Test"
+         FILE "$ENV{DESTDIR}/home/root/QT_Application"
          RPATH "")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/root/QT_Test")
+   "/home/root/QT_Application")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/home/root" TYPE EXECUTABLE FILES "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/QT_Test")
-  if(EXISTS "$ENV{DESTDIR}/home/root/QT_Test" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/root/QT_Test")
+  file(INSTALL DESTINATION "/home/root" TYPE EXECUTABLE FILES "/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-Debug/QT_Application")
+  if(EXISTS "$ENV{DESTDIR}/home/root/QT_Application" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/root/QT_Application")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-strip" "$ENV{DESTDIR}/home/root/QT_Test")
+      execute_process(COMMAND "/Drive/.git_repo/qt6_toolchain/raspberrypi/sysroots/x86_64-pokysdk-linux/usr/bin/aarch64-poky-linux/aarch64-poky-linux-strip" "$ENV{DESTDIR}/home/root/QT_Application")
     endif()
   endif()
 endif()
@@ -74,5 +74,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Drive/.git_repo/Capstone/QT_Test/build-QT_Test-Rasberry_Pi_4-Debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Drive/.git_repo/Capstone/QT_Application/build-QT_Application-Rasberry_Pi_4-Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

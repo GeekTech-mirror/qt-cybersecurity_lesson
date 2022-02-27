@@ -1,1 +1,1 @@
-/home/root/QT_Test
+/home/root/QT_Application

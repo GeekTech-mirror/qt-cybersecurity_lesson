@@ -133,6 +133,10 @@ public:
         font1.setPointSize(26);
         font1.setBold(true);
         rubber_ducky_button->setFont(font1);
+        rubber_ducky_button->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"	color: rgb(209, 213, 218);\n"
+"	background-color: rgb(40, 44, 52);\n"
+"}"));
 
         verticalLayout->addWidget(rubber_ducky_button);
 

@@ -34,9 +34,8 @@ public:
     QWidget *Main_Menu_Widget;
     QVBoxLayout *verticalLayout;
     QSpacerItem *horizontalSpacer_6;
-    QLabel *label;
-    QLabel *label_2;
     QSpacerItem *horizontalSpacer_7;
+    QLabel *label;
     QSpacerItem *horizontalSpacer_4;
     QSpacerItem *horizontalSpacer_5;
     QPushButton *rubber_ducky_button;
@@ -103,28 +102,21 @@ public:
 
         verticalLayout->addItem(horizontalSpacer_6);
 
+        horizontalSpacer_7 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        verticalLayout->addItem(horizontalSpacer_7);
+
         label = new QLabel(Main_Menu_Widget);
         label->setObjectName(QString::fromUtf8("label"));
         QFont font;
-        font.setPointSize(36);
+        font.setFamilies({QString::fromUtf8("DejaVu Serif")});
+        font.setPointSize(45);
         font.setBold(true);
         label->setFont(font);
         label->setStyleSheet(QString::fromUtf8("color: rgb(220, 225, 232);"));
         label->setAlignment(Qt::AlignCenter);
 
         verticalLayout->addWidget(label);
-
-        label_2 = new QLabel(Main_Menu_Widget);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
-        label_2->setFont(font);
-        label_2->setStyleSheet(QString::fromUtf8("color: rgb(220, 225, 232);"));
-        label_2->setAlignment(Qt::AlignCenter);
-
-        verticalLayout->addWidget(label_2);
-
-        horizontalSpacer_7 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        verticalLayout->addItem(horizontalSpacer_7);
 
         horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -141,6 +133,10 @@ public:
         font1.setPointSize(26);
         font1.setBold(true);
         rubber_ducky_button->setFont(font1);
+        rubber_ducky_button->setStyleSheet(QString::fromUtf8("QPushButton {\n"
+"	color: rgb(209, 213, 218);\n"
+"	background-color: rgb(40, 44, 52);\n"
+"}"));
 
         verticalLayout->addWidget(rubber_ducky_button);
 
@@ -263,8 +259,7 @@ public:
         Main_Window->setWindowTitle(QCoreApplication::translate("Main_Window", "Main_Window", nullptr));
         action_home->setText(QCoreApplication::translate("Main_Window", "Home", nullptr));
         action_help->setText(QCoreApplication::translate("Main_Window", "Help_Documentation", nullptr));
-        label->setText(QCoreApplication::translate("Main_Window", "Cybersecurity", nullptr));
-        label_2->setText(QCoreApplication::translate("Main_Window", "Course", nullptr));
+        label->setText(QCoreApplication::translate("Main_Window", "Cybercraft", nullptr));
         rubber_ducky_button->setText(QCoreApplication::translate("Main_Window", "Rubber Ducky", nullptr));
         wifi_jammer_button->setText(QCoreApplication::translate("Main_Window", "Wi-Fi Jammer", nullptr));
         man_in_the_middle_button->setText(QCoreApplication::translate("Main_Window", "Man-in-the-Middle", nullptr));

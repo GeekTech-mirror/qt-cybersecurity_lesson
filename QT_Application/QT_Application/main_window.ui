@@ -142,6 +142,12 @@
             <bold>true</bold>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+	color: rgb(209, 213, 218);
+	background-color: rgb(40, 44, 52);
+}</string>
+          </property>
           <property name="text">
            <string>Rubber Ducky</string>
           </property>

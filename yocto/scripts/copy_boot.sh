@@ -211,28 +211,6 @@ if [ -f ${SRCDIR}/u-boot.bin ]; then
     fi
 fi
 
-if [ -f ./config.txt ]; then
-    echo "Copying local config.txt to card"
-    sudo cp ./config.txt /mnt
-
-    if [ $? -ne 0 ]; then
-        echo "Error copying local config.txt to card"
-        sudo umount ${DEV}
-        exit 1
-    fi
-fi
-
-if [ -f ./cmdline.txt ]; then
-    echo "Copying local cmdline.txt to card"
-    sudo cp ./cmdline.txt /mnt
-
-    if [ $? -ne 0 ]; then
-        echo "Error copying local cmdline.txt to card"
-        sudo umount ${DEV}
-        exit 1
-    fi
-fi
-
 echo "Unmounting ${DEV}"
 sudo umount ${DEV}
 

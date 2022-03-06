@@ -3,7 +3,10 @@
 
 #include <QMainWindow>
 #include <QStackedWidget>
-
+#include <QFontDatabase>
+#include <QIcon>
+#include <QFont>
+#include <QList>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Main_Window; }
@@ -14,7 +17,7 @@ class Main_Window : public QMainWindow
     Q_OBJECT
 
 public:
-    Main_Window (QWidget *parent = nullptr);
+    explicit Main_Window (QWidget *parent = nullptr);
     ~Main_Window ();
 
 private slots:

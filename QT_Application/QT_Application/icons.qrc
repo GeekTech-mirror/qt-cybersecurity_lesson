@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/breeze-icons/actions/16/help-about.svg</file>
+        <file>icons/breeze-icons/actions/symbolic/help-about-symbolic.svg</file>
+        <file>icons/breeze-icons/places/16/user-home.svg</file>
+        <file>icons/breeze-icons/places/symbolic/user-home-symbolic.svg</file>
+        <file>icons/breeze-icons/index.theme</file>
+    </qresource>
+</RCC>

@@ -18,9 +18,11 @@ set(PROJECT_SOURCES
         main.cpp
         main_window.cpp
         main_window.h
+        main_window.ui
         button_style.cpp
         button_style.h
-        main_window.ui
+        icons.qrc
+        fonts.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

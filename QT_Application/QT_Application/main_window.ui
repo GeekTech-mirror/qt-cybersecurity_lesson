@@ -83,7 +83,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="title">
           <property name="font">
            <font>
             <family>DejaVu Serif</family>
@@ -408,8 +408,8 @@
   </widget>
   <action name="action_home">
    <property name="icon">
-    <iconset theme="user-home-symbolic">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/breeze-icons/places/16/user-home.svg</normaloff>:/icons/breeze-icons/places/16/user-home.svg</iconset>
    </property>
    <property name="text">
     <string>Home</string>
@@ -417,14 +417,16 @@
   </action>
   <action name="action_help">
    <property name="icon">
-    <iconset theme="help-hint">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/breeze-icons/actions/16/help-about.svg</normaloff>:/icons/breeze-icons/actions/16/help-about.svg</iconset>
    </property>
    <property name="text">
     <string>Help_Documentation</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

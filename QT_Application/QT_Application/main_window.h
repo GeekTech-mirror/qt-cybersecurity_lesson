@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QFontDatabase>
-#include <QIcon>
 #include <QFont>
+#include <QIcon>
 #include <QList>
 
 QT_BEGIN_NAMESPACE

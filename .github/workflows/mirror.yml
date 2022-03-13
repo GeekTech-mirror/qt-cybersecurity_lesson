@@ -1,0 +1,28 @@
+name: Mirror repository
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: pixta-dev/repository-mirroring-action@v1.0.2
+      with:
+        # Target url
+        target_repo_url: ssh://github.com/GeekTech-mirror/qt-cybercraft.git
+        
+        # SSH private key for ssh connection to the target repository
+        ssh_private_key:
+          -----BEGIN OPENSSH PRIVATE KEY-----
+          b3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jdHIAAAAGYmNyeXB0AAAAGAAAABA/u6YmIB
+          XbSJXXcVtisAkeAAAAEAAAAAEAAAAzAAAAC3NzaC1lZDI1NTE5AAAAIO7xk/KoniyGtEaB
+          3ud/kP3RimxYD86SU/dx0pOLEAhwAAAAoH+DDSDF7Q7iYriLDw2kZwoLKOy9MBdO7cbtaz
+          QW5tl8xJIdXgO9OseRRvmXwrk045SrB0Q0mkvo8VF5YcuQejSzAY4828S1bJi9OHR2EpJy
+          M+Ja6X6wX5wWGjnLngWufv/Jkqk7t7yp6lVA0rA45srCJ6YW3n83oFiXFBV80HNS6yclmO
+          HbgzURab1FNIioWLMvKx/O0JcWCRvz8MccdoU=
+          -----END OPENSSH PRIVATE KEY-----
+

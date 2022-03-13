@@ -62,7 +62,7 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(QT_Application)
 endif()
 
-set(INSTALL_DESTDIR "/home/root")
+set(INSTALL_DESTDIR "/usr/bin")
 
 install(TARGETS QT_Application
     RUNTIME DESTINATION "${INSTALL_DESTDIR}"

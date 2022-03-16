@@ -1,14 +1,12 @@
 #include "main_window.h"
-#include "button_style.h"
+#include "style_custom.h"
 
 #include <QApplication>
 
 int main (int argc, char *argv[])
 {
-//    Q_INIT_RESOURCE(styles);
-
-//    QApplication::setStyle(new button_style);
-    QApplication::setStyle("fusion");
+    QApplication::setStyle(new QStyleCustom);
+//  QApplication::setStyle("fusion");
 
     QApplication app (argc, argv);
 

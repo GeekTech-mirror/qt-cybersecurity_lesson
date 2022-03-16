@@ -21,10 +21,12 @@ Main_Window::Main_Window (QWidget *parent)
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
 }
 
+
 Main_Window::~Main_Window ()
 {
     delete ui;
 }
+
 
 void Main_Window::on_rubber_ducky_button_clicked ()
 {

@@ -19,8 +19,9 @@ set(PROJECT_SOURCES
         main_window.cpp
         main_window.h
         main_window.ui
-        button_style.cpp
-        button_style.h
+        style_common.h
+        style_custom.cpp
+        style_custom.h
         icons.qrc
         fonts.qrc
 )

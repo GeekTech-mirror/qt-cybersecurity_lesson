@@ -150,6 +150,8 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
 
         break;
         }
+    default:
+        QProxyStyle::drawPrimitive(element, option, painter, widget);
     }
 }
 

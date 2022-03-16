@@ -1,5 +1,5 @@
-#ifndef BUTTON_STYLE_H
-#define BUTTON_STYLE_H
+#ifndef STYLE_CUSTOM_H
+#define STYLE_CUSTOM_H
 
 #include <style_common.h>
 
@@ -23,4 +23,4 @@ private:
     mutable QPalette m_standardPalette;
 };
 
-#endif // BUTTON_STYLE_H
+#endif // STYLE_CUSTOM_H

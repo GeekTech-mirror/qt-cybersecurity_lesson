@@ -1,10 +1,27 @@
-#include "style_custom.h"
+/* Custom Application Style
+** File: style_custom.cpp
+** --------
+** Make changes to the default "Fusion" Style
+** --------
+**
+** Features:
+** - Add Rounded corners on button elements
+**   * corner_radius: controls roundness of corners
+**
+** - Change button color
+**   * button_color: controls button's base color
+**   * button_brightness: change button color brightness
+*/
 
+/* QT header files */
 #include <QPainter>
 #include <QPushButton>
-#include <QCommonStyle>
 #include <QStyleOption>
 #include <QStyleFactory>
+
+/* local includes */
+#include "style_custom.h"
+#include "style_custom_p.h"
 
 
 enum Direction {
@@ -15,6 +32,7 @@ enum Direction {
 };
 
 
+/* Merge two colors */
 static QColor merged_colors (const QColor &colorA,
                              const QColor &colorB,
                              int factor = 50)
@@ -31,7 +49,7 @@ static QColor merged_colors (const QColor &colorA,
 }
 
 
-// The default button and handle gradient
+/* The default button and handle gradient */
 static QLinearGradient qt_fusion_gradient (const QRect &rect,
                                            const QBrush &baseColor,
                                            Direction direction = TopDown)
@@ -71,38 +89,60 @@ static QLinearGradient qt_fusion_gradient (const QRect &rect,
 }
 
 
+/* Constructor */
 QStyleCustom::QStyleCustom () :
     QProxyStyle (QStyleFactory::create("fusion"))
 {
-    setObjectName ("Custom");
+    setObjectName ("custom");
 }
 
+/* Private Contructor */
+QStyleCustom::QStyleCustom (QStyleCustomPrivate &dd) : d_ptr(&dd)
+{
+}
 
+/* Destructor */
 QStyleCustom::~QStyleCustom ()
 {
 }
 
 
+/* Define visual representation of UI elements
+** Parameters:
+**     primitive element - specify which UI element to draw
+**     style options - specify how and where to render the element
+**     painter - paint handler to draw the element
+**     widget (optional) - specify a widget to draw on
+** Return: none
+** Notes: re-implementation of fusion style functions
+*/
 void QStyleCustom::drawPrimitive (PrimitiveElement element,
                                   const QStyleOption *option,
                                   QPainter *painter,
                                   const QWidget *widget) const
 {
-    QStyleCommon ColorPalette;
-
+    // Access color options from private data pointer
     QColor button_color = QColor(40,44,52);
-    QColor outline = ColorPalette.outline(option->palette);
-    QColor highlighted_outline = ColorPalette.highlighted_outline(option->palette);
+    QColor outline = d_ptr->outline(option->palette);
+    QColor highlighted_outline = d_ptr->highlighted_outline(option->palette);
+
+    // Initialize button shape
+    QRect button_shape;
+    QRect rect = option->rect;
 
     int button_brightness = 125;
-    int corner_radius = 16;
+    int corner_radius = qMin(rect.width(), rect.height()) / 6;
 
+    // Primitive element selector
     switch (element) {
     case PE_PanelButtonCommand: {
+
+        // Increase color brightness
+        button_color = button_color.lighter(button_brightness);
+
+        // Check button state
         bool isDefault = false;
         bool isDown = (option->state & State_Sunken) || (option->state & State_On);
-        QRect button_shape;
-        QRect rect = option->rect;
 
         if (const QStyleOptionButton *button =
                 qstyleoption_cast<const QStyleOptionButton*>(option)) {
@@ -116,42 +156,48 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
             (option->state & State_HasFocus &&
              option->state & State_KeyboardFocusChange);
 
-        button_color = button_color.lighter(button_brightness);
-
+        // Set highlight color for selected (default) button
         QColor dark_outline = outline;
         if (hasFocus | isDefault) {
             dark_outline = highlighted_outline;
         }
 
         if (isDefault)
-            button_color = merged_colors (button_color, highlighted_outline.lighter(130), 90);
+            button_color = merged_colors (button_color,
+                                          highlighted_outline.lighter(130),
+                                          90);
 
+        // Set button location
         QPainter *p = painter;
         button_shape = rect.adjusted (0, 1, -1, 0);
 
+        // Use Anti-aliasing and create lift around edges
         p->setRenderHint (QPainter::Antialiasing, true);
         p->translate (0.5, -0.5);
 
+        // Apply subtle gradient from top to bottum
         QLinearGradient gradient =
             qt_fusion_gradient (rect, (isEnabled && option->state & State_MouseOver)
-                                ? button_color : button_color.darker (104) );
+                                ? button_color : button_color.darker (104));
 
-        p->setPen(Qt::transparent);
-        p->setBrush(isDown ? QBrush(button_color.darker(110)) : gradient);
-        p->drawRoundedRect(button_shape, corner_radius, corner_radius);
-        p->setBrush(Qt::NoBrush);
+        // Paint button color based on whether button's pressed
+        p->setPen (Qt::transparent);
+        p->setBrush (isDown ? QBrush(button_color.darker(110)) : gradient);
+        p->drawRoundedRect (button_shape, corner_radius, corner_radius);
+        p->setBrush (Qt::NoBrush);
 
-        // Outline
-        p->setPen(!isEnabled ? QPen(dark_outline.lighter(115)) : QPen(dark_outline));
-        p->drawRoundedRect(button_shape, corner_radius, corner_radius);
+        // Paint button outline
+        p->setPen (!isEnabled ? QPen(dark_outline.lighter(115)) : QPen(dark_outline));
+        p->drawRoundedRect (button_shape, corner_radius, corner_radius);
 
-        p->setPen(QColor(255, 255, 255, 30));
-        p->drawRoundedRect(button_shape.adjusted(1, 1, -1, -1), corner_radius, corner_radius);
+        // Paint semi-transparent outline around button edge
+        p->setPen (QColor(255, 255, 255, 30));
+        p->drawRoundedRect (button_shape.adjusted(1, 1, -1, -1), corner_radius, corner_radius);
 
         break;
         }
     default:
-        QProxyStyle::drawPrimitive(element, option, painter, widget);
+        QProxyStyle::drawPrimitive (element, option, painter, widget);
     }
 }
 

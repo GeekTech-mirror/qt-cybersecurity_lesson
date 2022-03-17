@@ -1,15 +1,14 @@
-#ifndef STYLE_COMMON_H
-#define STYLE_COMMON_H
+#ifndef STYLE_CUSTOM_P_H
+#define STYLE_CUSTOM_P_H
 
 #include <QCommonStyle>
-#include <QGuiApplication>
 
-class QStyleCommon
+QT_BEGIN_NAMESPACE
+
+class QStyleCustomPrivate
 {
 public:
-    QStyleCommon()
-    {
-    };
+    QStyleCustomPrivate();
 
     // Used for grip handles
     QColor light_shade() const {
@@ -44,7 +43,9 @@ public:
     QColor highlighted_outline(const QPalette &pal) const {
         QColor highlighted_outline = highlight(pal).darker(125);
         if (highlighted_outline.value() > 160)
-            highlighted_outline.setHsl(highlighted_outline.hue(), highlighted_outline.saturation(), 160);
+            highlighted_outline.setHsl(highlighted_outline.hue(),
+                                       highlighted_outline.saturation(),
+                                       160);
         return highlighted_outline;
     }
 
@@ -58,7 +59,9 @@ public:
         QColor button_color = pal.button().color();
         int val = qGray(button_color.rgb());
         button_color = button_color.lighter(100 + qMax(1, (180 - val)/6));
-        button_color.setHsv(button_color.hue(), button_color.saturation() * 0.75, button_color.value());
+        button_color.setHsv(button_color.hue(),
+                            button_color.saturation() * 0.75,
+                            button_color.value());
         return button_color;
     }
 
@@ -70,4 +73,4 @@ public:
     };
 };
 
-#endif // STYLE_COMMON_H
+#endif // STYLE_CUSTOM_P_H

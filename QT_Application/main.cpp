@@ -6,7 +6,6 @@
 int main (int argc, char *argv[])
 {
     QApplication::setStyle(new QStyleCustom);
-//  QApplication::setStyle("fusion");
 
     QApplication app (argc, argv);
 

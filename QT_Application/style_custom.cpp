@@ -9,7 +9,7 @@
 **   * corner_radius: controls roundness of corners
 **
 ** - Change button color
-**   * button_color: controls button's base color
+**   * background_color: controls button's base color
 **   * button_brightness: change button color brightness
 */
 
@@ -114,7 +114,7 @@ QStyleCustom::~QStyleCustom ()
 **     painter - paint handler to draw the element
 **     widget (optional) - specify a widget to draw on
 ** Return: none
-** Notes: re-implementation of fusion style functions
+** Notes: re-implementation of fusion style
 */
 void QStyleCustom::drawPrimitive (PrimitiveElement element,
                                   const QStyleOption *option,
@@ -122,7 +122,7 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
                                   const QWidget *widget) const
 {
     // Access color options from private data pointer
-    QColor button_color = QColor(40,44,52);
+    QColor background_color = QColor(40,44,52);
     QColor outline = d_ptr->outline(option->palette);
     QColor highlighted_outline = d_ptr->highlighted_outline(option->palette);
 
@@ -138,7 +138,7 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
     case PE_PanelButtonCommand: {
 
         // Increase color brightness
-        button_color = button_color.lighter(button_brightness);
+        QColor button_color = background_color.lighter(button_brightness);
 
         // Check button state
         bool isDefault = false;
@@ -171,7 +171,7 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
         QPainter *p = painter;
         button_shape = rect.adjusted (0, 1, -1, 0);
 
-        // Use Anti-aliasing and create lift around edges
+        // Use Anti-aliasing and corner center
         p->setRenderHint (QPainter::Antialiasing, true);
         p->translate (0.5, -0.5);
 
@@ -186,16 +186,40 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
         p->drawRoundedRect (button_shape, corner_radius, corner_radius);
         p->setBrush (Qt::NoBrush);
 
-        // Paint button outline
+        // Paint button shadow
         p->setPen (!isEnabled ? QPen(dark_outline.lighter(115)) : QPen(dark_outline));
         p->drawRoundedRect (button_shape, corner_radius, corner_radius);
 
-        // Paint semi-transparent outline around button edge
+        // Paint semi-transparent inner outline
         p->setPen (QColor(255, 255, 255, 30));
         p->drawRoundedRect (button_shape.adjusted(1, 1, -1, -1), corner_radius, corner_radius);
 
         break;
+    }
+    case PE_Frame: {
+        if (widget && widget->inherits("QComboBoxPrivateContainer")){
+            QStyleOption copy = *option;
+            copy.state |= State_Raised;
+            proxy()->drawPrimitive(PE_PanelMenu, &copy, painter, widget);
+            break;
         }
+        painter->save();
+        painter->setRenderHint (QPainter::Antialiasing, true);
+        painter->translate (0.5, 0.5);
+
+        painter->setPen (Qt::transparent);
+        painter->setBrush (background_color.darker(155));
+        painter->drawRoundedRect (option->rect, corner_radius/3, corner_radius/3);
+        painter->setBrush (Qt::NoBrush);
+
+        QPen pen(QColor(255,255,255,2));
+        pen.setWidth(2);
+        pen.setCosmetic(false);
+        painter->setPen(pen);
+        painter->drawRoundedRect(option->rect.adjusted(1,1,-1,-1), corner_radius/3, corner_radius/3);
+        painter->restore();
+        break;
+    }
     default:
         QProxyStyle::drawPrimitive (element, option, painter, widget);
     }

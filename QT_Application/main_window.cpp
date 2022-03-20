@@ -7,13 +7,16 @@ Main_Window::Main_Window (QWidget *parent)
 {
     ui->setupUi (this);
 
+    // Add icons to project
     QIcon::setThemeName("breeze-icons");
     ui->action_home->setIcon (QIcon::fromTheme("user-home"));
     ui->action_help->setIcon (QIcon::fromTheme("help-about"));
 
+    // Add DejaVu Serif font
     QFontDatabase::addApplicationFont (":/fonts/dejavu/DejaVuSerif.ttf");
     ui->title->setFont (QFont("DejaVuSerif", 45, QFont::Bold));
 
+    // Add DejaVu Sans font
     QFontDatabase::addApplicationFont (":/fonts/dejavu/DejaVuSans.ttf");
     ui->rubber_ducky_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
     ui->wifi_jammer_button->setFont (QFont("DejavuSans", 26, QFont::Bold));

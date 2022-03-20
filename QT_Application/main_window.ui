@@ -28,13 +28,7 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(40, 44, 52);</string>
   </property>
-  <property name="tabShape">
-   <enum>QTabWidget::Rounded</enum>
-  </property>
   <widget class="QWidget" name="Central_Widget">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
    <property name="styleSheet">
     <string notr="true">background-color: rgb(30, 34, 39);
 </string>
@@ -45,11 +39,8 @@
       <property name="enabled">
        <bool>true</bool>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="Main_Menu_Widget">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -150,7 +141,6 @@
           <property name="styleSheet">
            <string notr="true">QPushButton {
 	color: rgb(209, 213, 218);
-	background-color: rgb(40, 44, 52);
 }</string>
           </property>
           <property name="text">
@@ -188,7 +178,6 @@
           <property name="styleSheet">
            <string notr="true">QPushButton {
 	color: rgb(209, 213, 218);
-	background-color: rgb(40, 44, 52);
 }</string>
           </property>
           <property name="text">
@@ -226,7 +215,6 @@
           <property name="styleSheet">
            <string notr="true">QPushButton {
 	color: rgb(209, 213, 218);
-	background-color: rgb(40, 44, 52);
 }</string>
           </property>
           <property name="text">
@@ -264,7 +252,6 @@
           <property name="styleSheet">
            <string notr="true">QPushButton {
 	color: rgb(209, 213, 218);
-	background-color: rgb(40, 44, 52);
 }</string>
           </property>
           <property name="text">
@@ -350,27 +337,20 @@
        </widget>
       </widget>
       <widget class="QWidget" name="War_Driving_Widget">
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QListView" name="network_list">
         <property name="geometry">
          <rect>
-          <x>70</x>
-          <y>270</y>
-          <width>321</width>
-          <height>81</height>
+          <x>10</x>
+          <y>30</y>
+          <width>443</width>
+          <height>281</height>
          </rect>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>28</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
-	background-color: rgb(40, 44, 52);
-}</string>
-        </property>
-        <property name="text">
-         <string>War Driving</string>
+        <property name="minimumSize">
+         <size>
+          <width>441</width>
+          <height>191</height>
+         </size>
         </property>
        </widget>
       </widget>

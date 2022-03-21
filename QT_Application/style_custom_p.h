@@ -3,8 +3,6 @@
 
 #include <QCommonStyle>
 
-QT_BEGIN_NAMESPACE
-
 class QStyleCustomPrivate
 {
 public:

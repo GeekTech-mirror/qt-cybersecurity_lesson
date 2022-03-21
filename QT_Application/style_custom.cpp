@@ -167,7 +167,7 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
                                           highlighted_outline.lighter(130),
                                           90);
 
-        // Set button location
+        // Set button shape and location
         QPainter *p = painter;
         button_shape = rect.adjusted (0, 1, -1, 0);
 

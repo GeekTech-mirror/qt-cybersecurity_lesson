@@ -2,7 +2,6 @@
 #define WAR_DRIVING_H
 
 #include <QObject>
-#include <QSharedPointer>
 
 class QWarDriving
 {

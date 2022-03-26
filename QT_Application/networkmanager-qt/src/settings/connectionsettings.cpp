@@ -8,28 +8,12 @@
 #include "connectionsettings.h"
 #include "connectionsettings_p.h"
 
-//#include "adslsetting.h"
-//#include "bluetoothsetting.h"
-#include "bondsetting.h"
 #include "bridgeportsetting.h"
 #include "bridgesetting.h"
-#include "cdmasetting.h"
-#include "gsmsetting.h"
-//#include "infinibandsetting.h"
-//#include "iptunnelsetting.h"
 #include "ipv4setting.h"
 #include "ipv6setting.h"
-//#include "olpcmeshsetting.h"
-#include "pppoesetting.h"
-#include "pppsetting.h"
 #include "security8021xsetting.h"
-#include "serialsetting.h"
-//#include "tunsetting.h"
-//#include "vlansetting.h"
-//#include "vpnsetting.h"
-//#include "wimaxsetting.h"
 #include "wiredsetting.h"
-//#include "wireguardsetting.h"
 #include "wirelesssecuritysetting.h"
 #include "wirelesssetting.h"
 
@@ -48,7 +32,6 @@
 #endif
 
 #include "genericsetting.h"
-#include "teamsetting.h"
 
 #include <QUuid>
 
@@ -89,79 +72,11 @@ void NetworkManager::ConnectionSettingsPrivate::initSettings(NMBluetoothCapabili
     clearSettings();
 
     switch (type) {
-//    case ConnectionSettings::Adsl:
-//        addSetting(Setting::Ptr(new AdslSetting()));
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        break;
-    case ConnectionSettings::Bond:
-        addSetting(Setting::Ptr(new BondSetting()));
-        addSetting(Setting::Ptr(new Ipv4Setting()));
-        addSetting(Setting::Ptr(new Ipv6Setting()));
-        break;
-//    case ConnectionSettings::Bluetooth:
-//        addSetting(Setting::Ptr(new BluetoothSetting()));
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        // addSetting(Setting::Ptr(new Ipv6Setting()));
-//        if (bt_cap == NM_BT_CAPABILITY_DUN) {
-//            addSetting(Setting::Ptr(new GsmSetting()));
-//            addSetting(Setting::Ptr(new PppSetting()));
-//            addSetting(Setting::Ptr(new SerialSetting()));
-//        }
-//        break;
     case ConnectionSettings::Bridge:
         addSetting(Setting::Ptr(new BridgeSetting()));
         addSetting(Setting::Ptr(new Ipv4Setting()));
         addSetting(Setting::Ptr(new Ipv6Setting()));
         break;
-    case ConnectionSettings::Cdma:
-        addSetting(Setting::Ptr(new CdmaSetting()));
-        addSetting(Setting::Ptr(new Ipv4Setting()));
-        if (NetworkManager::checkVersion(1, 0, 0)) {
-            addSetting(Setting::Ptr(new Ipv6Setting()));
-        }
-        addSetting(Setting::Ptr(new PppSetting()));
-        break;
-    case ConnectionSettings::Gsm:
-        addSetting(Setting::Ptr(new GsmSetting()));
-        addSetting(Setting::Ptr(new Ipv4Setting()));
-        if (NetworkManager::checkVersion(1, 0, 0)) {
-            addSetting(Setting::Ptr(new Ipv6Setting()));
-        }
-        addSetting(Setting::Ptr(new PppSetting()));
-        break;
-//    case ConnectionSettings::Infiniband:
-//        addSetting(Setting::Ptr(new InfinibandSetting()));
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        break;
-//    case ConnectionSettings::OLPCMesh:
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        addSetting(Setting::Ptr(new OlpcMeshSetting()));
-//        break;
-    case ConnectionSettings::Pppoe:
-        addSetting(Setting::Ptr(new Ipv4Setting()));
-        // addSetting(new Ipv6Setting()));
-        addSetting(Setting::Ptr(new PppSetting()));
-        addSetting(Setting::Ptr(new PppoeSetting()));
-        addSetting(Setting::Ptr(new WiredSetting()));
-        break;
-//    case ConnectionSettings::Vlan:
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        addSetting(Setting::Ptr(new VlanSetting()));
-//        break;
-//    case ConnectionSettings::Vpn:
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        addSetting(Setting::Ptr(new VpnSetting()));
-//        break;
-//    case ConnectionSettings::Wimax:
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        addSetting(Setting::Ptr(new WimaxSetting()));
-//        break;
     case ConnectionSettings::Wired:
         addSetting(Setting::Ptr(new Ipv4Setting()));
         addSetting(Setting::Ptr(new Ipv6Setting()));
@@ -175,31 +90,11 @@ void NetworkManager::ConnectionSettingsPrivate::initSettings(NMBluetoothCapabili
         addSetting(Setting::Ptr(new WirelessSetting()));
         addSetting(Setting::Ptr(new WirelessSecuritySetting()));
         break;
-//    case ConnectionSettings::Team:
-//        addSetting(Setting::Ptr(new TeamSetting()));
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        break;
     case ConnectionSettings::Generic:
         addSetting(Setting::Ptr(new GenericSetting()));
         addSetting(Setting::Ptr(new Ipv4Setting()));
         addSetting(Setting::Ptr(new Ipv6Setting()));
         break;
-//    case ConnectionSettings::Tun:
-//        addSetting(Setting::Ptr(new TunSetting()));
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        break;
-//    case ConnectionSettings::IpTunnel:
-//        addSetting(Setting::Ptr(new IpTunnelSetting()));
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        break;
-//    case ConnectionSettings::WireGuard:
-//        addSetting(Setting::Ptr(new WireGuardSetting()));
-//        addSetting(Setting::Ptr(new Ipv4Setting()));
-//        addSetting(Setting::Ptr(new Ipv6Setting()));
-//        break;
     case ConnectionSettings::Unknown:
     default:
         break;
@@ -213,81 +108,11 @@ void NetworkManager::ConnectionSettingsPrivate::initSettings(const NetworkManage
     clearSettings();
 
     switch (type) {
-//    case ConnectionSettings::Adsl:
-//        addSetting(connectionSettings->setting(Setting::Adsl));
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        break;
-    case ConnectionSettings::Bond:
-        addSetting(connectionSettings->setting(Setting::Bond));
-        addSetting(connectionSettings->setting(Setting::Ipv4));
-        addSetting(connectionSettings->setting(Setting::Ipv6));
-        break;
-//    case ConnectionSettings::Bluetooth:
-//        addSetting(connectionSettings->setting(Setting::Bluetooth));
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        if (NetworkManager::checkVersion(1, 0, 0)) {
-//            addSetting(connectionSettings->setting(Setting::Ipv6));
-//        }
-//        if (q->setting(Setting::Gsm) && q->setting(Setting::Ppp) && q->setting(Setting::Serial)) {
-//            addSetting(connectionSettings->setting(Setting::Gsm));
-//            addSetting(connectionSettings->setting(Setting::Ppp));
-//            addSetting(connectionSettings->setting(Setting::Serial));
-//        }
-//        break;
     case ConnectionSettings::Bridge:
         addSetting(connectionSettings->setting(Setting::Bridge));
         addSetting(connectionSettings->setting(Setting::Ipv4));
         addSetting(connectionSettings->setting(Setting::Ipv6));
         break;
-    case ConnectionSettings::Cdma:
-        addSetting(connectionSettings->setting(Setting::Cdma));
-        addSetting(connectionSettings->setting(Setting::Ipv4));
-        if (NetworkManager::checkVersion(1, 0, 0)) {
-            addSetting(connectionSettings->setting(Setting::Ipv6));
-        }
-        addSetting(connectionSettings->setting(Setting::Ppp));
-        break;
-    case ConnectionSettings::Gsm:
-        addSetting(connectionSettings->setting(Setting::Gsm));
-        addSetting(connectionSettings->setting(Setting::Ipv4));
-        if (NetworkManager::checkVersion(1, 0, 0)) {
-            addSetting(connectionSettings->setting(Setting::Ipv6));
-        }
-        addSetting(connectionSettings->setting(Setting::Ppp));
-        break;
-//    case ConnectionSettings::Infiniband:
-//        addSetting(connectionSettings->setting(Setting::Infiniband));
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        break;
-//    case ConnectionSettings::OLPCMesh:
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        addSetting(connectionSettings->setting(Setting::OlpcMesh));
-//        break;
-    case ConnectionSettings::Pppoe:
-        addSetting(connectionSettings->setting(Setting::Ipv4));
-        // addSetting(Ipv6Setting(connectionSettings->setting(Setting::Ipv6));
-        addSetting(connectionSettings->setting(Setting::Ppp));
-        addSetting(connectionSettings->setting(Setting::Pppoe));
-        addSetting(connectionSettings->setting(Setting::Wired));
-        break;
-//    case ConnectionSettings::Vlan:
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        addSetting(connectionSettings->setting(Setting::Vlan));
-//        break;
-//    case ConnectionSettings::Vpn:
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        addSetting(connectionSettings->setting(Setting::Vpn));
-//        break;
-//    case ConnectionSettings::Wimax:
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        addSetting(connectionSettings->setting(Setting::Wimax));
-//        break;
     case ConnectionSettings::Wired:
         addSetting(connectionSettings->setting(Setting::Ipv4));
         addSetting(connectionSettings->setting(Setting::Ipv6));
@@ -301,31 +126,11 @@ void NetworkManager::ConnectionSettingsPrivate::initSettings(const NetworkManage
         addSetting(connectionSettings->setting(Setting::Wireless));
         addSetting(connectionSettings->setting(Setting::WirelessSecurity));
         break;
-//    case ConnectionSettings::Team:
-//        addSetting(connectionSettings->setting(Setting::Team));
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        break;
     case ConnectionSettings::Generic:
         addSetting(connectionSettings->setting(Setting::Generic));
         addSetting(connectionSettings->setting(Setting::Ipv4));
         addSetting(connectionSettings->setting(Setting::Ipv6));
         break;
-//    case ConnectionSettings::Tun:
-//        addSetting(connectionSettings->setting(Setting::Tun));
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        break;
-//    case ConnectionSettings::IpTunnel:
-//        addSetting(connectionSettings->setting(Setting::IpTunnel));
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        break;
-//    case ConnectionSettings::WireGuard:
-//        addSetting(connectionSettings->setting(Setting::WireGuard));
-//        addSetting(connectionSettings->setting(Setting::Ipv4));
-//        addSetting(connectionSettings->setting(Setting::Ipv6));
-//        break;
     case ConnectionSettings::Unknown:
     default:
         break;
@@ -336,44 +141,14 @@ NetworkManager::ConnectionSettings::ConnectionType NetworkManager::ConnectionSet
 {
     ConnectionSettings::ConnectionType type = Wired;
 
-    if (typeString == QLatin1String(NM_SETTING_ADSL_SETTING_NAME)) {
-        type = Adsl;
-    } else if (typeString == QLatin1String(NM_SETTING_BLUETOOTH_SETTING_NAME)) {
-        type = Bluetooth;
-    } else if (typeString == QLatin1String(NM_SETTING_BOND_SETTING_NAME)) {
-        type = Bond;
-    } else if (typeString == QLatin1String(NM_SETTING_BRIDGE_SETTING_NAME)) {
+    if (typeString == QLatin1String(NM_SETTING_BRIDGE_SETTING_NAME)) {
         type = Bridge;
-    } else if (typeString == QLatin1String(NM_SETTING_CDMA_SETTING_NAME)) {
-        type = Cdma;
-    } else if (typeString == QLatin1String(NM_SETTING_GSM_SETTING_NAME)) {
-        type = Gsm;
-    } else if (typeString == QLatin1String(NM_SETTING_INFINIBAND_SETTING_NAME)) {
-        type = Infiniband;
-    } else if (typeString == QLatin1String(NM_SETTING_OLPC_MESH_SETTING_NAME)) {
-        type = OLPCMesh;
-    } else if (typeString == QLatin1String(NM_SETTING_PPPOE_SETTING_NAME)) {
-        type = Pppoe;
-    } else if (typeString == QLatin1String(NM_SETTING_VLAN_SETTING_NAME)) {
-        type = Vlan;
-    } else if (typeString == QLatin1String(NM_SETTING_VPN_SETTING_NAME)) {
-        type = Vpn;
-    } else if (typeString == QLatin1String(NM_SETTING_WIMAX_SETTING_NAME)) {
-        type = Wimax;
     } else if (typeString == QLatin1String(NM_SETTING_WIRED_SETTING_NAME)) {
         type = Wired;
     } else if (typeString == QLatin1String(NM_SETTING_WIRELESS_SETTING_NAME)) {
         type = Wireless;
-    } else if (typeString == QLatin1String(NM_SETTING_TEAM_SETTING_NAME)) {
-        type = Team;
     } else if (typeString == QLatin1String(NM_SETTING_GENERIC_SETTING_NAME)) {
         type = Generic;
-    } else if (typeString == QLatin1String(NM_SETTING_TUN_SETTING_NAME)) {
-        type = Tun;
-    } else if (typeString == QLatin1String(NM_SETTING_IP_TUNNEL_SETTING_NAME)) {
-        type = IpTunnel;
-    } else if (typeString == QLatin1String(NM_SETTING_WIREGUARD_SETTING_NAME)) {
-        type = WireGuard;
     }
 
     return type;
@@ -384,41 +159,8 @@ QString NetworkManager::ConnectionSettings::typeAsString(NetworkManager::Connect
     QString typeString;
 
     switch (type) {
-    case Adsl:
-        typeString = QLatin1String(NM_SETTING_ADSL_SETTING_NAME);
-        break;
-    case Bond:
-        typeString = QLatin1String(NM_SETTING_BOND_SETTING_NAME);
-        break;
-    case Bluetooth:
-        typeString = QLatin1String(NM_SETTING_BLUETOOTH_SETTING_NAME);
-        break;
     case Bridge:
         typeString = QLatin1String(NM_SETTING_BRIDGE_SETTING_NAME);
-        break;
-    case Cdma:
-        typeString = QLatin1String(NM_SETTING_CDMA_SETTING_NAME);
-        break;
-    case Gsm:
-        typeString = QLatin1String(NM_SETTING_GSM_SETTING_NAME);
-        break;
-    case Infiniband:
-        typeString = QLatin1String(NM_SETTING_INFINIBAND_SETTING_NAME);
-        break;
-    case OLPCMesh:
-        typeString = QLatin1String(NM_SETTING_OLPC_MESH_SETTING_NAME);
-        break;
-    case Pppoe:
-        typeString = QLatin1String(NM_SETTING_PPPOE_SETTING_NAME);
-        break;
-    case Vlan:
-        typeString = QLatin1String(NM_SETTING_VLAN_SETTING_NAME);
-        break;
-    case Vpn:
-        typeString = QLatin1String(NM_SETTING_VPN_SETTING_NAME);
-        break;
-    case Wimax:
-        typeString = QLatin1String(NM_SETTING_WIMAX_SETTING_NAME);
         break;
     case Wired:
         typeString = QLatin1String(NM_SETTING_WIRED_SETTING_NAME);
@@ -426,20 +168,8 @@ QString NetworkManager::ConnectionSettings::typeAsString(NetworkManager::Connect
     case Wireless:
         typeString = QLatin1String(NM_SETTING_WIRELESS_SETTING_NAME);
         break;
-    case Team:
-        typeString = QLatin1String(NM_SETTING_TEAM_SETTING_NAME);
-        break;
     case Generic:
         typeString = QLatin1String(NM_SETTING_GENERIC_SETTING_NAME);
-        break;
-    case Tun:
-        typeString = QLatin1String(NM_SETTING_TUN_SETTING_NAME);
-        break;
-    case IpTunnel:
-        typeString = QLatin1String(NM_SETTING_IP_TUNNEL_SETTING_NAME);
-        break;
-    case WireGuard:
-        typeString = QLatin1String(NM_SETTING_WIREGUARD_SETTING_NAME);
         break;
     default:
         break;
@@ -1052,60 +782,21 @@ QDebug NetworkManager::operator<<(QDebug dbg, const NetworkManager::ConnectionSe
         dbg.nospace() << settingPtr->typeAsString(settingPtr->type()).toUpper() << " SETTINGS\n";
         dbg.nospace() << "---------------------------\n";
         switch (settingPtr->type()) {
-//        case Setting::Adsl:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::AdslSetting>().data());
-//            break;
-        case Setting::Bond:
-            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::BondSetting>().data());
-            break;
-//        case Setting::Bluetooth:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::BluetoothSetting>().data());
-//            break;
         case Setting::Bridge:
             dbg.nospace() << *(settingPtr.staticCast<NetworkManager::BridgeSetting>().data());
             break;
         case Setting::BridgePort:
             dbg.nospace() << *(settingPtr.staticCast<NetworkManager::BridgePortSetting>().data());
             break;
-        case Setting::Cdma:
-            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::CdmaSetting>().data());
-            break;
-        case Setting::Gsm:
-            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::GsmSetting>().data());
-            break;
-//        case Setting::Infiniband:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::InfinibandSetting>().data());
-//            break;
         case Setting::Ipv4:
             dbg.nospace() << *(settingPtr.staticCast<NetworkManager::Ipv4Setting>().data());
             break;
         case Setting::Ipv6:
             dbg.nospace() << *(settingPtr.staticCast<NetworkManager::Ipv6Setting>().data());
             break;
-//        case Setting::OlpcMesh:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::OlpcMeshSetting>().data());
-//            break;
-        case Setting::Ppp:
-            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::PppSetting>().data());
-            break;
-        case Setting::Pppoe:
-            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::PppoeSetting>().data());
-            break;
         case Setting::Security8021x:
             dbg.nospace() << *(settingPtr.staticCast<NetworkManager::Security8021xSetting>().data());
             break;
-        case Setting::Serial:
-            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::SerialSetting>().data());
-            break;
-//        case Setting::Vlan:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::VlanSetting>().data());
-//            break;
-//        case Setting::Vpn:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::VpnSetting>().data());
-//            break;
-//        case Setting::Wimax:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::WimaxSetting>().data());
-//            break;
         case Setting::Wired:
             dbg.nospace() << *(settingPtr.staticCast<NetworkManager::WiredSetting>().data());
             break;
@@ -1115,18 +806,6 @@ QDebug NetworkManager::operator<<(QDebug dbg, const NetworkManager::ConnectionSe
         case Setting::WirelessSecurity:
             dbg.nospace() << *(settingPtr.staticCast<NetworkManager::WirelessSecuritySetting>().data());
             break;
-//        case Setting::Team:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::TeamSetting>().data());
-//            break;
-//        case Setting::Tun:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::TunSetting>().data());
-//            break;
-//        case Setting::IpTunnel:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::IpTunnelSetting>().data());
-//            break;
-//        case Setting::WireGuard:
-//            dbg.nospace() << *(settingPtr.staticCast<NetworkManager::WireGuardSetting>().data());
-//            break;
         default:
             dbg.nospace() << *settingPtr.data();
         }

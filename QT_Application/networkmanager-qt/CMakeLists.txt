@@ -28,7 +28,6 @@ execute_process(COMMAND ${qtpaths_executable} --query QT_INSTALL_PREFIX OUTPUT_V
 set(CMAKE_INSTALL_LIBDIR "lib")
 
 ##### RPATH settings #####
-cmake_print_variables(CMAKE_INSTALL_LIBDIR)
 if(NOT CMAKE_INSTALL_LIBDIR)
     message(FATAL_ERROR "CMAKE_INSTALL_LIBDIR is not set. Setting one is necessary for using the RPATH settings.")
 else()
@@ -167,9 +166,6 @@ include("${ECM_MODULE_DIR}/ECMCoverageOption.cmake")
 
 ####################################################################
 
-
-
-#set(REQUIRED_QT_VERSION 6.2.4)
 find_package(QT NAMES Qt6 REQUIRED Core DBus Network)
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050f02)
@@ -184,14 +180,14 @@ include(ECMGenerateHeaders)
 include(ECMAddQch)
 include(ECMQtDeclareLoggingCategory)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 option(BUILD_QCH "Build API documentation in QCH format (for e.g. Qt Assistant, Qt Creator & KDevelop)" OFF)
 add_feature_info(QCH ${BUILD_QCH} "API documentation in QCH format (for e.g. Qt Assistant, Qt Creator & KDevelop)")
 
 ecm_setup_version(PROJECT VARIABLE_PREFIX NETWORKMANAGERQT
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/networkmanagerqt_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6NetworkManagerQtConfigVersion.cmake"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/NetworkManagerQtConfigVersion.cmake"
                         SOVERSION 6)
 
 # Enable unit testing
@@ -208,34 +204,34 @@ if (BUILD_EXAMPLES)
 endif(BUILD_EXAMPLES)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/KF6NetworkManagerQt")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/NetworkManagerQt")
 
 if (BUILD_QCH)
     ecm_install_qch_export(
-        TARGETS KF6NetworkManagerQt_QCH
-        FILE KF6NetworkManagerQtQchTargets.cmake
+        TARGETS NetworkManagerQt_QCH
+        FILE NetworkManagerQtQchTargets.cmake
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
     )
-    set(PACKAGE_INCLUDE_QCHTARGETS "include(\"\${CMAKE_CURRENT_LIST_DIR}/KF6NetworkManagerQtQchTargets.cmake\")")
+    set(PACKAGE_INCLUDE_QCHTARGETS "include(\"\${CMAKE_CURRENT_LIST_DIR}/NetworkManagerQtQchTargets.cmake\")")
 endif()
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KF6NetworkManagerQtConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6NetworkManagerQtConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/NetworkManagerQtConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/NetworkManagerQtConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6NetworkManagerQtConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6NetworkManagerQtConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/NetworkManagerQtConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/NetworkManagerQtConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KF6NetworkManagerQtTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF6NetworkManagerQtTargets.cmake NAMESPACE KF6:: )
+install(EXPORT NetworkManagerQtTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE NetworkManagerQtTargets.cmake)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/networkmanagerqt_version.h

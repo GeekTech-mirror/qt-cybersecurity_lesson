@@ -16,26 +16,12 @@
 #include <libnm/NetworkManager.h>
 #define signals Q_SIGNALS
 
-//#include "adsldevice.h"
-//#include "bluetoothdevice.h"
-#include "bonddevice.h"
 #include "bridgedevice.h"
 #include "genericdevice.h"
-#include "gredevice.h"
-//#include "infinibanddevice.h"
-//#include "iptunneldevice.h"
-//#include "macvlandevice.h"
-//#include "modemdevice.h"
-//#include "olpcmeshdevice.h"
 #include "settings.h"
 #include "settings_p.h"
-//#include "tundevice.h"
 #include "vethdevice.h"
-//#include "vlandevice.h"
-//#include "vpnconnection.h"
-//#include "wimaxdevice.h"
 #include "wireddevice.h"
-//#include "wireguarddevice.h"
 #include "wirelessdevice.h"
 
 #include "nmdebug.h"
@@ -141,22 +127,9 @@ void NetworkManager::NetworkManagerPrivate::init()
     m_supportedInterfaceTypes = static_cast<NetworkManager::Device::Types>(
         NetworkManager::Device::Ethernet
         | NetworkManager::Device::Wifi
-//        | NetworkManager::Device::Modem
-//        | (checkVersion(1, 2, 0) ? 0 : NetworkManager::Device::Wimax)
-//        | NetworkManager::Device::Bluetooth
-//        | NetworkManager::Device::OlpcMesh
-//        | NetworkManager::Device::InfiniBand
-        | NetworkManager::Device::Bond
-//        | NetworkManager::Device::Vlan
-//        | NetworkManager::Device::Adsl
         | NetworkManager::Device::Bridge
         | NetworkManager::Device::Generic
-//        | NetworkManager::Device::Team
-//        | NetworkManager::Device::MacVlan
-//        | NetworkManager::Device::Tun
         | NetworkManager::Device::Veth
-//        | NetworkManager::Device::IpTunnel
-//        | NetworkManager::Device::WireGuard
 );
     /* clang-format on */
 
@@ -285,17 +258,7 @@ NetworkManager::ActiveConnection::Ptr NetworkManager::NetworkManagerPrivate::fin
         const bool contains = it != m_activeConnections.constEnd();
         if (contains && *it) {
             activeConnection = *it;
-        } /*else {
-            activeConnection = NetworkManager::ActiveConnection::Ptr(new NetworkManager::VpnConnection(uni), &QObject::deleteLater);
-            if (activeConnection->connection()) {
-                m_activeConnections[uni] = activeConnection;
-                if (!contains) {
-                    Q_EMIT activeConnectionAdded(uni);
-                }
-            } else {
-                activeConnection.clear();
-            }
-        }*/
+        }
     }
     return activeConnection;
 }
@@ -312,55 +275,16 @@ NetworkManager::Device::Ptr NetworkManager::NetworkManagerPrivate::createNetwork
     case Device::Wifi:
         createdInterface = Device::Ptr(new NetworkManager::WirelessDevice(uni), &QObject::deleteLater);
         break;
-//    case Device::Modem:
-//        createdInterface = Device::Ptr(new NetworkManager::ModemDevice(uni), &QObject::deleteLater);
-//        break;
-//    case Device::Bluetooth:
-//        createdInterface = Device::Ptr(new NetworkManager::BluetoothDevice(uni), &QObject::deleteLater);
-//        break;
-//    case Device::Wimax:
-//        createdInterface = Device::Ptr(new NetworkManager::WimaxDevice(uni), &QObject::deleteLater);
-//        break;
-//    case Device::OlpcMesh:
-//        createdInterface = Device::Ptr(new NetworkManager::OlpcMeshDevice(uni), &QObject::deleteLater);
-//        break;
-//    case Device::InfiniBand:
-//        createdInterface = Device::Ptr(new NetworkManager::InfinibandDevice(uni), &QObject::deleteLater);
-//        break;
-    case Device::Bond:
-        createdInterface = Device::Ptr(new NetworkManager::BondDevice(uni), &QObject::deleteLater);
-        break;
-//    case Device::Vlan:
-//        createdInterface = Device::Ptr(new NetworkManager::VlanDevice(uni), &QObject::deleteLater);
-//        break;
-//    case Device::Adsl:
-//        createdInterface = Device::Ptr(new NetworkManager::AdslDevice(uni), &QObject::deleteLater);
-//        break;
     case Device::Bridge:
         createdInterface = Device::Ptr(new NetworkManager::BridgeDevice(uni), &QObject::deleteLater);
         break;
-    // No need to check checkVersion, because we can't get Generic, Gre, MacVlan, Tun & Veth values in incompatible runtime
+    // No need to check checkVersion, because we can't get Generic and Veth values in incompatible runtime
     case Device::Generic:
         createdInterface = Device::Ptr(new NetworkManager::GenericDevice(uni), &QObject::deleteLater);
         break;
-    case Device::Gre:
-        createdInterface = Device::Ptr(new NetworkManager::GreDevice(uni), &QObject::deleteLater);
-        break;
-//    case Device::MacVlan:
-//        createdInterface = Device::Ptr(new NetworkManager::MacVlanDevice(uni), &QObject::deleteLater);
-//        break;
-//    case Device::Tun:
-//        createdInterface = Device::Ptr(new NetworkManager::TunDevice(uni), &QObject::deleteLater);
-//        break;
     case Device::Veth:
         createdInterface = Device::Ptr(new NetworkManager::VethDevice(uni), &QObject::deleteLater);
         break;
-//    case Device::IpTunnel:
-//        createdInterface = Device::Ptr(new NetworkManager::IpTunnelDevice(uni), &QObject::deleteLater);
-//        break;
-//    case Device::WireGuard:
-//        createdInterface = Device::Ptr(new NetworkManager::WireGuardDevice(uni), &QObject::deleteLater);
-//        break;
     default:
         createdInterface = device;
         if (uni != QLatin1String("any")) { // VPN connections use "any" as uni for the network interface.
@@ -557,20 +481,11 @@ void NetworkManager::NetworkManagerPrivate::setLogging(NetworkManager::LogLevel 
         if (domains.testFlag(NetworkManager::WiFi)) {
             logDomains << QLatin1String("WIFI");
         }
-//        if (domains.testFlag(NetworkManager::Bluetooth)) {
-//            logDomains << QLatin1String("BT");
-//        }
-        if (domains.testFlag(NetworkManager::MobileBroadBand)) {
-            logDomains << QLatin1String("MB");
-        }
         if (domains.testFlag(NetworkManager::DHCP4)) {
             logDomains << QLatin1String("DHCP4");
         }
         if (domains.testFlag(NetworkManager::DHCP6)) {
             logDomains << QLatin1String("DHCP6");
-        }
-        if (domains.testFlag(NetworkManager::PPP)) {
-            logDomains << QLatin1String("PPP");
         }
         if (domains.testFlag(NetworkManager::WiFiScan)) {
             logDomains << QLatin1String("WIFI_SCAN");
@@ -587,9 +502,6 @@ void NetworkManager::NetworkManagerPrivate::setLogging(NetworkManager::LogLevel 
         if (domains.testFlag(NetworkManager::DNS)) {
             logDomains << QLatin1String("DNS");
         }
-//        if (domains.testFlag(NetworkManager::VPN)) {
-//            logDomains << QLatin1String("VPN");
-//        }
         if (domains.testFlag(NetworkManager::Sharing)) {
             logDomains << QLatin1String("SHARING");
         }
@@ -611,27 +523,12 @@ void NetworkManager::NetworkManagerPrivate::setLogging(NetworkManager::LogLevel 
         if (domains.testFlag(NetworkManager::Devices)) {
             logDomains << QLatin1String("DEVICE");
         }
-//        if (domains.testFlag(NetworkManager::OLPC)) {
-//            logDomains << QLatin1String("OLPC");
-//        }
-//        if (domains.testFlag(NetworkManager::Wimax)) {
-//            logDomains << QLatin1String("WIMAX");
-//        }
-//        if (domains.testFlag(NetworkManager::Infiniband)) {
-//            logDomains << QLatin1String("INFINIBAND");
-//        }
         if (domains.testFlag(NetworkManager::Firewall)) {
             logDomains << QLatin1String("FIREWALL");
         }
-//        if (domains.testFlag(NetworkManager::Adsl)) {
-//            logDomains << QLatin1String("ADSL");
-//        }
         if (domains.testFlag(NetworkManager::Bond)) {
             logDomains << QLatin1String("BOND");
         }
-//        if (domains.testFlag(NetworkManager::Vlan)) {
-//            logDomains << QLatin1String("VLAN");
-//        }
         if (domains.testFlag(NetworkManager::Agents)) {
             logDomains << QLatin1String("AGENTS");
         }
@@ -641,14 +538,8 @@ void NetworkManager::NetworkManagerPrivate::setLogging(NetworkManager::LogLevel 
         if (domains.testFlag(NetworkManager::DbusProps)) {
             logDomains << QLatin1String("DBUS_PROPS");
         }
-//        if (domains.testFlag(NetworkManager::Team)) {
-//            logDomains << QLatin1String("TEAM");
-//        }
         if (domains.testFlag(NetworkManager::ConCheck)) {
             logDomains << QLatin1String("CONCHECK");
-        }
-        if (domains.testFlag(NetworkManager::Dcb)) {
-            logDomains << QLatin1String("DCB");
         }
         if (domains.testFlag(NetworkManager::Dispatch)) {
             logDomains << QLatin1String("DISPATCH");

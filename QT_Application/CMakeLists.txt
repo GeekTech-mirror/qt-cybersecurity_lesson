@@ -11,9 +11,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Network REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -23,6 +23,14 @@ set(PROJECT_SOURCES
         style_custom.cpp
         style_custom.h
         style_custom_p.h
+        network_tree_view.cpp
+        network_tree_view.h
+        network_list.cpp
+        network_list.h
+        network_model_item.cpp
+        network_model_item.h
+        network_model.cpp
+        network_model.h
         war_driving.cpp
         war_driving.h
         icons.qrc
@@ -54,7 +62,7 @@ endif()
 
 target_link_libraries(QT_Application PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(QT_Application PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(QT_Application PRIVATE KF6::NetworkManagerQt)
+target_link_libraries(QT_Application PRIVATE NetworkManagerQt)
 
 set_target_properties(QT_Application PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

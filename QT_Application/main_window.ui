@@ -337,7 +337,7 @@
        </widget>
       </widget>
       <widget class="QWidget" name="War_Driving_Widget">
-       <widget class="QListView" name="network_list">
+       <widget class="QTreeView" name="network_list">
         <property name="geometry">
          <rect>
           <x>10</x>

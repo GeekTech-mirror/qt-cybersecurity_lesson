@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QStandardItem>
 #include <QStringListModel>
+#include <QAbstractItemModel>
 #include <QDebug>
 
 #include <NetworkManagerQt/Manager>
@@ -13,6 +14,8 @@
 #include "main_window.h"
 #include "./ui_main_window.h"
 
+#include "network_model.h"
+#include "network_list.h
 Main_Window::Main_Window (QWidget *parent)
     : QMainWindow (parent)
     , ui(new Ui::Main_Window)
@@ -34,6 +37,12 @@ Main_Window::Main_Window (QWidget *parent)
     ui->wifi_jammer_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
     ui->man_in_the_middle_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
+
+    QNetworkModel *network_model = new QNetworkModel();
+
+    ui->network_list->setModel (network_model);
+
+
 }
 
 
@@ -64,9 +73,7 @@ void Main_Window::on_man_in_the_middle_button_clicked ()
 void Main_Window::on_war_driving_button_clicked ()
 {
     ui->Stacked_Widget->setCurrentIndex (4);
-
-    //QStandardItemModel *model = new QStandardItemModel;
-
+/*
     QStringList results;
 
     // getting all of the devices, and iterate through them
@@ -91,14 +98,12 @@ void Main_Window::on_war_driving_button_clicked ()
 
             // and finally get the SSID
             results << ap.ssid();
-
         }
 
         QAbstractItemModel *model = new QStringListModel (results);
         ui->network_list->setModel(model);
     }
-
-    //ui->network_list->setModel(model);
+*/
 }
 
 

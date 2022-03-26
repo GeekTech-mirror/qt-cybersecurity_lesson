@@ -69,35 +69,14 @@ QString NetworkManager::Setting::typeAsString(NetworkManager::Setting::SettingTy
     QString typeString;
 
     switch (type) {
-    case Cdma:
-        typeString = QLatin1String(NM_SETTING_CDMA_SETTING_NAME);
-        break;
-    case Gsm:
-        typeString = QLatin1String(NM_SETTING_GSM_SETTING_NAME);
-        break;
-    case Bluetooth:
-        typeString = QLatin1String(NM_SETTING_BLUETOOTH_SETTING_NAME);
-        break;
     case Ipv4:
         typeString = QLatin1String(NM_SETTING_IP4_CONFIG_SETTING_NAME);
         break;
     case Ipv6:
         typeString = QLatin1String(NM_SETTING_IP6_CONFIG_SETTING_NAME);
         break;
-    case Ppp:
-        typeString = QLatin1String(NM_SETTING_PPP_SETTING_NAME);
-        break;
-    case Pppoe:
-        typeString = QLatin1String(NM_SETTING_PPPOE_SETTING_NAME);
-        break;
     case Security8021x:
         typeString = QLatin1String(NM_SETTING_802_1X_SETTING_NAME);
-        break;
-    case Serial:
-        typeString = QLatin1String(NM_SETTING_SERIAL_SETTING_NAME);
-        break;
-    case Vpn:
-        typeString = QLatin1String(NM_SETTING_VPN_SETTING_NAME);
         break;
     case Wired:
         typeString = QLatin1String(NM_SETTING_WIRED_SETTING_NAME);
@@ -108,29 +87,8 @@ QString NetworkManager::Setting::typeAsString(NetworkManager::Setting::SettingTy
     case WirelessSecurity:
         typeString = QLatin1String(NM_SETTING_WIRELESS_SECURITY_SETTING_NAME);
         break;
-    case OlpcMesh:
-        typeString = QLatin1String(NM_SETTING_OLPC_MESH_SETTING_NAME);
-        break;
-    case Vlan:
-        typeString = QLatin1String(NM_SETTING_VLAN_SETTING_NAME);
-        break;
-    case Wimax:
-        typeString = QLatin1String(NM_SETTING_WIMAX_SETTING_NAME);
-        break;
-    case Bond:
-        typeString = QLatin1String(NM_SETTING_BOND_SETTING_NAME);
-        break;
     case Bridge:
         typeString = QLatin1String(NM_SETTING_BRIDGE_SETTING_NAME);
-        break;
-    case Team:
-        typeString = QLatin1String(NM_SETTING_TEAM_SETTING_NAME);
-        break;
-    case Vxlan:
-        typeString = QLatin1String(NM_SETTING_VXLAN_SETTING_NAME);
-        break;
-    case IpTunnel:
-        typeString = QLatin1String(NM_SETTING_IP_TUNNEL_SETTING_NAME);
         break;
     case Proxy:
         typeString = QLatin1String(NM_SETTING_PROXY_SETTING_NAME);
@@ -138,35 +96,14 @@ QString NetworkManager::Setting::typeAsString(NetworkManager::Setting::SettingTy
     case User:
         typeString = QLatin1String(NM_SETTING_USER_SETTING_NAME);
         break;
-    case OvsInterface:
-        typeString = QLatin1String(NM_SETTING_OVS_INTERFACE_SETTING_NAME);
-        break;
-    case OvsBridge:
-        typeString = QLatin1String(NM_SETTING_OVS_BRIDGE_SETTING_NAME);
-        break;
-    case OvsPatch:
-        typeString = QLatin1String(NM_SETTING_OVS_PATCH_SETTING_NAME);
-        break;
-    case OvsPort:
-        typeString = QLatin1String(NM_SETTING_OVS_PORT_SETTING_NAME);
-        break;
     case Match:
         typeString = QLatin1String(NM_SETTING_MATCH_SETTING_NAME);
         break;
     case Tc:
         typeString = QLatin1String(NM_SETTING_TC_CONFIG_SETTING_NAME);
         break;
-    case TeamPort:
-        typeString = QLatin1String(NM_SETTING_TEAM_PORT_SETTING_NAME);
-        break;
     case Macsec:
         typeString = QLatin1String(NM_SETTING_MACSEC_SETTING_NAME);
-        break;
-    case Dcb:
-        typeString = QLatin1String(NM_SETTING_DCB_SETTING_NAME);
-        break;
-    case NetworkManager::Setting::WireGuard:
-        typeString = QLatin1String(NM_SETTING_WIREGUARD_SETTING_NAME);
         break;
     case NetworkManager::Setting::Generic:
         typeString = QLatin1String(NM_SETTING_GENERIC_SETTING_NAME);
@@ -182,74 +119,32 @@ NetworkManager::Setting::SettingType NetworkManager::Setting::typeFromString(con
 {
     SettingType type = Wired;
 
-    if (typeString == QLatin1String(NM_SETTING_CDMA_SETTING_NAME)) {
-        type = Cdma;
-    } else if (typeString == QLatin1String(NM_SETTING_GSM_SETTING_NAME)) {
-        type = Gsm;
-    } else if (typeString == QLatin1String(NM_SETTING_BLUETOOTH_SETTING_NAME)) {
-        type = Bluetooth;
-    } else if (typeString == QLatin1String(NM_SETTING_IP4_CONFIG_SETTING_NAME)) {
+    if (typeString == QLatin1String(NM_SETTING_IP4_CONFIG_SETTING_NAME)) {
         type = Ipv4;
     } else if (typeString == QLatin1String(NM_SETTING_IP6_CONFIG_SETTING_NAME)) {
         type = Ipv6;
-    } else if (typeString == QLatin1String(NM_SETTING_PPP_SETTING_NAME)) {
-        type = Ppp;
-    } else if (typeString == QLatin1String(NM_SETTING_PPPOE_SETTING_NAME)) {
-        type = Pppoe;
-    } else if (typeString == QLatin1String(NM_SETTING_SERIAL_SETTING_NAME)) {
-        type = Serial;
     } else if (typeString == QLatin1String(NM_SETTING_802_1X_SETTING_NAME)) {
         type = Security8021x;
-    } else if (typeString == QLatin1String(NM_SETTING_VPN_SETTING_NAME)) {
-        type = Vpn;
     } else if (typeString == QLatin1String(NM_SETTING_WIRED_SETTING_NAME)) {
         type = Wired;
     } else if (typeString == QLatin1String(NM_SETTING_WIRELESS_SETTING_NAME)) {
         type = Wireless;
     } else if (typeString == QLatin1String(NM_SETTING_WIRELESS_SECURITY_SETTING_NAME)) {
         type = WirelessSecurity;
-    } else if (typeString == QLatin1String(NM_SETTING_OLPC_MESH_SETTING_NAME)) {
-        type = OlpcMesh;
-    } else if (typeString == QLatin1String(NM_SETTING_VLAN_SETTING_NAME)) {
-        type = Vlan;
-    } else if (typeString == QLatin1String(NM_SETTING_WIMAX_SETTING_NAME)) {
-        type = Wimax;
-    } else if (typeString == QLatin1String(NM_SETTING_BOND_SETTING_NAME)) {
-        type = Bond;
     } else if (typeString == QLatin1String(NM_SETTING_BRIDGE_SETTING_NAME)) {
         type = Bridge;
-    } else if (typeString == QLatin1String(NM_SETTING_TEAM_SETTING_NAME)) {
-        type = Team;
-    } else if (typeString == QLatin1String(NM_SETTING_VXLAN_SETTING_NAME)) {
-        type = Vxlan;
-    } else if (typeString == QLatin1String(NM_SETTING_IP_TUNNEL_SETTING_NAME)) {
-        type = IpTunnel;
     } else if (typeString == QLatin1String(NM_SETTING_GENERIC_SETTING_NAME)) {
         type = Generic;
     } else if (typeString == QLatin1String(NM_SETTING_USER_SETTING_NAME)) {
         type = User;
     } else if (typeString == QLatin1String(NM_SETTING_PROXY_SETTING_NAME)) {
         type = Proxy;
-    } else if (typeString == QLatin1String(NM_SETTING_OVS_INTERFACE_SETTING_NAME)) {
-        type = OvsInterface;
-    } else if (typeString == QLatin1String(NM_SETTING_OVS_BRIDGE_SETTING_NAME)) {
-        type = OvsBridge;
-    } else if (typeString == QLatin1String(NM_SETTING_OVS_PATCH_SETTING_NAME)) {
-        type = OvsPatch;
-    } else if (typeString == QLatin1String(NM_SETTING_OVS_PORT_SETTING_NAME)) {
-        type = OvsPort;
     } else if (typeString == QLatin1String(NM_SETTING_MATCH_SETTING_NAME)) {
         type = Match;
     } else if (typeString == QLatin1String(NM_SETTING_TC_CONFIG_SETTING_NAME)) {
         type = Tc;
-    } else if (typeString == QLatin1String(NM_SETTING_TEAM_PORT_SETTING_NAME)) {
-        type = TeamPort;
     } else if (typeString == QLatin1String(NM_SETTING_MACSEC_SETTING_NAME)) {
         type = Macsec;
-    } else if (typeString == QLatin1String(NM_SETTING_DCB_SETTING_NAME)) {
-        type = Dcb;
-    } else if (typeString == QLatin1String(NM_SETTING_WIREGUARD_SETTING_NAME)) {
-        type = WireGuard;
     }
 
     return type;

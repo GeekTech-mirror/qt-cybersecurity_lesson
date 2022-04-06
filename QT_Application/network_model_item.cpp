@@ -89,7 +89,7 @@ bool QNetworkItem::insertColumns(int position, int columns)
         return false;
 
     for (int column = 0; column < columns; ++column)
-        m_itemData.insert(position, QVariant());
+        m_itemData.insert(position, int());
 
     for (QNetworkItem *child : qAsConst(m_childItems))
         child->insertColumns(position, columns);
@@ -117,6 +117,7 @@ QVariant QNetworkItem::data(int column) const
 {
     if (column < 0 || column >= m_itemData.size())
         return QVariant();
+
     return m_itemData.at(column);
 }
 
@@ -127,12 +128,79 @@ bool QNetworkItem::setData(int column, const QVariant &value)
     if (column < 0 || column >= m_itemData.size())
         return false;
 
-    if (m_itemData != value) {
+    if (m_itemData[column] != value) {
         m_itemData[column] = value;
         return true;
     }
     else {
         return false;
     }
-
 }
+
+
+QVariant QNetworkItem::devicePath() const
+{
+    return m_devicePath;
+}
+
+void QNetworkItem::setDevicePath(const QString &path)
+{
+    if (m_devicePath != path) {
+        m_devicePath = path;
+        m_changedRoles << QNetworkModel::DevicePathRole << QNetworkModel::ItemTypeRole << QNetworkModel::UniRole;
+    }
+}
+
+
+QVariant QNetworkItem::specificPath() const
+{
+    return m_specificPath;
+}
+
+void QNetworkItem::setSpecificPath(const QVariant &path)
+{
+    if (m_specificPath != path) {
+        m_specificPath = path;
+        m_changedRoles << QNetworkModel::SpecificPathRole;
+    }
+}
+
+
+QVariant QNetworkItem::ssid() const
+{
+    return m_ssid;
+}
+
+void QNetworkItem::setSsid(const QVariant &ssid)
+{
+    if (m_ssid != ssid) {
+        m_ssid = ssid;
+        m_changedRoles << QNetworkModel::SsidRole << QNetworkModel::UniRole;
+    }
+}
+
+/*
+QVariant QNetworkItem::uuid() const
+{
+    return m_uuid;
+}
+
+void QNetworkItem::setUuid(const QVariant &uuid)
+{
+    if (m_uuid != uuid) {
+        m_uuid = uuid;
+        m_changedRoles << QNetworkModel::UuidRole;
+    }
+}
+*/
+/*
+QVariant QNetworkItem::uni() const
+{
+    if (m_type == NetworkManager::ConnectionSettings::Wireless && m_uuid.toString().isEmpty()) {
+        return m_ssid.toString() + '%' + m_devicePath.toString();
+    }
+    else {
+        return m_connectionPath.toString() + '%' + m_devicePath.toString();
+    }
+}
+*/

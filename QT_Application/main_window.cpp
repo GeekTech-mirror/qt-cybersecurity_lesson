@@ -39,17 +39,13 @@ Main_Window::Main_Window (QWidget *parent)
     ui->man_in_the_middle_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
 
-    QStringList header = {"SSID", "Security"};
+    QStringList header("Ssid");
 
     QString data = "data";
 
     QNetworkModel *network_model = new QNetworkModel(header, data);
 
     ui->network_list->setModel (network_model);
-
-
-//    QList<QNetworkModelItem *> List = network_list->returnItems(QNetworkList::Ssid, );
-
 }
 
 

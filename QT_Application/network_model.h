@@ -18,8 +18,8 @@ public:
                            QObject *parent = nullptr);
     ~QNetworkModel();
 
-
-    QVariant data(const QModelIndex &index, int role) const override;
+    /* Tree Model */
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value,
                  int role = Qt::EditRole) override;
 
@@ -48,12 +48,55 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
+
+    /* Network Model */
+    enum ItemRole {
+        ConnectionDetailsRole = Qt::UserRole + 1,
+        ConnectionIconRole,
+        ConnectionPathRole,
+        ConnectionStateRole,
+        DeviceName,
+        DevicePathRole,
+        DeviceStateRole,
+        DuplicateRole,
+        ItemUniqueNameRole,
+        ItemTypeRole,
+        LastUsedRole,
+        LastUsedDateOnlyRole,
+        NameRole,
+        SecurityTypeRole,
+        SecurityTypeStringRole,
+        SectionRole,
+        SignalRole,
+        SlaveRole,
+        SsidRole,
+        SpecificPathRole,
+        TimeStampRole,
+        TypeRole,
+        UniRole,
+        UuidRole,
+    };
+    Q_ENUM(ItemRole)
+    QHash<int, QByteArray> roleNames() const override;
+
+
+
 private:
+    /* Tree Model */
     void setupModelData(const QStringList &lines, QNetworkItem *parent);
     QNetworkItem *getItem(const QModelIndex &index) const;
 
     QNetworkItem *rootItem;
 
+    /* Network Model */
+    void addConnection(const NetworkManager::Connection::Ptr &connection, QVector<QVariant> &list, int position);
+    void addDevice(const NetworkManager::Device::Ptr &device, int &position, QNetworkItem *parent);
+    void addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network, const NetworkManager::WirelessDevice::Ptr &device, int position, QNetworkItem *parent);
+
+    void initializeSignals();
+    void initializeSignals(const NetworkManager::Connection::Ptr &connection);
+    void initializeSignals(const NetworkManager::Device::Ptr &device);
+    void initializeSignals(const NetworkManager::WirelessNetwork::Ptr &network);
 };
 
 #endif // QNetworkModel_H

@@ -23,10 +23,6 @@ set(PROJECT_SOURCES
         style_custom.cpp
         style_custom.h
         style_custom_p.h
-        network_tree_view.cpp
-        network_tree_view.h
-        network_list.cpp
-        network_list.h
         network_model_item.cpp
         network_model_item.h
         network_model.cpp

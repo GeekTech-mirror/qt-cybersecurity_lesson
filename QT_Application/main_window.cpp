@@ -7,6 +7,7 @@
 #include <QDebug>
 
 #include <NetworkManagerQt/Manager>
+#include <NetworkManagerQt/Settings>
 #include <NetworkManagerQt/Device>
 #include <NetworkManagerQt/WirelessDevice>
 #include <NetworkManagerQt/AccessPoint>
@@ -15,7 +16,7 @@
 #include "./ui_main_window.h"
 
 #include "network_model.h"
-#include "network_list.h
+
 Main_Window::Main_Window (QWidget *parent)
     : QMainWindow (parent)
     , ui(new Ui::Main_Window)
@@ -38,10 +39,16 @@ Main_Window::Main_Window (QWidget *parent)
     ui->man_in_the_middle_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
 
-    QNetworkModel *network_model = new QNetworkModel();
+    QStringList header = {"SSID", "Security"};
+
+    QString data = "data";
+
+    QNetworkModel *network_model = new QNetworkModel(header, data);
 
     ui->network_list->setModel (network_model);
 
+
+//    QList<QNetworkModelItem *> List = network_list->returnItems(QNetworkList::Ssid, );
 
 }
 
@@ -104,6 +111,7 @@ void Main_Window::on_war_driving_button_clicked ()
         ui->network_list->setModel(model);
     }
 */
+
 }
 
 

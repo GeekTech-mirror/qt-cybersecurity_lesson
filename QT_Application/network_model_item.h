@@ -1,5 +1,5 @@
-#ifndef QNetworkModelItem_H
-#define QNetworkModelItem_H
+#ifndef QNetworkItem_H
+#define QNetworkItem_H
 
 #include <NetworkManagerQt/ActiveConnection>
 #include <NetworkManagerQt/Connection>
@@ -7,135 +7,37 @@
 #include <NetworkManagerQt/Device>
 #include <NetworkManagerQt/Utils>
 
-#include "network_model.h"
-
-class QNetworkModelItem : public QObject
+class QNetworkItem
 {
-    Q_OBJECT
 public:
-    enum ItemType { UnavailableConnection, AvailableConnection, AvailableAccessPoint };
+    explicit QNetworkItem(const QVector<QVariant> &data, QNetworkItem *parent = nullptr);
+    ~QNetworkItem();
 
-    explicit QNetworkModelItem(QObject *parent = nullptr);
-    explicit QNetworkModelItem(const QNetworkModelItem *item, QObject *parent = nullptr);
-    ~QNetworkModelItem() override;
 
-    QString activeConnectionPath() const;
-    void setActiveConnectionPath(const QString &path);
+    /* new */
+    QNetworkItem *parent();
+    QNetworkItem *child(int row);
+    int childNumber() const;
+    int childCount() const;
+    int columnCount() const;
 
-    QString connectionPath() const;
-    void setConnectionPath(const QString &path);
+    bool insertChildren(int position, int count, int columns);
+    bool removeChildren(int position, int count);
 
-    NetworkManager::ActiveConnection::State connectionState() const;
-    void setConnectionState(NetworkManager::ActiveConnection::State state);
+    bool insertColumns(int position, int columns);
+    bool removeColumns(int position, int columns);
 
-    QStringList details() const;
 
-    QString deviceName() const;
-    void setDeviceName(const QString &name);
 
-    QString devicePath() const;
-    void setDevicePath(const QString &path);
+    QVariant data(int column) const;
+    bool setData(int column, const QVariant &value);
 
-    QString deviceState() const;
-    void setDeviceState(const NetworkManager::Device::State state);
-
-    bool duplicate() const;
-
-    void setIcon(const QString &icon);
-    QString icon() const
-    {
-        return m_icon;
-    }
-
-    ItemType itemType() const;
-
-    NetworkManager::WirelessSetting::NetworkMode mode() const;
-    void setMode(const NetworkManager::WirelessSetting::NetworkMode mode);
-
-    QString name() const;
-    void setName(const QString &name);
-
-    QString originalName() const;
-
-    QString sectionType() const;
-
-    NetworkManager::WirelessSecurityType securityType() const;
-    void setSecurityType(NetworkManager::WirelessSecurityType type);
-
-    int signal() const;
-    void setSignal(int signal);
-
-    bool slave() const;
-    void setSlave(bool slave);
-
-    QString specificPath() const;
-    void setSpecificPath(const QString &path);
-
-    QString ssid() const;
-    void setSsid(const QString &ssid);
-
-    QDateTime timestamp() const;
-    void setTimestamp(const QDateTime &date);
-
-    NetworkManager::ConnectionSettings::ConnectionType type() const;
-    void setType(NetworkManager::ConnectionSettings::ConnectionType type);
-
-    QString uni() const;
-
-    QString uuid() const;
-    void setUuid(const QString &uuid);
-
-    qulonglong rxBytes() const;
-    void setRxBytes(qulonglong bytes);
-
-    qulonglong txBytes() const;
-    void setTxBytes(qulonglong bytes);
-
-    bool operator==(const QNetworkModelItem *item) const;
-
-    QVector<int> changedRoles() const
-    {
-        return m_changedRoles;
-    }
-    void clearChangedRoles()
-    {
-        m_changedRoles.clear();
-    }
-
-public Q_SLOTS:
-    void invalidateDetails();
 
 private:
-    QString computeIcon() const;
-    void refreshIcon();
-//    void updateDetails() const;
-
-    QString m_activeConnectionPath;
-    QString m_connectionPath;
-    NetworkManager::ActiveConnection::State m_connectionState;
-    QString m_devicePath;
-    QString m_deviceName;
-    NetworkManager::Device::State m_deviceState;
-    mutable QStringList m_details;
-    mutable bool m_detailsValid;
-    bool m_duplicate;
-    NetworkManager::WirelessSetting::NetworkMode m_mode;
-    QString m_name;
-    NetworkManager::WirelessSecurityType m_securityType;
-    int m_signal;
-    bool m_slave;
-    QString m_specificPath;
-    QString m_ssid;
-    QDateTime m_timestamp;
-    NetworkManager::ConnectionSettings::ConnectionType m_type;
-    QString m_uuid;
-    qulonglong m_rxBytes;
-    qulonglong m_txBytes;
-    QString m_icon;
-    QVector<int> m_changedRoles;
-
-signals:
+    QNetworkItem *m_parentItem;
+    QVector<QNetworkItem*> m_childItems;
+    QVector<QVariant> m_itemData;
 
 };
 
-#endif // QNetworkModelItem_H
+#endif // QNetworkItem_H

@@ -14,7 +14,7 @@ public:
     QNetworkTreeView();
 
 private:
-    QTreeView *tree_view;
+
     QNetworkModel *network_model;
     QNetworkList network_list;
 };

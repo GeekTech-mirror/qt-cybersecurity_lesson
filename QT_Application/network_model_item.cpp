@@ -26,7 +26,7 @@ QNetworkItem *QNetworkItem::parent()
     return m_parentItem;
 }
 
-/* return pointer to child at "number" */
+/* return pointer to child at "row" */
 QNetworkItem *QNetworkItem::child(int number)
 {
     if (number < 0 || number >= m_childItems.size())
@@ -138,12 +138,43 @@ bool QNetworkItem::setData(int column, const QVariant &value)
 }
 
 
+
+/*
+ *  Network Items
+ */
+NetworkManager::ActiveConnection::State QNetworkItem::connectionState() const
+{
+    return m_connectionState;
+}
+
+void QNetworkItem::setConnectionState(NetworkManager::ActiveConnection::State state)
+{
+    if (m_connectionState != state) {
+        m_connectionState = state;
+        m_changedRoles << QNetworkModel::ConnectionStateRole << QNetworkModel::SectionRole;
+        refreshIcon();
+    }
+}
+
+QVariant QNetworkItem::deviceName() const
+{
+    return m_deviceName;
+}
+
+void QNetworkItem::setDeviceName(const QVariant &name)
+{
+    if (m_deviceName != name) {
+        m_deviceName = name;
+        m_changedRoles << QNetworkModel::DeviceName;
+    }
+}
+
 QVariant QNetworkItem::devicePath() const
 {
     return m_devicePath;
 }
 
-void QNetworkItem::setDevicePath(const QString &path)
+void QNetworkItem::setDevicePath(const QVariant &path)
 {
     if (m_devicePath != path) {
         m_devicePath = path;
@@ -151,6 +182,49 @@ void QNetworkItem::setDevicePath(const QString &path)
     }
 }
 
+QString QNetworkItem::icon() const
+{
+    return m_icon;
+}
+
+void QNetworkItem::setIcon(const QString &icon)
+{
+    if (icon != m_icon) {
+        m_icon = icon;
+        m_changedRoles << QNetworkModel::ConnectionIconRole;
+    }
+}
+
+void QNetworkItem::refreshIcon()
+{
+    setIcon(computeIcon());
+}
+
+QString QNetworkItem::computeIcon() const
+{
+    switch (m_type) {
+    case NetworkManager::ConnectionSettings::Bridge:
+        break;
+    case NetworkManager::ConnectionSettings::Wired:
+        if (m_connectionState == NetworkManager::ActiveConnection::Activated) {
+            return QStringLiteral("network-wired-activated");
+        } else {
+            return QStringLiteral("network-wired");
+        }
+        break;
+    case NetworkManager::ConnectionSettings::Wireless:
+        return (m_securityType <= NetworkManager::NoneSecurity) ? QStringLiteral("network-wireless") : QStringLiteral("network-wireless-100-locked");
+
+    default:
+        break;
+    }
+
+    if (m_connectionState == NetworkManager::ActiveConnection::Activated) {
+        return QStringLiteral("network-wired-activated");
+    } else {
+        return QStringLiteral("network-wired");
+    }
+}
 
 QVariant QNetworkItem::specificPath() const
 {
@@ -165,6 +239,19 @@ void QNetworkItem::setSpecificPath(const QVariant &path)
     }
 }
 
+NetworkManager::WirelessSecurityType QNetworkItem::securityType() const
+{
+    return m_securityType;
+}
+
+void QNetworkItem::setSecurityType(NetworkManager::WirelessSecurityType type)
+{
+    if (m_securityType != type) {
+        m_securityType = type;
+        m_changedRoles << QNetworkModel::SecurityTypeStringRole << QNetworkModel::SecurityTypeRole;
+        refreshIcon();
+    }
+}
 
 QVariant QNetworkItem::ssid() const
 {
@@ -179,7 +266,7 @@ void QNetworkItem::setSsid(const QVariant &ssid)
     }
 }
 
-/*
+
 QVariant QNetworkItem::uuid() const
 {
     return m_uuid;
@@ -192,7 +279,22 @@ void QNetworkItem::setUuid(const QVariant &uuid)
         m_changedRoles << QNetworkModel::UuidRole;
     }
 }
-*/
+
+NetworkManager::ConnectionSettings::ConnectionType QNetworkItem::type() const
+{
+    return m_type;
+}
+
+void QNetworkItem::setType(NetworkManager::ConnectionSettings::ConnectionType type)
+{
+    if (m_type != type) {
+        m_type = type;
+        m_changedRoles << QNetworkModel::TypeRole << QNetworkModel::ItemTypeRole << QNetworkModel::UniRole;
+
+        refreshIcon();
+    }
+}
+
 /*
 QVariant QNetworkItem::uni() const
 {

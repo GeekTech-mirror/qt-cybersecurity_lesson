@@ -1,3 +1,5 @@
+#include <QIcon>
+
 #include <NetworkManagerQt/ConnectionSettings>
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
@@ -5,28 +7,51 @@
 #include "network_model.h"
 #include "network_model_item.h"
 
-QNetworkModel::QNetworkModel(const QStringList &headers, const QString &data, QObject *parent)
+QNetworkModel::QNetworkModel(const QVector<QNetworkModel::ItemRole> &columnRoles, QObject *parent)
     : QAbstractItemModel(parent)
 {
     QVector<QVariant> rootData;
-    for (const QVariant &header : headers) {
-        rootData << header;
+    for (int i = 0; i < columnRoles.count(); ++i) {
+        switch (columnRoles.at(i)) {
+        case DeviceName:
+            rootData << "Device Name";
+            break;
+
+        case DevicePathRole:
+            rootData << "Device Path";
+            break;
+
+        case ConnectionIconRole:
+            rootData << "";
+            break;
+
+        case SpecificPathRole:
+            rootData << "Specific Path";
+            break;
+
+        case SsidRole:
+            rootData << "Ssid";
+            break;
+
+        case TypeRole:
+            rootData << "Type";
+            break;
+
+        default:
+            break;
+        }
     }
-    //QVector<QVariant> role(QNetworkModel::SsidRole);
     rootItem = new QNetworkItem(rootData);
 
     // Initialize existing connections
-//    QVector<QVariant> list;
-    int position = 0;
     for (const NetworkManager::Device::Ptr &dev : NetworkManager::networkInterfaces()) {
         if (!dev->managed()) {
             continue;
         }
-        addDevice(dev, position, rootItem);
+        addDevice(dev, rootItem);
     }
 
-//    rootItem = new QNetworkItem(rootData);
-//    setupModelData(data.split('\n'), rootItem);
+    setupModelData(columnRoles, rootItem);
 }
 
 QNetworkModel::~QNetworkModel()
@@ -209,63 +234,50 @@ Qt::ItemFlags QNetworkModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
 
-    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    return QAbstractItemModel::flags(index);
 }
 
 
-void QNetworkModel::setupModelData(const QStringList &lines, QNetworkItem *parent)
+void QNetworkModel::setupModelData(const QVector<QNetworkModel::ItemRole> &roles, QNetworkItem *parent)
 {
     QList<QNetworkItem *> parents;
-    QList<int> indentations;
     parents << parent;
-    indentations << 0;
 
-    int number = 0;
+    for (int i = 0; i < parent->childCount(); ++i) {
+        QNetworkItem *item = parent->child(i);
 
-    while (number < lines.count()) {
-        int position = 0;
-        while (position < lines[number].length()) {
-            if (lines[number].at(position) != ' ')
+        for (int j = 0; j < parent->columnCount(); ++j) {
+            switch (roles.at(j)) {
+            case DeviceName:
+                item->setData(j, item->deviceName());
                 break;
-            ++position;
-        }
 
-        const QString lineData = lines[number].mid(position).trimmed();
+            case DevicePathRole:
+                item->setData(j, item->devicePath());
+                break;
 
-        if (!lineData.isEmpty()) {
-            // Read the column data from the rest of the line.
-            const QStringList columnStrings =
-                lineData.split(QLatin1Char('\t'), Qt::SkipEmptyParts);
-            QList<QVariant> columnData;
-            columnData.reserve(columnStrings.size());
-            for (const QString &columnString : columnStrings)
-                columnData << columnString;
+            case ConnectionIconRole:
+                item->setData(j, QIcon::fromTheme(item->icon()));
+                break;
 
-            if (position > indentations.last()) {
-                // The last child of the current parent is now the new parent
-                // unless the current parent has no children.
+            case SpecificPathRole:
+                item->setData(j, item->specificPath());
+                break;
 
-                if (parents.last()->childCount() > 0) {
-                    parents << parents.last()->child(parents.last()->childCount()-1);
-                    indentations << position;
-                }
-            } else {
-                while (position < indentations.last() && parents.count() > 0) {
-                    parents.pop_back();
-                    indentations.pop_back();
-                }
+            case SsidRole:
+                item->setData(j, item->ssid());
+                break;
+
+            case TypeRole:
+                item->setData(j, item->type());
+                break;
+
+            default:
+                item->setData(j, "");
             }
-
-            // Append a new item to the current parent's list of children.
-            QNetworkItem *parent = parents.last();
-            parent->insertChildren(parent->childCount(), 1,
-                                   rootItem->columnCount());
-            for (int column = 0; column < columnData.size(); ++column)
-                parent->child(parent->childCount() - 1)
-                        ->setData(column, columnData[column]);
         }
-        ++number;
     }
+
 }
 
 /* Network Mode */
@@ -296,22 +308,22 @@ QHash<int, QByteArray> QNetworkModel::roleNames() const
 }
 
 
-void QNetworkModel::addDevice(const NetworkManager::Device::Ptr &device, int &position, QNetworkItem *parent)
+void QNetworkModel::addDevice(const NetworkManager::Device::Ptr &device, QNetworkItem *parent)
 {
     initializeSignals(device);
 
     if (device->type() == NetworkManager::Device::Wifi) {
         NetworkManager::WirelessDevice::Ptr wifiDev = device.objectCast<NetworkManager::WirelessDevice>();
         for (const NetworkManager::WirelessNetwork::Ptr &wifiNetwork : wifiDev->networks()) {
-            addWirelessNetwork(wifiNetwork, wifiDev, position, parent);
-            position++;
+            addWirelessNetwork(wifiNetwork, wifiDev, parent);
         }
     }
 
 }
 
-void QNetworkModel::addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network, const NetworkManager::WirelessDevice::Ptr &device,
-                                       int position, QNetworkItem *parent)
+void QNetworkModel::addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network,
+                                       const NetworkManager::WirelessDevice::Ptr &device,
+                                       QNetworkItem *parent)
 {
     initializeSignals(network);
 
@@ -356,24 +368,21 @@ void QNetworkModel::addWirelessNetwork(const NetworkManager::WirelessNetwork::Pt
     QNetworkItem *item = parents.last();
 
     item->insertChildren(item->childCount(), 1,
-                           rootItem->columnCount());
+                         rootItem->columnCount());
 
-    item->setSsid(network->ssid());
-
-    item->child(item->childCount() - 1)
-            ->setData(0, item->ssid());
-
-    /*
     if (device->ipInterfaceName().isEmpty()) {
-        item->setDeviceName(device->interfaceName());
-    } else {
-        item->setDeviceName(device->ipInterfaceName());
+        item->child(item->childCount()-1)->setDeviceName(device->interfaceName());
     }
-    item->setDevicePath(device->uni());
-    */
+    else {
+        item->child(item->childCount()-1)->setDeviceName(device->ipInterfaceName());
+    }
+    item->child(item->childCount()-1)->setSsid(network->ssid());
+    item->child(item->childCount()-1)->setDevicePath(device->uni());
+    item->child(item->childCount()-1)->setSpecificPath(network->referenceAccessPoint()->uni());
+    item->child(item->childCount()-1)->setType(NetworkManager::ConnectionSettings::Wireless);
 //    item->setMode(mode);
 //    item->setName(network->ssid());
-//    item->setSpecificPath(network->referenceAccessPoint()->uni());
+
 //    item->setSsid(network->ssid());
 //    item->setType(NetworkManager::ConnectionSettings::Wireless);
 

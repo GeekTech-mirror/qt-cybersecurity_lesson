@@ -5,5 +5,9 @@
         <file>icons/breeze-icons/places/16/user-home.svg</file>
         <file>icons/breeze-icons/places/symbolic/user-home-symbolic.svg</file>
         <file>icons/breeze-icons/index.theme</file>
+        <file>icons/breeze-icons/devices/16/network-wireless-connected-100.svg</file>
+        <file>icons/breeze-icons/devices/16/network-wireless.svg</file>
+        <file>icons/breeze-icons/devices/16/network-wired.svg</file>
+        <file>icons/breeze-icons/devices/16/network-wired-activated.svg</file>
     </qresource>
 </RCC>

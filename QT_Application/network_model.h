@@ -14,7 +14,37 @@ class QNetworkModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit QNetworkModel(const QStringList &headers, const QString &data,
+    /* Network Model */
+    enum ItemRole {
+        ConnectionDetailsRole = Qt::UserRole + 1,
+        ConnectionIconRole,
+        ConnectionPathRole,
+        ConnectionStateRole,
+        DeviceName,
+        DevicePathRole,
+        DeviceStateRole,
+        DuplicateRole,
+        ItemUniqueNameRole,
+        ItemTypeRole,
+        LastUsedRole,
+        LastUsedDateOnlyRole,
+        NameRole,
+        SecurityTypeRole,
+        SecurityTypeStringRole,
+        SectionRole,
+        SignalRole,
+        SlaveRole,
+        SsidRole,
+        SpecificPathRole,
+        TimeStampRole,
+        TypeRole,
+        UniRole,
+        UuidRole,
+    };
+    Q_ENUM(ItemRole)
+    QHash<int, QByteArray> roleNames() const override;
+
+    explicit QNetworkModel(const QVector<QNetworkModel::ItemRole> &columnRoles,
                            QObject *parent = nullptr);
     ~QNetworkModel();
 
@@ -49,49 +79,19 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 
-    /* Network Model */
-    enum ItemRole {
-        ConnectionDetailsRole = Qt::UserRole + 1,
-        ConnectionIconRole,
-        ConnectionPathRole,
-        ConnectionStateRole,
-        DeviceName,
-        DevicePathRole,
-        DeviceStateRole,
-        DuplicateRole,
-        ItemUniqueNameRole,
-        ItemTypeRole,
-        LastUsedRole,
-        LastUsedDateOnlyRole,
-        NameRole,
-        SecurityTypeRole,
-        SecurityTypeStringRole,
-        SectionRole,
-        SignalRole,
-        SlaveRole,
-        SsidRole,
-        SpecificPathRole,
-        TimeStampRole,
-        TypeRole,
-        UniRole,
-        UuidRole,
-    };
-    Q_ENUM(ItemRole)
-    QHash<int, QByteArray> roleNames() const override;
-
-
-
 private:
     /* Tree Model */
-    void setupModelData(const QStringList &lines, QNetworkItem *parent);
+    void setupModelData(const QVector<QNetworkModel::ItemRole> &roles, QNetworkItem *parent);
     QNetworkItem *getItem(const QModelIndex &index) const;
 
     QNetworkItem *rootItem;
 
     /* Network Model */
-    void addConnection(const NetworkManager::Connection::Ptr &connection, QVector<QVariant> &list, int position);
-    void addDevice(const NetworkManager::Device::Ptr &device, int &position, QNetworkItem *parent);
-    void addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network, const NetworkManager::WirelessDevice::Ptr &device, int position, QNetworkItem *parent);
+    void addConnection(const NetworkManager::Connection::Ptr &connection, QVector<QNetworkModel::ItemRole> &list);
+    void addDevice(const NetworkManager::Device::Ptr &device, QNetworkItem *parent);
+    void addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network,
+                            const NetworkManager::WirelessDevice::Ptr &device,
+                            QNetworkItem *parent);
 
     void initializeSignals();
     void initializeSignals(const NetworkManager::Connection::Ptr &connection);

@@ -49,7 +49,7 @@ public:
     ~QNetworkModel();
 
     /* Tree Model */
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DecorationRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value,
                  int role = Qt::EditRole) override;
 
@@ -78,6 +78,8 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
+private Q_SLOTS:
+    void wirelessNetworkAppeared(const QString &ssid);
 
 private:
     /* Tree Model */
@@ -97,6 +99,7 @@ private:
     void initializeSignals(const NetworkManager::Connection::Ptr &connection);
     void initializeSignals(const NetworkManager::Device::Ptr &device);
     void initializeSignals(const NetworkManager::WirelessNetwork::Ptr &network);
+
 };
 
 #endif // QNetworkModel_H

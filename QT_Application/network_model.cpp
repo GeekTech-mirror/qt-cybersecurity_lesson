@@ -66,7 +66,10 @@ QVariant QNetworkModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    if (role != Qt::DisplayRole && role != Qt::EditRole) {
+    if (role != Qt::DisplayRole &&
+        role != Qt::EditRole &&
+        role != Qt::DecorationRole)
+    {
         return QVariant();
     }
 
@@ -413,7 +416,7 @@ void QNetworkModel::initializeSignals(const NetworkManager::Device::Ptr &device)
 
     if (device->type() == NetworkManager::Device::Wifi) {
         NetworkManager::WirelessDevice::Ptr wifiDev = device.objectCast<NetworkManager::WirelessDevice>();
-//        connect(wifiDev.data(), &NetworkManager::WirelessDevice::networkAppeared, this, &QNetworkModel::wirelessNetworkAppeared, Qt::UniqueConnection);
+        connect(wifiDev.data(), &NetworkManager::WirelessDevice::networkAppeared, this, &QNetworkModel::wirelessNetworkAppeared, Qt::UniqueConnection);
     }
 }
 
@@ -425,4 +428,16 @@ void QNetworkModel::initializeSignals(const NetworkManager::WirelessNetwork::Ptr
 //            this,
 //            &QNetworkModel::wirelessNetworkReferenceApChanged,
 //            Qt::UniqueConnection);
+}
+
+void QNetworkModel::wirelessNetworkAppeared(const QString &ssid)
+{
+    NetworkManager::Device::Ptr device = NetworkManager::findNetworkInterface(qobject_cast<NetworkManager::Device *>(sender())->uni());
+    if (device && device->type() == NetworkManager::Device::Wifi) {
+        NetworkManager::WirelessDevice::Ptr wirelessDevice = device.objectCast<NetworkManager::WirelessDevice>();
+        NetworkManager::WirelessNetwork::Ptr network = wirelessDevice->findNetwork(ssid);
+
+        addWirelessNetwork(network, wirelessDevice, rootItem);
+        insertRows(rootItem->childCount()-1, 1);
+    }
 }

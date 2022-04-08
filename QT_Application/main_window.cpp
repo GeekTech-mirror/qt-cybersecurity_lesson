@@ -44,7 +44,7 @@ Main_Window::Main_Window (QWidget *parent)
     QNetworkModel *network_model = new QNetworkModel(role);
 
     ui->network_list->setModel (network_model);
-    ui->network_list->rootIsDecorated();
+    ui->network_list->setColumnWidth(0, 64);
 
     QStandardItem item;
 }

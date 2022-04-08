@@ -7,8 +7,9 @@
 #include "network_model.h"
 #include "network_model_item.h"
 
-QNetworkModel::QNetworkModel(const QVector<QNetworkModel::ItemRole> &columnRoles, QObject *parent)
-    : QAbstractItemModel(parent)
+QNetworkModel::QNetworkModel(const QVector<QNetworkModel::ItemRole> &roles, QObject *parent)
+    : columnRoles(roles),
+      QAbstractItemModel(parent)
 {
     QVector<QVariant> rootData;
     for (int i = 0; i < columnRoles.count(); ++i) {
@@ -27,6 +28,10 @@ QNetworkModel::QNetworkModel(const QVector<QNetworkModel::ItemRole> &columnRoles
 
         case SpecificPathRole:
             rootData << "Specific Path";
+            break;
+
+        case SecurityTypeRole:
+            rootData << "Security";
             break;
 
         case SsidRole:
@@ -51,7 +56,7 @@ QNetworkModel::QNetworkModel(const QVector<QNetworkModel::ItemRole> &columnRoles
         addDevice(dev, rootItem);
     }
 
-    setupModelData(columnRoles, rootItem);
+    setupModelData(roles, rootItem);
 }
 
 QNetworkModel::~QNetworkModel()
@@ -85,7 +90,40 @@ bool QNetworkModel::setData(const QModelIndex &index, const QVariant &value,
         return false;
 
     QNetworkItem *item = getItem(index);
-    bool result = item->setData(index.column(), value);
+    bool result;
+
+    switch (columnRoles.at(index.column())) {
+    case DeviceName:
+        result = item->setData(index.column(), item->deviceName());
+        break;
+
+    case DevicePathRole:
+        result = item->setData(index.column(), item->devicePath());
+        break;
+
+    case ConnectionIconRole:
+        result = item->setData(index.column(), QIcon::fromTheme(item->icon()));
+        break;
+
+    case SpecificPathRole:
+        result = item->setData(index.column(), item->specificPath());
+        break;
+
+    case SecurityTypeRole:
+        result = item->setData(index.column(), item->securityType());
+        break;
+
+    case SsidRole:
+        result = item->setData(index.column(), item->ssid());
+        break;
+
+    case TypeRole:
+        result = item->setData(index.column(), item->type());
+        break;
+
+    default:
+        result = item->setData(index.column(), "");
+    }
 
     if (result)
         emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
@@ -248,9 +286,9 @@ void QNetworkModel::setupModelData(const QVector<QNetworkModel::ItemRole> &roles
 
     for (int i = 0; i < parent->childCount(); ++i) {
         QNetworkItem *item = parent->child(i);
-
         for (int j = 0; j < parent->columnCount(); ++j) {
-            switch (roles.at(j)) {
+
+            switch (columnRoles.at(j)) {
             case DeviceName:
                 item->setData(j, item->deviceName());
                 break;
@@ -265,6 +303,10 @@ void QNetworkModel::setupModelData(const QVector<QNetworkModel::ItemRole> &roles
 
             case SpecificPathRole:
                 item->setData(j, item->specificPath());
+                break;
+
+            case SecurityTypeRole:
+                item->setData(j, item->securityType());
                 break;
 
             case SsidRole:
@@ -366,7 +408,14 @@ void QNetworkModel::addWirelessNetwork(const NetworkManager::WirelessNetwork::Pt
     NetworkManager::WirelessSecurityType securityType = NetworkManager::UnknownSecurity;
 
     NetworkManager::AccessPoint::Ptr ap = network->referenceAccessPoint();
-
+    if (ap && (ap->capabilities().testFlag(NetworkManager::AccessPoint::Privacy) || ap->wpaFlags() || ap->rsnFlags())) {
+        securityType = NetworkManager::findBestWirelessSecurity(device->wirelessCapabilities(),
+                                                                true,
+                                                                (device->mode() == NetworkManager::WirelessDevice::Adhoc),
+                                                                ap->capabilities(),
+                                                                ap->wpaFlags(),
+                                                                ap->rsnFlags());
+    }
 
     QNetworkItem *item = parents.last();
 
@@ -383,6 +432,7 @@ void QNetworkModel::addWirelessNetwork(const NetworkManager::WirelessNetwork::Pt
     item->child(item->childCount()-1)->setDevicePath(device->uni());
     item->child(item->childCount()-1)->setSpecificPath(network->referenceAccessPoint()->uni());
     item->child(item->childCount()-1)->setType(NetworkManager::ConnectionSettings::Wireless);
+    item->setSecurityType(securityType);
 //    item->setMode(mode);
 //    item->setName(network->ssid());
 
@@ -438,6 +488,8 @@ void QNetworkModel::wirelessNetworkAppeared(const QString &ssid)
         NetworkManager::WirelessNetwork::Ptr network = wirelessDevice->findNetwork(ssid);
 
         addWirelessNetwork(network, wirelessDevice, rootItem);
-        insertRows(rootItem->childCount()-1, 1);
+        for (int i = 0; i < rootItem->columnCount(); ++i) {
+            setData(index(rootItem->childCount()-1,i), QVariant());
+        }
     }
 }

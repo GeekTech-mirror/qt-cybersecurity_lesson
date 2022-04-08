@@ -44,7 +44,7 @@ public:
     Q_ENUM(ItemRole)
     QHash<int, QByteArray> roleNames() const override;
 
-    explicit QNetworkModel(const QVector<QNetworkModel::ItemRole> &columnRoles,
+    explicit QNetworkModel(const QVector<QNetworkModel::ItemRole> &roles,
                            QObject *parent = nullptr);
     ~QNetworkModel();
 
@@ -85,10 +85,11 @@ private:
     /* Tree Model */
     void setupModelData(const QVector<QNetworkModel::ItemRole> &roles, QNetworkItem *parent);
     QNetworkItem *getItem(const QModelIndex &index) const;
-
     QNetworkItem *rootItem;
 
     /* Network Model */
+    QVector<QNetworkModel::ItemRole> columnRoles;
+
     void addConnection(const NetworkManager::Connection::Ptr &connection, QVector<QNetworkModel::ItemRole> &list);
     void addDevice(const NetworkManager::Device::Ptr &device, QNetworkItem *parent);
     void addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network,

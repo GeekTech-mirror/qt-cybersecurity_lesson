@@ -1,5 +1,4 @@
 #include <QIcon>
-#include <QMetaEnum>
 
 #include <NetworkManagerQt/ConnectionSettings>
 #include <NetworkManagerQt/Manager>

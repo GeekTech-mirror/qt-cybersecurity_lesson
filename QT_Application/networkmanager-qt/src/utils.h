@@ -10,7 +10,6 @@
 #include <QHostAddress>
 #include <QPair>
 
-#include "qnamespace.h"
 #include "wirelessdevice.h"
 #include "wirelesssecuritysetting.h"
 #include "wirelesssetting.h"

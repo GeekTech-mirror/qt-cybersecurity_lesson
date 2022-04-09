@@ -84,13 +84,16 @@ private Q_SLOTS:
 private:
     /* Tree Model */
     void setupModelData(const QVector<QNetworkModel::ItemRole> &roles, QNetworkItem *parent);
+    QString getSecurityString(NetworkManager::WirelessSecurityType type) const;
+    QVariant getColumn(const QModelIndex &index) const;
     QNetworkItem *getItem(const QModelIndex &index) const;
     QNetworkItem *rootItem;
 
     /* Network Model */
     QVector<QNetworkModel::ItemRole> columnRoles;
 
-    void addConnection(const NetworkManager::Connection::Ptr &connection, QVector<QNetworkModel::ItemRole> &list);
+    void addConnection(const NetworkManager::Connection::Ptr &connection,
+                       QVector<QNetworkModel::ItemRole> &list);
     void addDevice(const NetworkManager::Device::Ptr &device, QNetworkItem *parent);
     void addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network,
                             const NetworkManager::WirelessDevice::Ptr &device,

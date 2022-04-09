@@ -40,7 +40,8 @@ Main_Window::Main_Window (QWidget *parent)
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
 
     QVector<QNetworkModel::ItemRole> role ({QNetworkModel::ConnectionIconRole,
-                                            QNetworkModel::SsidRole});
+                                            QNetworkModel::SsidRole,
+                                            QNetworkModel::SecurityTypeRole});
     QNetworkModel *network_model = new QNetworkModel(role);
 
     ui->network_list->setModel (network_model);

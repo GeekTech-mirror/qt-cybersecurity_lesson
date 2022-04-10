@@ -61,10 +61,8 @@ QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
 
     m_timer = new QTimer(this);
     m_timer->setInterval(2000);
-    connect(m_timer, &QTimer::timeout, [this]()
-    {
-            requestScan();
-    });
+    connect(m_timer, &QTimer::timeout, this,
+            [&](){QNetworkModel::requestScan();});
     m_timer->start();
 
     // Initialize existing connections

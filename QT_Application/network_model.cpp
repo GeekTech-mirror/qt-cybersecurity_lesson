@@ -10,8 +10,8 @@
 #include "network_model_p.h"
 #include "network_model_item.h"
 
-// 10 seconds
-#define NM_REQUESTSCAN_LIMIT_RATE 10000
+// 1 seconds
+#define NM_REQUESTSCAN_LIMIT_RATE 1000
 
 QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
                               QObject *parent)
@@ -450,15 +450,18 @@ void QNetworkModel::requestScan(const QString &interface)
 {
     for (const NetworkManager::Device::Ptr &device : NetworkManager::networkInterfaces())
     {
-        if (device->type() == NetworkManager::Device::Wifi) {
+        if (device->type() == NetworkManager::Device::Wifi)
+        {
             NetworkManager::WirelessDevice::Ptr wifiDevice = device.objectCast<NetworkManager::WirelessDevice>();
 
-            if (wifiDevice && wifiDevice->state() != NetworkManager::WirelessDevice::Unavailable) {
+            if (wifiDevice && wifiDevice->state() != NetworkManager::WirelessDevice::Unavailable)
+            {
                 if (!interface.isEmpty() && interface != wifiDevice->interfaceName()) {
                     continue;
                 }
 
-                if (!checkRequestScanRateLimit(wifiDevice)) {
+                if (!checkRequestScanRateLimit(wifiDevice))
+                {
                     QDateTime now = QDateTime::currentDateTime();
                     // for NM < 1.12, lastScan is not available
                     QDateTime lastScan = wifiDevice->lastScan();

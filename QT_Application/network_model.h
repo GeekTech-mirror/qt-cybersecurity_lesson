@@ -3,18 +3,32 @@
 
 #include <QAbstractItemModel>
 #include <QQueue>
+#include <QTimer>
 
-#include <NetworkManagerQt/Manager>
-#include <NetworkManagerQt/Utils>
 #include <NetworkManagerQt/WirelessDevice>
 
 #include "network_model_item.h"
 
+
+class QNetworkModelPrivate;
 class QNetworkModel : public QAbstractItemModel
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE (QNetworkModel)
+
 public:
     /* Network Model */
+    enum HandlerAction {
+        ActivateConnection,
+        AddAndActivateConnection,
+        AddConnection,
+        DeactivateConnection,
+        RemoveConnection,
+        RequestScan,
+        UpdateConnection,
+        CreateHotspot,
+    };
+
     enum ItemRole {
         ConnectionDetailsRole = Qt::UserRole + 1,
         ConnectionIconRole,
@@ -44,66 +58,75 @@ public:
     Q_ENUM(ItemRole)
     QHash<int, QByteArray> roleNames() const override;
 
-    explicit QNetworkModel(const QVector<QNetworkModel::ItemRole> &roles,
-                           QObject *parent = nullptr);
-    ~QNetworkModel();
+    /* Constructor */
+    explicit QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
+                            QObject *parent = nullptr);
+    ~QNetworkModel ();
 
     /* Tree Model */
-    QVariant data(const QModelIndex &index, int role = Qt::DecorationRole) const override;
-    bool setData(const QModelIndex &index, const QVariant &value,
-                 int role = Qt::EditRole) override;
+    QVariant data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    bool setData (const QModelIndex &index, const QVariant &value,
+                  int role = Qt::EditRole) override;
 
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const override;
-    bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant &value, int role = Qt::EditRole) override;
+    QVariant headerData (int section, Qt::Orientation orientation,
+                         int role = Qt::DisplayRole) const override;
+    bool setHeaderData (int section, Qt::Orientation orientation,
+                        const QVariant &value, int role = Qt::EditRole) override;
 
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex &index) const override;
+    QModelIndex index (int row, int column,
+                       const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex parent (const QModelIndex &index) const override;
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int rowCount (const QModelIndex &parent = QModelIndex()) const override;
 
-    bool insertRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex()) override;
-    bool removeRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex()) override;
+    bool insertRows (int position, int rows,
+                     const QModelIndex &parent = QModelIndex()) override;
+    bool removeRows (int position, int rows,
+                     const QModelIndex &parent = QModelIndex()) override;
 
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount (const QModelIndex &parent = QModelIndex()) const override;
 
-    bool insertColumns(int position, int columns,
-                       const QModelIndex &parent = QModelIndex()) override;
-    bool removeColumns(int position, int columns,
-                       const QModelIndex &parent = QModelIndex()) override;
+    bool insertColumns (int position, int columns,
+                        const QModelIndex &parent = QModelIndex()) override;
+    bool removeColumns (int position, int columns,
+                        const QModelIndex &parent = QModelIndex()) override;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    Qt::ItemFlags flags (const QModelIndex &index) const override;
+
+
+
+public Q_SLOTS:
+    void updateConnection (const NetworkManager::Connection::Ptr &connection,
+                           const NMVariantMapMap &map);
+    void requestScan (const QString &interface);
 
 private Q_SLOTS:
-    void wirelessNetworkAppeared(const QString &ssid);
+//    void replyFinished(QDBusPendingCallWatcher *watcher);
+    void wirelessNetworkAppeared (const QString &ssid);
 
 private:
     /* Tree Model */
-    void setupModelData(const QVector<QNetworkModel::ItemRole> &roles, QNetworkItem *parent);
-    QString getSecurityString(NetworkManager::WirelessSecurityType type) const;
-    QVariant getColumn(const QModelIndex &index) const;
-    QNetworkItem *getItem(const QModelIndex &index) const;
     QNetworkItem *rootItem;
+    QVector<QNetworkModel::ItemRole> columnRoles;
+    void setupModelData (QNetworkItem *parent);
 
     /* Network Model */
-    QVector<QNetworkModel::ItemRole> columnRoles;
+    void addConnection (const NetworkManager::Connection::Ptr &connection,
+                        QVector<QNetworkModel::ItemRole> &list);
+    void addDevice (const NetworkManager::Device::Ptr &device, QNetworkItem *parent);
+    void addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
+                             const NetworkManager::WirelessDevice::Ptr &device,
+                             QNetworkItem *parent);
 
-    void addConnection(const NetworkManager::Connection::Ptr &connection,
-                       QVector<QNetworkModel::ItemRole> &list);
-    void addDevice(const NetworkManager::Device::Ptr &device, QNetworkItem *parent);
-    void addWirelessNetwork(const NetworkManager::WirelessNetwork::Ptr &network,
-                            const NetworkManager::WirelessDevice::Ptr &device,
-                            QNetworkItem *parent);
+    /* Scan Networks */
+    QMap<QString, QTimer *> m_wirelessScanRetryTimer;
+    bool checkRequestScanRateLimit(const NetworkManager::WirelessDevice::Ptr &wifiDevice);
+    void scheduleRequestScan(const QString &interface, int timeout);
+    void scanRequestFailed(const QString &interface);
 
-    void initializeSignals();
-    void initializeSignals(const NetworkManager::Connection::Ptr &connection);
-    void initializeSignals(const NetworkManager::Device::Ptr &device);
-    void initializeSignals(const NetworkManager::WirelessNetwork::Ptr &network);
-
+protected:
+    QNetworkModel(QNetworkModelPrivate &dd);
+    QNetworkModelPrivate *d_ptr;
 };
 
 #endif // QNetworkModel_H

@@ -1,51 +1,57 @@
-#include "network_list.h"
-#include "network_model_item.h"
+/*
+    SPDX-FileCopyrightText: 2013-2018 Jan Grulich <jgrulich@redhat.com>
 
-QNetworkList::QNetworkList(QObject *parent)
+    SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+*/
+
+#include "networkitemslist.h"
+#include "networkmodelitem.h"
+
+NetworkItemsList::NetworkItemsList(QObject *parent)
     : QObject(parent)
 {
 }
 
-QNetworkList::~QNetworkList()
+NetworkItemsList::~NetworkItemsList()
 {
     qDeleteAll(m_items);
 }
 
-bool QNetworkList::contains(const QNetworkList::FilterType type, const QString &parameter) const
+bool NetworkItemsList::contains(const NetworkItemsList::FilterType type, const QString &parameter) const
 {
-    for (QNetworkModelItem *item : m_items) {
+    for (NetworkModelItem *item : m_items) {
         switch (type) {
-        case QNetworkList::ActiveConnection:
+        case NetworkItemsList::ActiveConnection:
             if (item->activeConnectionPath() == parameter) {
                 return true;
             }
             break;
-        case QNetworkList::Connection:
+        case NetworkItemsList::Connection:
             if (item->connectionPath() == parameter) {
                 return true;
             }
             break;
-        case QNetworkList::Device:
+        case NetworkItemsList::Device:
             if (item->devicePath() == parameter) {
                 return true;
             }
             break;
-        case QNetworkList::Name:
+        case NetworkItemsList::Name:
             if (item->name() == parameter) {
                 return true;
             }
             break;
-        case QNetworkList::Ssid:
+        case NetworkItemsList::Ssid:
             if (item->ssid() == parameter) {
                 return true;
             }
             break;
-        case QNetworkList::Uuid:
+        case NetworkItemsList::Uuid:
             if (item->uuid() == parameter) {
                 return true;
             }
             break;
-        case QNetworkList::Type:
+        case NetworkItemsList::Type:
             break;
         default:
             break;
@@ -55,49 +61,49 @@ bool QNetworkList::contains(const QNetworkList::FilterType type, const QString &
     return false;
 }
 
-int QNetworkList::count() const
+int NetworkItemsList::count() const
 {
     return m_items.count();
 }
 
-int QNetworkList::indexOf(QNetworkModelItem *item) const
+int NetworkItemsList::indexOf(NetworkModelItem *item) const
 {
     return m_items.indexOf(item);
 }
 
-void QNetworkList::insertItem(QNetworkModelItem *item)
+void NetworkItemsList::insertItem(NetworkModelItem *item)
 {
     m_items << item;
 }
 
-QNetworkModelItem *QNetworkList::itemAt(int index) const
+NetworkModelItem *NetworkItemsList::itemAt(int index) const
 {
     return m_items.at(index);
 }
 
-QList<QNetworkModelItem *> QNetworkList::items() const
+QList<NetworkModelItem *> NetworkItemsList::items() const
 {
     return m_items;
 }
 
-void QNetworkList::removeItem(QNetworkModelItem *item)
+void NetworkItemsList::removeItem(NetworkModelItem *item)
 {
     m_items.removeAll(item);
 }
 
-QList<QNetworkModelItem *>
-QNetworkList::returnItems(const QNetworkList::FilterType type, const QString &parameter, const QString &additionalParameter) const
+QList<NetworkModelItem *>
+NetworkItemsList::returnItems(const NetworkItemsList::FilterType type, const QString &parameter, const QString &additionalParameter) const
 {
-    QList<QNetworkModelItem *> result;
+    QList<NetworkModelItem *> result;
 
-    for (QNetworkModelItem *item : m_items) {
+    for (NetworkModelItem *item : m_items) {
         switch (type) {
-        case QNetworkList::ActiveConnection:
+        case NetworkItemsList::ActiveConnection:
             if (item->activeConnectionPath() == parameter) {
                 result << item;
             }
             break;
-        case QNetworkList::Connection:
+        case NetworkItemsList::Connection:
             if (item->connectionPath() == parameter) {
                 if (additionalParameter.isEmpty()) {
                     result << item;
@@ -108,17 +114,17 @@ QNetworkList::returnItems(const QNetworkList::FilterType type, const QString &pa
                 }
             }
             break;
-        case QNetworkList::Device:
+        case NetworkItemsList::Device:
             if (item->devicePath() == parameter) {
                 result << item;
             }
             break;
-        case QNetworkList::Name:
+        case NetworkItemsList::Name:
             if (item->name() == parameter) {
                 result << item;
             }
             break;
-        case QNetworkList::Ssid:
+        case NetworkItemsList::Ssid:
             if (item->ssid() == parameter) {
                 if (additionalParameter.isEmpty()) {
                     result << item;
@@ -129,12 +135,12 @@ QNetworkList::returnItems(const QNetworkList::FilterType type, const QString &pa
                 }
             }
             break;
-        case QNetworkList::Uuid:
+        case NetworkItemsList::Uuid:
             if (item->uuid() == parameter) {
                 result << item;
             }
             break;
-        case QNetworkList::Type:
+        case NetworkItemsList::Type:
             break;
         }
     }
@@ -142,13 +148,13 @@ QNetworkList::returnItems(const QNetworkList::FilterType type, const QString &pa
     return result;
 }
 
-QList<QNetworkModelItem *> QNetworkList::returnItems(const QNetworkList::FilterType type,
+QList<NetworkModelItem *> NetworkItemsList::returnItems(const NetworkItemsList::FilterType type,
                                                         NetworkManager::ConnectionSettings::ConnectionType typeParameter) const
 {
-    QList<QNetworkModelItem *> result;
+    QList<NetworkModelItem *> result;
 
-    for (QNetworkModelItem *item : m_items) {
-        if (type == QNetworkList::Type) {
+    for (NetworkModelItem *item : m_items) {
+        if (type == NetworkItemsList::Type) {
             if (item->type() == typeParameter) {
                 result << item;
             }

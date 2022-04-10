@@ -7,6 +7,7 @@ class QStyleCustomPrivate;
 class QStyleCustom : public QProxyStyle
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(QStyleCustom)
 
 public:
     QStyleCustom();

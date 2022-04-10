@@ -27,6 +27,7 @@ set(PROJECT_SOURCES
         network_model_item.h
         network_model.cpp
         network_model.h
+        network_model_p.h
         war_driving.cpp
         war_driving.h
         icons.qrc

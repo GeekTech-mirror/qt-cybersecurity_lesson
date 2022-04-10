@@ -1,7 +1,6 @@
 #include <arpa/inet.h>
 #include <QThread>
 #include <QTextStream>
-#include <QStandardItem>
 #include <QStringListModel>
 #include <QAbstractItemModel>
 #include <QDebug>
@@ -39,15 +38,16 @@ Main_Window::Main_Window (QWidget *parent)
     ui->man_in_the_middle_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
 
-    QVector<QNetworkModel::ItemRole> role ({QNetworkModel::ConnectionIconRole,
+    // Setup Tree View to display networks
+    QVector<QNetworkModel::ItemRole> roles ({QNetworkModel::ConnectionIconRole,
                                             QNetworkModel::SsidRole,
                                             QNetworkModel::SecurityTypeRole});
-    QNetworkModel *network_model = new QNetworkModel(role);
+
+    QNetworkModel *network_model = new QNetworkModel(roles);
 
     ui->network_list->setModel (network_model);
     ui->network_list->setColumnWidth(0, 64);
-
-    QStandardItem item;
+    ui->network_list->setColumnWidth(1, 220);
 }
 
 

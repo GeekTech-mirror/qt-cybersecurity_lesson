@@ -1,20 +1,36 @@
-#ifndef QNetworkModel_H
-#define QNetworkModel_H
+/*
+    SPDX-FileCopyrightText: 2013-2018 Jan Grulich <jgrulich@redhat.com>
+
+    SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+*/
+
+#ifndef PLASMA_NM_NETWORK_MODEL_H
+#define PLASMA_NM_NETWORK_MODEL_H
 
 #include <QAbstractListModel>
 #include <QQueue>
 
+#include "networkitemslist.h"
+
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Utils>
+#include <NetworkManagerQt/VpnConnection>
 #include <NetworkManagerQt/WirelessDevice>
 
-#include "network_list.h"
+#if WITH_MODEMMANAGER_SUPPORT
+#include <ModemManagerQt/Modem>
+#endif
 
-class QNetworkModel : public QAbstractListModel
+class Q_DECL_EXPORT NetworkModel : public QAbstractListModel
 {
+    Q_OBJECT
 public:
-    explicit QNetworkModel(QObject *parent = nullptr);
-    ~QNetworkModel() override;
+    // HACK: Delay model updates to prevent jumping password entry in the applet
+    // BUG: 435430
+    Q_PROPERTY(bool delayModelUpdates WRITE setDelayModelUpdates)
+
+    explicit NetworkModel(QObject *parent = nullptr);
+    ~NetworkModel() override;
 
     enum ItemRole {
         ConnectionDetailsRole = Qt::UserRole + 1,
@@ -41,10 +57,12 @@ public:
         TypeRole,
         UniRole,
         UuidRole,
+        VpnState,
+        VpnType,
         RxBytesRole,
         TxBytesRole,
     };
-    Q_ENUM(ItemRole)
+    Q_ENUMS(ItemRole)
 
     enum ModelChangeType { ItemAdded, ItemRemoved, ItemPropertyChanged };
 
@@ -62,6 +80,7 @@ private Q_SLOTS:
     void activeConnectionAdded(const QString &activeConnection);
     void activeConnectionRemoved(const QString &activeConnection);
     void activeConnectionStateChanged(NetworkManager::ActiveConnection::State state);
+    void activeVpnConnectionStateChanged(NetworkManager::VpnConnection::State state, NetworkManager::VpnConnection::StateChangeReason reason);
     void availableConnectionAppeared(const QString &connection);
     void availableConnectionDisappeared(const QString &connection);
     void connectionAdded(const QString &connection);
@@ -70,6 +89,11 @@ private Q_SLOTS:
     void deviceAdded(const QString &device);
     void deviceRemoved(const QString &device);
     void deviceStateChanged(NetworkManager::Device::State state, NetworkManager::Device::State oldState, NetworkManager::Device::StateChangeReason reason);
+#if WITH_MODEMMANAGER_SUPPORT
+    void gsmNetworkAccessTechnologiesChanged(QFlags<MMModemAccessTechnology> accessTechnologies);
+    void gsmNetworkCurrentModesChanged();
+    void gsmNetworkSignalQualityChanged(const ModemManager::SignalQualityPair &signalQuality);
+#endif
     void ipConfigChanged();
     void ipInterfaceChanged();
     void statusChanged(NetworkManager::Status status);
@@ -82,8 +106,8 @@ private Q_SLOTS:
 
 private:
     bool m_delayModelUpdates = false;
-    QNetworkList m_list;
-    QQueue<QPair<ModelChangeType, QNetworkModelItem *>> m_updateQueue;
+    NetworkItemsList m_list;
+    QQueue<QPair<ModelChangeType, NetworkModelItem *>> m_updateQueue;
 
     void addActiveConnection(const NetworkManager::ActiveConnection::Ptr &activeConnection);
     void addAvailableConnection(const QString &connection, const NetworkManager::Device::Ptr &device);
@@ -97,13 +121,13 @@ private:
     void initializeSignals(const NetworkManager::Device::Ptr &device);
     void initializeSignals(const NetworkManager::WirelessNetwork::Ptr &network);
     void
-    updateFromWirelessNetwork(QNetworkModelItem *item, const NetworkManager::WirelessNetwork::Ptr &network, const NetworkManager::WirelessDevice::Ptr &device);
+    updateFromWirelessNetwork(NetworkModelItem *item, const NetworkManager::WirelessNetwork::Ptr &network, const NetworkManager::WirelessDevice::Ptr &device);
 
-    void insertItem(QNetworkModelItem *item);
-    void removeItem(QNetworkModelItem *item);
-    void updateItem(QNetworkModelItem *item);
+    void insertItem(NetworkModelItem *item);
+    void removeItem(NetworkModelItem *item);
+    void updateItem(NetworkModelItem *item);
 
     NetworkManager::WirelessSecurityType alternativeWirelessSecurity(const NetworkManager::WirelessSecurityType type);
 };
 
-#endif // QNetworkModel_H
+#endif // PLASMA_NM_NETWORK_MODEL_H

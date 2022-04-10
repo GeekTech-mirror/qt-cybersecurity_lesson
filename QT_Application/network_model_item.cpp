@@ -6,6 +6,8 @@
 #include <NetworkManagerQt/WirelessSetting>
 #include <NetworkManagerQt/AccessPoint>
 
+#include <QAbstractListModel>
+
 #include "network_model_item.h"
 #include "network_model.h"
 
@@ -156,6 +158,7 @@ void QNetworkItem::setConnectionState(NetworkManager::ActiveConnection::State st
     }
 }
 
+
 QVariant QNetworkItem::deviceName() const
 {
     return m_deviceName;
@@ -169,6 +172,7 @@ void QNetworkItem::setDeviceName(const QVariant &name)
     }
 }
 
+
 QVariant QNetworkItem::devicePath() const
 {
     return m_devicePath;
@@ -181,6 +185,7 @@ void QNetworkItem::setDevicePath(const QVariant &path)
         m_changedRoles << QNetworkModel::DevicePathRole << QNetworkModel::ItemTypeRole << QNetworkModel::UniRole;
     }
 }
+
 
 QString QNetworkItem::icon() const
 {
@@ -213,7 +218,7 @@ QString QNetworkItem::computeIcon() const
         }
         break;
     case NetworkManager::ConnectionSettings::Wireless:
-        return (m_securityType <= NetworkManager::NoneSecurity) ? QStringLiteral("network-wireless") : QStringLiteral("network-wireless-100-locked");
+        return (m_securityType <= NetworkManager::NoneSecurity) ? QStringLiteral("network-wireless-connected-100") : QStringLiteral("network-wireless-connected-100-locked");
 
     default:
         break;
@@ -225,6 +230,7 @@ QString QNetworkItem::computeIcon() const
         return QStringLiteral("network-wired");
     }
 }
+
 
 QVariant QNetworkItem::specificPath() const
 {
@@ -239,6 +245,7 @@ void QNetworkItem::setSpecificPath(const QVariant &path)
     }
 }
 
+
 NetworkManager::WirelessSecurityType QNetworkItem::securityType() const
 {
     return m_securityType;
@@ -252,6 +259,7 @@ void QNetworkItem::setSecurityType(NetworkManager::WirelessSecurityType type)
         refreshIcon();
     }
 }
+
 
 QVariant QNetworkItem::ssid() const
 {
@@ -280,6 +288,7 @@ void QNetworkItem::setUuid(const QVariant &uuid)
     }
 }
 
+
 NetworkManager::ConnectionSettings::ConnectionType QNetworkItem::type() const
 {
     return m_type;
@@ -294,6 +303,7 @@ void QNetworkItem::setType(NetworkManager::ConnectionSettings::ConnectionType ty
         refreshIcon();
     }
 }
+
 
 /*
 QVariant QNetworkItem::uni() const

@@ -1,5 +1,11 @@
-#ifndef QNetworkModelItem_H
-#define QNetworkModelItem_H
+/*
+    SPDX-FileCopyrightText: 2013-2018 Jan Grulich <jgrulich@redhat.com>
+
+    SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
+*/
+
+#ifndef PLASMA_NM_MODEL_NETWORK_MODEL_ITEM_H
+#define PLASMA_NM_MODEL_NETWORK_MODEL_ITEM_H
 
 #include <NetworkManagerQt/ActiveConnection>
 #include <NetworkManagerQt/Connection>
@@ -7,17 +13,17 @@
 #include <NetworkManagerQt/Device>
 #include <NetworkManagerQt/Utils>
 
-#include "network_model.h"
+#include "networkmodel.h"
 
-class QNetworkModelItem : public QObject
+class Q_DECL_EXPORT NetworkModelItem : public QObject
 {
     Q_OBJECT
 public:
     enum ItemType { UnavailableConnection, AvailableConnection, AvailableAccessPoint };
 
-    explicit QNetworkModelItem(QObject *parent = nullptr);
-    explicit QNetworkModelItem(const QNetworkModelItem *item, QObject *parent = nullptr);
-    ~QNetworkModelItem() override;
+    explicit NetworkModelItem(QObject *parent = nullptr);
+    explicit NetworkModelItem(const NetworkModelItem *item, QObject *parent = nullptr);
+    ~NetworkModelItem() override;
 
     QString activeConnectionPath() const;
     void setActiveConnectionPath(const QString &path);
@@ -85,13 +91,19 @@ public:
     QString uuid() const;
     void setUuid(const QString &uuid);
 
+    QString vpnState() const;
+    void setVpnState(NetworkManager::VpnConnection::State state);
+
+    QString vpnType() const;
+    void setVpnType(const QString &type);
+
     qulonglong rxBytes() const;
     void setRxBytes(qulonglong bytes);
 
     qulonglong txBytes() const;
     void setTxBytes(qulonglong bytes);
 
-    bool operator==(const QNetworkModelItem *item) const;
+    bool operator==(const NetworkModelItem *item) const;
 
     QVector<int> changedRoles() const
     {
@@ -108,7 +120,7 @@ public Q_SLOTS:
 private:
     QString computeIcon() const;
     void refreshIcon();
-//    void updateDetails() const;
+    void updateDetails() const;
 
     QString m_activeConnectionPath;
     QString m_connectionPath;
@@ -129,13 +141,12 @@ private:
     QDateTime m_timestamp;
     NetworkManager::ConnectionSettings::ConnectionType m_type;
     QString m_uuid;
+    QString m_vpnType;
+    NetworkManager::VpnConnection::State m_vpnState;
     qulonglong m_rxBytes;
     qulonglong m_txBytes;
     QString m_icon;
     QVector<int> m_changedRoles;
-
-signals:
-
 };
 
-#endif // QNetworkModelItem_H
+#endif // PLASMA_NM_MODEL_NETWORK_MODEL_ITEM_H

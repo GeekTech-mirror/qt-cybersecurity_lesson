@@ -98,7 +98,7 @@ public:
 public Q_SLOTS:
     void updateConnection (const NetworkManager::Connection::Ptr &connection,
                            const NMVariantMapMap &map);
-    void requestScan (const QString &interface);
+    void requestScan (const QString &interface  = QString());
 
 private Q_SLOTS:
 //    void replyFinished(QDBusPendingCallWatcher *watcher);
@@ -119,6 +119,7 @@ private:
                              QNetworkItem *parent);
 
     /* Scan Networks */
+    QTimer *m_timer = nullptr;
     QMap<QString, QTimer *> m_wirelessScanRetryTimer;
     bool checkRequestScanRateLimit(const NetworkManager::WirelessDevice::Ptr &wifiDevice);
     void scheduleRequestScan(const QString &interface, int timeout);

@@ -1,3 +1,4 @@
+#include <QDBusInterface>
 #include <QIcon>
 #include <QTimer>
 
@@ -10,7 +11,7 @@
 #include "network_model_item.h"
 
 // 10 seconds
-#define NM_REQUESTSCAN_LIMIT_RATE 2000
+#define NM_REQUESTSCAN_LIMIT_RATE 10000
 
 QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
                               QObject *parent)
@@ -54,6 +55,17 @@ QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
         }
     }
     rootItem = new QNetworkItem(rootData);
+
+    // Initialize first scan and then scan every 15 seconds
+    requestScan();
+
+    m_timer = new QTimer(this);
+    m_timer->setInterval(2000);
+    connect(m_timer, &QTimer::timeout, [this]()
+    {
+            requestScan();
+    });
+    m_timer->start();
 
     // Initialize existing connections
     for (const NetworkManager::Device::Ptr &dev :

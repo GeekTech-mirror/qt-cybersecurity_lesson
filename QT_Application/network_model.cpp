@@ -18,6 +18,7 @@ QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
     : columnRoles (roles),
       QAbstractItemModel (parent)
 {
+    // Create header based on column roles
     QVector<QVariant> rootData;
     for (int i = 0; i < columnRoles.count(); ++i)
     {
@@ -56,7 +57,7 @@ QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
     }
     rootItem = new QNetworkItem(rootData);
 
-    // Initialize first scan and then scan every 15 seconds
+    // Initialize first scan and then scan every 2 seconds
     requestScan();
 
     m_timer = new QTimer(this);

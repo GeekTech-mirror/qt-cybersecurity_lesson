@@ -65,50 +65,50 @@ public:
     {
         switch (type) {
         case NetworkManager::NoneSecurity:
-            return "None";
+            return QStringLiteral("None");
             break;
 
         case NetworkManager::StaticWep:
-            return "Static-Wep";
+            return QStringLiteral("Static-Wep");
             break;
 
         case NetworkManager::DynamicWep:
-            return "Dynamic-Wep";
+            return QStringLiteral("Dynamic-Wep");
             break;
 
         case NetworkManager::Leap:
-            return "Leap";
+            return QStringLiteral("Leap");
             break;
 
         case NetworkManager::WpaPsk:
-            return "Wpa-Psk";
+            return QStringLiteral("Wpa-Psk");
             break;
 
         case NetworkManager::WpaEap:
-            return "Wpa-Eap";
+            return QStringLiteral("Wpa-Eap");
             break;
 
         case NetworkManager::Wpa2Psk:
-            return "Wpa2-Psk";
+            return QStringLiteral("Wpa2-Psk");
             break;
 
         case NetworkManager::Wpa2Eap:
-            return "Wpa2-Eap";
+            return QStringLiteral("Wpa2-Eap");
             break;
 
         case NetworkManager::SAE:
-            return "SAE";
+            return QStringLiteral("SAE");
             break;
 
         case NetworkManager::Wpa3SuiteB192:
-            return "Wpa3-Suite-B192";
+            return QStringLiteral("Wpa3-Suite-B192");
             break;
 
         default:
-            return "Unknown";
+            return QStringLiteral("Unknown");
         }
 
-        return "error";
+        return QStringLiteral("error");
     }
 
 

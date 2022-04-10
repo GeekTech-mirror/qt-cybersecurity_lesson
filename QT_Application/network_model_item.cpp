@@ -1,3 +1,5 @@
+#include <QAbstractListModel>
+
 #include <NetworkManagerQt/BridgeDevice>
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
@@ -5,8 +7,6 @@
 #include <NetworkManagerQt/WirelessDevice>
 #include <NetworkManagerQt/WirelessSetting>
 #include <NetworkManagerQt/AccessPoint>
-
-#include <QAbstractListModel>
 
 #include "network_model_item.h"
 #include "network_model.h"
@@ -113,6 +113,7 @@ bool QNetworkItem::removeColumns(int position, int columns)
 
     return true;
 }
+
 
 /* retrieve data from itemData list at specified column */
 QVariant QNetworkItem::data(int column) const

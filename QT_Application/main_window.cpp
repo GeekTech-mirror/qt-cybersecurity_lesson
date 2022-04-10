@@ -48,6 +48,8 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->setModel (network_model);
     ui->network_list->setColumnWidth(0, 64);
     ui->network_list->setColumnWidth(1, 220);
+
+    ui->Stacked_Widget->setCurrentIndex(0);
 }
 
 
@@ -78,38 +80,6 @@ void Main_Window::on_man_in_the_middle_button_clicked ()
 void Main_Window::on_war_driving_button_clicked ()
 {
     ui->Stacked_Widget->setCurrentIndex (4);
-/*
-    QStringList results;
-
-    // getting all of the devices, and iterate through them
-    NetworkManager::Device::List list = NetworkManager::networkInterfaces();
-    Q_FOREACH (NetworkManager::Device::Ptr dev, list)
-    {
-        if((NMDeviceType)dev->type() != NM_DEVICE_TYPE_WIFI)
-        {
-            //skipping non-wifi interfaces
-            continue;
-        }
-        // creating a Wifi device with this object path
-        NetworkManager::WirelessDevice wifi_dev(dev->uni());
-        wifi_dev.requestScan();
-        QThread::sleep(2); // still not the best solution:w
-        //get the Object Path of all the visible access points
-        // and iterate through
-        foreach(QString ap_path, wifi_dev.accessPoints())
-        {
-            // creating an AccessPoint object with this path
-            NetworkManager::AccessPoint ap(ap_path);
-
-            // and finally get the SSID
-            results << ap.ssid();
-        }
-
-        QAbstractItemModel *model = new QStringListModel (results);
-        ui->network_list->setModel(model);
-    }
-*/
-
 }
 
 

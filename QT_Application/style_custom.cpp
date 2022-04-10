@@ -50,7 +50,7 @@ static QColor merged_colors (const QColor &colorA,
 
 
 /* The default button and handle gradient */
-static QLinearGradient qt_fusion_gradient (const QRect &rect,
+static QLinearGradient qt_fusion_gradient (const QRect rect,
                                            const QBrush &baseColor,
                                            Direction direction = TopDown)
 {

@@ -10,7 +10,8 @@
 class QNetworkItem
 {
 public:
-    explicit QNetworkItem(const QVector<QVariant> &data, QNetworkItem *parent = nullptr);
+    explicit QNetworkItem(const QVector<QVariant> &data,
+                          QNetworkItem *parent = nullptr);
     ~QNetworkItem();
 
     /* Tree Items */

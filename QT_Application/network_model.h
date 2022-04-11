@@ -7,7 +7,7 @@
 
 #include <NetworkManagerQt/WirelessDevice>
 
-#include "network_model_item.h"
+#include "network_item.h"
 
 
 class QNetworkModelPrivate;
@@ -26,7 +26,6 @@ public:
         RemoveConnection,
         RequestScan,
         UpdateConnection,
-        CreateHotspot,
     };
 
     enum ItemRole {
@@ -93,7 +92,7 @@ public:
 
     Qt::ItemFlags flags (const QModelIndex &index) const override;
 
-
+    void sort(int column, Qt::SortOrder order) override;
 
 public Q_SLOTS:
     void updateConnection (const NetworkManager::Connection::Ptr &connection,

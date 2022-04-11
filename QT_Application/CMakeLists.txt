@@ -23,8 +23,8 @@ set(PROJECT_SOURCES
         style_custom.cpp
         style_custom.h
         style_custom_p.h
-        network_model_item.cpp
-        network_model_item.h
+        network_item.cpp
+        network_item.h
         network_model.cpp
         network_model.h
         network_model_p.h

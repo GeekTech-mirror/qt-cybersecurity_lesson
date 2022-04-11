@@ -8,7 +8,7 @@
 #include <NetworkManagerQt/WirelessSetting>
 #include <NetworkManagerQt/AccessPoint>
 
-#include "network_model_item.h"
+#include "network_item.h"
 #include "network_model.h"
 
 QNetworkItem::QNetworkItem(const QVector<QVariant> &data, QNetworkItem *parent)

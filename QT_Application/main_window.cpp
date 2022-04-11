@@ -49,6 +49,7 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->setColumnWidth(0, 64);
     ui->network_list->setColumnWidth(1, 220);
 
+    // Set starting point to main menu
     ui->Stacked_Widget->setCurrentIndex(0);
 }
 

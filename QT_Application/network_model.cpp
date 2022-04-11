@@ -1,24 +1,37 @@
+/* Tree Network Model
+** File: network_model.cpp
+** --------
+** Scan for local networks and display relevent info
+** in a Tree Model
+** --------
+*/
+
+/* Qt include files */
 #include <QDBusInterface>
 #include <QIcon>
 #include <QTimer>
 
+/* NetworkManager Include files */
 #include <NetworkManagerQt/ConnectionSettings>
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
 
+/* local include files */
 #include "network_model.h"
 #include "network_model_p.h"
-#include "network_model_item.h"
+#include "network_item.h"
 
 // 1 seconds
 #define NM_REQUESTSCAN_LIMIT_RATE 1000
 
+
+/* Constructor */
 QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
                               QObject *parent)
     : columnRoles (roles),
       QAbstractItemModel (parent)
 {
-    // Create header based on column roles
+    // Create header titles based on column roles
     QVector<QVariant> rootData;
     for (int i = 0; i < columnRoles.count(); ++i)
     {
@@ -57,6 +70,7 @@ QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
     }
     rootItem = new QNetworkItem(rootData);
 
+
     // Initialize first scan and then scan every 2 seconds
     requestScan();
 
@@ -65,6 +79,7 @@ QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
     connect(m_timer, &QTimer::timeout, this,
             [&](){QNetworkModel::requestScan();});
     m_timer->start();
+
 
     // Initialize existing connections
     for (const NetworkManager::Device::Ptr &dev :
@@ -76,26 +91,44 @@ QNetworkModel::QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
         addDevice (dev, rootItem);
     }
 
+
+    // Fill initial table with network data
     setupModelData (rootItem);
 }
 
+/* Constructor for private functions */
 QNetworkModel::QNetworkModel (QNetworkModelPrivate &dd)
     : d_ptr (&dd)
 {
 }
 
+/* Destructor */
 QNetworkModel::~QNetworkModel ()
 {
     delete rootItem;
 }
 
 
-/* Tree Model */
+/* Tree Model
+** --------
+** reimplement functions from Tree Model
+** --------
+**/
+
+/* Return data from model
+** Parameters:
+**     index: specify model index for row and column
+**     role: controls the display method for the model contents
+** Return: value stored in the model index
+*/
 QVariant QNetworkModel::data (const QModelIndex &index, int role) const
 {
+    // Checks for valid index
     if (!index.isValid())
         return QVariant();
 
+    // Define roles that are allowed
+    // (all others return empty value)
     if (role != Qt::DisplayRole &&
         role != Qt::EditRole &&
         role != Qt::DecorationRole)
@@ -108,6 +141,7 @@ QVariant QNetworkModel::data (const QModelIndex &index, int role) const
     return item->data(index.column());
 }
 
+/* Store value in model index */
 bool QNetworkModel::setData (const QModelIndex &index,
                              const QVariant &value,
                              int role)
@@ -126,6 +160,13 @@ bool QNetworkModel::setData (const QModelIndex &index,
 }
 
 
+/* Return header data from model
+** Parameters:
+**     index: specify model index for row and column
+**     orientation: control location of header (vertical or horizontal)
+**     role: controls the display method for the model contents
+** Return: value stored in the model index
+*/
 QVariant QNetworkModel::headerData (int section,
                                     Qt::Orientation orientation,
                                     int role) const
@@ -136,6 +177,7 @@ QVariant QNetworkModel::headerData (int section,
     return QVariant();
 }
 
+/* Store header data in model index */
 bool QNetworkModel::setHeaderData (int section,
                                    Qt::Orientation orientation,
                                    const QVariant &value, int role)
@@ -152,6 +194,7 @@ bool QNetworkModel::setHeaderData (int section,
 }
 
 
+/* Return index to model */
 QModelIndex QNetworkModel::index (int row, int column,
                                   const QModelIndex &parent) const
 {
@@ -170,6 +213,8 @@ QModelIndex QNetworkModel::index (int row, int column,
     return QModelIndex();
 }
 
+
+/* Return index to parent in model */
 QModelIndex QNetworkModel::parent (const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -185,6 +230,7 @@ QModelIndex QNetworkModel::parent (const QModelIndex &index) const
 }
 
 
+/* Return total number of rows */
 int QNetworkModel::rowCount (const QModelIndex &parent) const
 {
     if (parent.isValid() && parent.column() > 0)
@@ -196,6 +242,7 @@ int QNetworkModel::rowCount (const QModelIndex &parent) const
 }
 
 
+/* Insert number of rows below specified position */
 bool QNetworkModel::insertRows (int position, int rows,
                                 const QModelIndex &parent)
 {
@@ -212,6 +259,7 @@ bool QNetworkModel::insertRows (int position, int rows,
     return success;
 }
 
+/* Remove number of rows below specified position */
 bool QNetworkModel::removeRows (int position, int rows,
                                 const QModelIndex &parent)
 {
@@ -227,12 +275,14 @@ bool QNetworkModel::removeRows (int position, int rows,
 }
 
 
+/* Return total number of columns */
 int QNetworkModel::columnCount (const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     return rootItem->columnCount();
 }
 
+/* Insert number of columns below specified position */
 bool QNetworkModel::insertColumns (int position, int columns,
                                    const QModelIndex &parent)
 {
@@ -243,6 +293,7 @@ bool QNetworkModel::insertColumns (int position, int columns,
     return success;
 }
 
+/* Remove number of columns below specified position */
 bool QNetworkModel::removeColumns (int position, int columns,
                                    const QModelIndex &parent)
 {
@@ -257,12 +308,19 @@ bool QNetworkModel::removeColumns (int position, int columns,
 }
 
 
+/* Returns list of item flags present on index (See Qt::ItemFlags) */
 Qt::ItemFlags QNetworkModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::NoItemFlags;
 
     return QAbstractItemModel::flags (index);
+}
+
+
+void QNetworkModel::sort(int column, Qt::SortOrder order)
+{
+
 }
 
 
@@ -273,7 +331,6 @@ void QNetworkModel::setupModelData (QNetworkItem *parent)
         QNetworkItem *item = parent->child(i);
         for (int j = 0; j < parent->columnCount(); ++j)
         {
-
             switch (columnRoles.at(j)) {
             case DeviceName:
                 item->setData(j, item->deviceName());
@@ -369,46 +426,23 @@ void QNetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::P
     QVector<QNetworkItem *> parents;
     parents << parent;
 
-    // BUG: 386342
-    // When creating a new hidden wireless network and attempting to connect to it, NM then later reports that AccessPoint appeared, but
-    // it doesn't know its SSID from some reason, this also makes Wireless device to advertise a new available connection, which we later
-    // attempt to merge with an AP, based on its SSID, but it doesn't find any, because we have AP with empty SSID. After this we get another
-    // AccessPoint appeared signal, this time we know SSID, but we don't attempt any merging, because it's usually the other way around, thus
-    // we need to attempt to merge it here with a connection we guess it's related to this new AP
 
-    /*
-    for (QNetworkItem *item : m_list.returnItems(QNetworkList::Type, NetworkManager::ConnectionSettings::Wireless)) {
-        if (item->itemType() != QNetworkItem::AvailableConnection)
-            continue;
-
-        NetworkManager::ConnectionSettings::Ptr connectionSettings = NetworkManager::findConnection(item->connectionPath())->settings();
-        if (connectionSettings && connectionSettings->connectionType() == NetworkManager::ConnectionSettings::Wireless) {
-            NetworkManager::WirelessSetting::Ptr wirelessSetting =
-                connectionSettings->setting(NetworkManager::Setting::Wireless).dynamicCast<NetworkManager::WirelessSetting>();
-            if (QString::fromUtf8(wirelessSetting->ssid()) == network->ssid()) {
-                const QString bssid = NetworkManager::macAddressAsString(wirelessSetting->bssid());
-                const QString restrictedHw = NetworkManager::macAddressAsString(wirelessSetting->macAddress());
-                if ((bssid.isEmpty() || bssid == network->referenceAccessPoint()->hardwareAddress())
-                    && (restrictedHw.isEmpty() || restrictedHw == device->hardwareAddress())) {
-                    updateFromWirelessNetwork(item, network, device);
-                    return;
-                }
-            }
-        }
-    }
-    */
-
-    NetworkManager::WirelessSetting::NetworkMode mode = NetworkManager::WirelessSetting::Infrastructure;
-    NetworkManager::WirelessSecurityType securityType = NetworkManager::UnknownSecurity;
+    NetworkManager::WirelessSetting::NetworkMode mode =
+            NetworkManager::WirelessSetting::Infrastructure;
+    NetworkManager::WirelessSecurityType securityType =
+            NetworkManager::UnknownSecurity;
 
     NetworkManager::AccessPoint::Ptr ap = network->referenceAccessPoint();
-    if (ap && (ap->capabilities().testFlag(NetworkManager::AccessPoint::Privacy) || ap->wpaFlags() || ap->rsnFlags()))
+    if (ap && (ap->capabilities().testFlag(NetworkManager::AccessPoint::Privacy)
+        || ap->wpaFlags() || ap->rsnFlags()))
     {
-        securityType = NetworkManager::findBestWirelessSecurity(device->wirelessCapabilities(), true,
-                                                                (device->mode() == NetworkManager::WirelessDevice::Adhoc),
-                                                                ap->capabilities(),
-                                                                ap->wpaFlags(),
-                                                                ap->rsnFlags());
+        securityType =
+                NetworkManager::findBestWirelessSecurity
+                (device->wirelessCapabilities(), true,
+                 (device->mode() == NetworkManager::WirelessDevice::Adhoc),
+                 ap->capabilities(),
+                 ap->wpaFlags(),
+                 ap->rsnFlags());
     }
 
     QNetworkItem *item = parents.last();
@@ -429,14 +463,11 @@ void QNetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::P
     item->child(item->childCount()-1)->setSpecificPath (network->referenceAccessPoint()->uni());
     item->child(item->childCount()-1)->setType (NetworkManager::ConnectionSettings::Wireless);
     item->child(item->childCount()-1)->setSecurityType (securityType);
-//    item->setMode(mode);
-//    item->setName(network->ssid());
-
-//    insertRows(position, 1);
 }
 
 
-void QNetworkModel::updateConnection(const NetworkManager::Connection::Ptr &connection, const NMVariantMapMap &map)
+void QNetworkModel::updateConnection (const NetworkManager::Connection::Ptr &connection,
+                                      const NMVariantMapMap &map)
 {
     QDBusPendingReply<> reply = connection->update(map);
     auto watcher = new QDBusPendingCallWatcher(reply, this);
@@ -445,15 +476,17 @@ void QNetworkModel::updateConnection(const NetworkManager::Connection::Ptr &conn
 }
 
 
-void QNetworkModel::requestScan(const QString &interface)
+void QNetworkModel::requestScan (const QString &interface)
 {
     for (const NetworkManager::Device::Ptr &device : NetworkManager::networkInterfaces())
     {
         if (device->type() == NetworkManager::Device::Wifi)
         {
-            NetworkManager::WirelessDevice::Ptr wifiDevice = device.objectCast<NetworkManager::WirelessDevice>();
+            NetworkManager::WirelessDevice::Ptr wifiDevice =
+                    device.objectCast<NetworkManager::WirelessDevice>();
 
-            if (wifiDevice && wifiDevice->state() != NetworkManager::WirelessDevice::Unavailable)
+            if (wifiDevice && wifiDevice->state() !=
+                NetworkManager::WirelessDevice::Unavailable)
             {
                 if (!interface.isEmpty() && interface != wifiDevice->interfaceName()) {
                     continue;
@@ -467,9 +500,14 @@ void QNetworkModel::requestScan(const QString &interface)
                     QDateTime lastRequestScan = wifiDevice->lastRequestScan();
                     // Compute the next time we can run a scan
                     int timeout = NM_REQUESTSCAN_LIMIT_RATE;
-                    if (lastScan.isValid() && lastScan.msecsTo(now) < NM_REQUESTSCAN_LIMIT_RATE) {
+                    if (lastScan.isValid() &&
+                        lastScan.msecsTo(now) < NM_REQUESTSCAN_LIMIT_RATE)
+                    {
                         timeout = NM_REQUESTSCAN_LIMIT_RATE - lastScan.msecsTo(now);
-                    } else if (lastRequestScan.isValid() && lastRequestScan.msecsTo(now) < NM_REQUESTSCAN_LIMIT_RATE) {
+                    }
+                    else if (lastRequestScan.isValid() &&
+                             lastRequestScan.msecsTo(now) < NM_REQUESTSCAN_LIMIT_RATE)
+                    {
                         timeout = NM_REQUESTSCAN_LIMIT_RATE - lastRequestScan.msecsTo(now);
                     }
 //                    qCDebug(PLASMA_NM_LIBS_LOG) << "Rescheduling a request scan for" << wifiDevice->interfaceName() << "in" << timeout;
@@ -479,7 +517,9 @@ void QNetworkModel::requestScan(const QString &interface)
                         return;
                     }
                     continue;
-                } else if (m_wirelessScanRetryTimer.contains(interface)) {
+                }
+                else if (m_wirelessScanRetryTimer.contains(interface))
+                {
                     m_wirelessScanRetryTimer.value(interface)->stop();
                     delete m_wirelessScanRetryTimer.take(interface);
                 }
@@ -495,7 +535,7 @@ void QNetworkModel::requestScan(const QString &interface)
 }
 
 
-bool QNetworkModel::checkRequestScanRateLimit(const NetworkManager::WirelessDevice::Ptr &wifiDevice)
+bool QNetworkModel::checkRequestScanRateLimit (const NetworkManager::WirelessDevice::Ptr &wifiDevice)
 {
     QDateTime now = QDateTime::currentDateTime();
     QDateTime lastScan = wifiDevice->lastScan();
@@ -515,10 +555,11 @@ bool QNetworkModel::checkRequestScanRateLimit(const NetworkManager::WirelessDevi
 }
 
 
-void QNetworkModel::scheduleRequestScan(const QString &interface, int timeout)
+void QNetworkModel::scheduleRequestScan (const QString &interface, int timeout)
 {
     QTimer *timer;
-    if (!m_wirelessScanRetryTimer.contains(interface)) {
+    if (!m_wirelessScanRetryTimer.contains(interface))
+    {
         // create a timer for the interface
         timer = new QTimer();
         timer->setSingleShot(true);
@@ -527,7 +568,9 @@ void QNetworkModel::scheduleRequestScan(const QString &interface, int timeout)
             requestScan(interface);
         };
         connect(timer, &QTimer::timeout, this, retryAction);
-    } else {
+    }
+    else
+    {
         // set the new value for an existing timer
         timer = m_wirelessScanRetryTimer.value(interface);
         if (timer->isActive()) {
@@ -550,10 +593,15 @@ void QNetworkModel::scanRequestFailed(const QString &interface)
 void QNetworkModel::wirelessNetworkAppeared (const QString &ssid)
 {
     NetworkManager::Device::Ptr device =
-            NetworkManager::findNetworkInterface(qobject_cast<NetworkManager::Device *>(sender())->uni());
-    if (device && device->type() == NetworkManager::Device::Wifi) {
-        NetworkManager::WirelessDevice::Ptr wirelessDevice = device.objectCast<NetworkManager::WirelessDevice>();
-        NetworkManager::WirelessNetwork::Ptr network = wirelessDevice->findNetwork(ssid);
+            NetworkManager::findNetworkInterface (qobject_cast<NetworkManager::Device *>
+                                                  (sender())->uni());
+
+    if (device && device->type() == NetworkManager::Device::Wifi)
+    {
+        NetworkManager::WirelessDevice::Ptr wirelessDevice =
+                device.objectCast<NetworkManager::WirelessDevice>();
+        NetworkManager::WirelessNetwork::Ptr network =
+                wirelessDevice->findNetwork(ssid);
 
         QString ssid = network->ssid();
         for (int i = 0; i < rootItem->childCount(); ++i)
@@ -566,7 +614,8 @@ void QNetworkModel::wirelessNetworkAppeared (const QString &ssid)
 
         int row = rootItem->childCount()-1;
         QNetworkItem *item = rootItem->child(row);
-        for (int i = 0; i < rootItem->columnCount(); ++i) {
+        for (int i = 0; i < rootItem->columnCount(); ++i)
+        {
             item->setData(i, d_ptr->getColumn(index(row, i), this));
         }
     }

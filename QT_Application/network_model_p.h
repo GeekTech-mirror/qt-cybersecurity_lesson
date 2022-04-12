@@ -36,7 +36,7 @@ public:
             break;
 
         case QNetworkModel::ConnectionIconRole:
-            return QIcon::fromTheme(item->icon());
+            return QIcon (item->icon());
             break;
 
         case QNetworkModel::SpecificPathRole:

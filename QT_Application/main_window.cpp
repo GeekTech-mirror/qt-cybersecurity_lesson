@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <QDebug>
 #include <QThread>
 #include <QTextStream>
 #include <QStringListModel>
@@ -22,11 +23,6 @@ Main_Window::Main_Window (QWidget *parent)
 {
     ui->setupUi (this);
 
-    // Add icons to project
-    QIcon::setThemeName("breeze-icons");
-    ui->action_home->setIcon (QIcon::fromTheme("user-home"));
-    ui->action_help->setIcon (QIcon::fromTheme("help-about"));
-
     // Add DejaVu Serif font
     QFontDatabase::addApplicationFont (":/fonts/dejavu/DejaVuSerif.ttf");
     ui->title->setFont (QFont("DejaVuSerif", 45, QFont::Bold));
@@ -46,8 +42,9 @@ Main_Window::Main_Window (QWidget *parent)
     QNetworkModel *network_model = new QNetworkModel(roles);
 
     ui->network_list->setModel (network_model);
+    ui->network_list->setIndentation(10);
     ui->network_list->setColumnWidth(0, 64);
-    ui->network_list->setColumnWidth(1, 220);
+    ui->network_list->setColumnWidth(1, 210);
 
     // Set starting point to main menu
     ui->Stacked_Widget->setCurrentIndex(0);

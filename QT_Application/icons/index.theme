@@ -1,0 +1,23 @@
+[Icon Theme]
+Name=cybersecurity-icons
+Comment=Icons
+
+########## Directories
+########## ordered by category and alphabetically
+
+Directories=network/24,toolbar/16
+
+########## Actions
+########## ordered by size
+
+[toolbar/16]
+Size=16
+Context=Toolbar
+Type=Fixed
+MaxSize=16
+
+[network/24]
+Size=24
+Context=Network
+Type=Scalable
+#MaxSize=24

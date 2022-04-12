@@ -14,7 +14,10 @@
 */
 
 /* QT header files */
+#include <QtMath>
 #include <QPainter>
+#include <QPixmap>
+#include <QPixmapCache>
 #include <QPushButton>
 #include <QStyleOption>
 #include <QStyleFactory>
@@ -135,7 +138,8 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
 
     // Primitive element selector
     switch (element) {
-    case PE_PanelButtonCommand: {
+    case PE_PanelButtonCommand:
+    {
 
         // Increase color brightness
         QColor button_color = background_color.lighter(button_brightness);
@@ -196,7 +200,8 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
 
         break;
     }
-    case PE_Frame: {
+    case PE_Frame:
+    {
         if (widget && widget->inherits("QComboBoxPrivateContainer")){
             QStyleOption copy = *option;
             copy.state |= State_Raised;
@@ -208,15 +213,22 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
         painter->translate (0.5, 0.5);
 
         painter->setPen (Qt::transparent);
-        painter->setBrush (background_color.darker(155));
-        painter->drawRoundedRect (option->rect, corner_radius/3, corner_radius/3);
+        painter->setBrush (background_color.darker(145));
+        painter->drawRoundedRect (option->rect.adjusted(0,0,-1,-1), corner_radius/3, corner_radius/3);
         painter->setBrush (Qt::NoBrush);
 
-        QPen pen(QColor(255,255,255,2));
-        pen.setWidth(2);
-        pen.setCosmetic(false);
-        painter->setPen(pen);
-        painter->drawRoundedRect(option->rect.adjusted(1,1,-1,-1), corner_radius/3, corner_radius/3);
+        QPen inner_border(QColor(255,255,255,2));
+        inner_border.setWidth(2);
+        inner_border.setCosmetic(false);
+        painter->setPen(inner_border);
+        painter->drawRoundedRect(option->rect.adjusted(1,1,-2,-2), corner_radius/3, corner_radius/3);
+
+        QPen outer_border(QColor(255,255,255,30));
+        outer_border.setWidth(1);
+        outer_border.setCosmetic(false);
+        painter->setPen(outer_border);
+        painter->drawRoundedRect(option->rect.adjusted(1,10,-2,-2), corner_radius/3, corner_radius/3);
+
         painter->restore();
         break;
     }
@@ -225,3 +237,89 @@ void QStyleCustom::drawPrimitive (PrimitiveElement element,
     }
 }
 
+void QStyleCustom::drawControl(ControlElement element,
+                               const QStyleOption *option,
+                               QPainter *painter,
+                               const QWidget *widget) const
+{
+    QRect rect = option->rect;
+    QColor background_color = QColor(40,44,52);
+
+    int corner_radius = qMin(rect.width(), rect.height()) / 6;
+
+    switch (element) {
+    case CE_HeaderSection:
+        painter->save();
+        // Draws the header in tables.
+        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+            const QStyleOptionHeaderV2 *headerV2 = qstyleoption_cast<const QStyleOptionHeaderV2 *>(option);
+            QString pixmapName = d_ptr->unique_name(u"headersection"_qs, option, option->rect.size());
+            pixmapName += QString::number(- int(header->position));
+            pixmapName += QString::number(- int(header->orientation));
+            if (headerV2)
+                pixmapName += QString::number(- int(headerV2->isSectionDragTarget));
+
+            QPixmap cache;
+            if (!QPixmapCache::find(pixmapName, &cache))
+            {
+                cache = d_ptr->style_cache_pixmap(rect.size());
+                cache.fill(Qt::transparent);
+                QRect pixmapRect(0, 0, rect.width(), rect.height());
+                QPainter cachePainter(&cache);
+                QColor button_color = background_color.lighter(125);
+                QColor gradientStartColor = button_color.lighter(104);
+                QColor gradientStopColor = button_color.darker(102);
+                if (headerV2 && headerV2->isSectionDragTarget)
+                {
+                    gradientStopColor = gradientStartColor.darker(130);
+                    gradientStartColor = gradientStartColor.darker(130);
+                }
+                QLinearGradient gradient(pixmapRect.topLeft(), pixmapRect.bottomLeft());
+
+                if (option->palette.window().gradient())
+                {
+                    gradient.setStops(option->palette.window().gradient()->stops());
+                }
+                else
+                {
+                    QColor midColor1 = merged_colors(gradientStartColor, gradientStopColor, 60);
+                    QColor midColor2 = merged_colors(gradientStartColor, gradientStopColor, 40);
+                    gradient.setColorAt(0, gradientStartColor);
+                    gradient.setColorAt(0.5, midColor1);
+                    gradient.setColorAt(0.501, midColor2);
+                    gradient.setColorAt(0.92, gradientStopColor);
+                    gradient.setColorAt(1, gradientStopColor.darker(104));
+                }
+                cachePainter.fillRect(pixmapRect, gradient);
+                cachePainter.setPen(d_ptr->inner_contrast_line());
+                cachePainter.setBrush(Qt::NoBrush);
+                cachePainter.drawLine(pixmapRect.topLeft(), pixmapRect.topRight());
+                cachePainter.setPen(d_ptr->outline(option->palette));
+                cachePainter.drawLine(pixmapRect.bottomLeft(), pixmapRect.bottomRight());
+
+                if (header->orientation == Qt::Horizontal &&
+                        header->position != QStyleOptionHeader::End &&
+                        header->position != QStyleOptionHeader::OnlyOneSection) {
+                    cachePainter.setPen(QColor(0, 0, 0, 40));
+                    cachePainter.drawLine(pixmapRect.topRight(), pixmapRect.bottomRight() + QPoint(0, -1));
+                    cachePainter.setPen(d_ptr->inner_contrast_line());
+                    cachePainter.drawLine(pixmapRect.topRight() + QPoint(-1, 0), pixmapRect.bottomRight() + QPoint(-1, -1));
+                }
+                else if (header->orientation == Qt::Vertical)
+                {
+                    cachePainter.setPen(d_ptr->outline(option->palette));
+                    cachePainter.drawLine(pixmapRect.topRight(), pixmapRect.bottomRight());
+                }
+                cachePainter.end();
+                QPixmapCache::insert(pixmapName, cache);
+            }
+            painter->drawPixmap(rect.topLeft(), cache);
+        }
+        painter->restore();
+        break;
+    default:
+        QProxyStyle::drawControl(element,option,painter,widget);
+        break;
+    }
+
+}

@@ -183,7 +183,9 @@ void QNetworkItem::setDevicePath(const QVariant &path)
 {
     if (m_devicePath != path) {
         m_devicePath = path;
-        m_changedRoles << QNetworkModel::DevicePathRole << QNetworkModel::ItemTypeRole << QNetworkModel::UniRole;
+        m_changedRoles << QNetworkModel::DevicePathRole
+                       << QNetworkModel::ItemTypeRole
+                       << QNetworkModel::UniRole;
     }
 }
 
@@ -213,20 +215,22 @@ QString QNetworkItem::computeIcon() const
         break;
     case NetworkManager::ConnectionSettings::Wired:
         if (m_connectionState == NetworkManager::ActiveConnection::Activated) {
-            return QStringLiteral("network-wired-activated");
+            return QStringLiteral("network-wired");
         } else {
             return QStringLiteral("network-wired");
         }
         break;
     case NetworkManager::ConnectionSettings::Wireless:
-        return (m_securityType <= NetworkManager::NoneSecurity) ? QStringLiteral("network-wireless-connected-100") : QStringLiteral("network-wireless-connected-100-locked");
+        return (m_securityType <= NetworkManager::NoneSecurity) ?
+                    QStringLiteral(":/icons/network/24/network-wireless.svg") :
+                    QStringLiteral(":/icons/network/24/network-wireless-locked.svg");
 
     default:
         break;
     }
 
     if (m_connectionState == NetworkManager::ActiveConnection::Activated) {
-        return QStringLiteral("network-wired-activated");
+        return QStringLiteral("network-wired");
     } else {
         return QStringLiteral("network-wired");
     }

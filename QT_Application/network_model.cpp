@@ -341,7 +341,7 @@ void QNetworkModel::setupModelData (QNetworkItem *parent)
                 break;
 
             case ConnectionIconRole:
-                item->setData(j, QIcon::fromTheme (item->icon()));
+                item->setData(j, QIcon (item->icon()));
                 break;
 
             case SpecificPathRole:
@@ -369,7 +369,11 @@ void QNetworkModel::setupModelData (QNetworkItem *parent)
 }
 
 
-/* Network Mode */
+/* Network Model
+** --------
+** Implement functions to add wireless networks to the model
+** --------
+**/
 QHash<int, QByteArray> QNetworkModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
@@ -542,9 +546,12 @@ bool QNetworkModel::checkRequestScanRateLimit (const NetworkManager::WirelessDev
     QDateTime lastRequestScan = wifiDevice->lastRequestScan();
 
     // if the last scan finished within the last 10 seconds
-    bool ret = lastScan.isValid() && lastScan.msecsTo(now) < NM_REQUESTSCAN_LIMIT_RATE;
+    bool ret = lastScan.isValid() && lastScan.msecsTo(now)
+            < NM_REQUESTSCAN_LIMIT_RATE;
     // or if the last Request was sent within the last 10 seconds
-    ret |= lastRequestScan.isValid() && lastRequestScan.msecsTo(now) < NM_REQUESTSCAN_LIMIT_RATE;
+    ret |= lastRequestScan.isValid() && lastRequestScan.msecsTo(now)
+            < NM_REQUESTSCAN_LIMIT_RATE;
+
     // skip the request scan
     if (ret) {
 //        qCDebug(PLASMA_NM_LIBS_LOG) << "Last scan finished " << lastScan.msecsTo(now) << "ms ago and last request scan was sent "

@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/breeze-icons/actions/16/help-about.svg</file>
-        <file>icons/breeze-icons/actions/symbolic/help-about-symbolic.svg</file>
-        <file>icons/breeze-icons/places/16/user-home.svg</file>
-        <file>icons/breeze-icons/places/symbolic/user-home-symbolic.svg</file>
-        <file>icons/breeze-icons/index.theme</file>
-        <file>icons/breeze-icons/devices/16/network-wired.svg</file>
-        <file>icons/breeze-icons/devices/16/network-wired-activated.svg</file>
-        <file>icons/breeze-icons/status/24/network-wireless-connected-100.svg</file>
+        <file>icons/index.theme</file>
+        <file>icons/toolbar/16/help-about.svg</file>
+        <file>icons/toolbar/16/user-home.svg</file>
+        <file>icons/network/24/network-wired-locked.svg</file>
+        <file>icons/network/24/network-wired.svg</file>
+        <file>icons/network/24/network-wireless-available.svg</file>
+        <file>icons/network/24/network-wireless-locked.svg</file>
+        <file>icons/network/24/network-wireless.svg</file>
     </qresource>
 </RCC>

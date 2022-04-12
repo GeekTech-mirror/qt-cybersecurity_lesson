@@ -40,7 +40,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="Main_Menu_Widget">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -364,8 +364,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>24</width>
-          <height>24</height>
+          <width>40</width>
+          <height>40</height>
          </size>
         </property>
        </widget>
@@ -410,7 +410,7 @@
   <action name="action_home">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/breeze-icons/places/16/user-home.svg</normaloff>:/icons/breeze-icons/places/16/user-home.svg</iconset>
+     <normaloff>:/icons/toolbar/16/user-home.svg</normaloff>:/icons/toolbar/16/user-home.svg</iconset>
    </property>
    <property name="text">
     <string>Home</string>
@@ -419,7 +419,7 @@
   <action name="action_help">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/breeze-icons/actions/16/help-about.svg</normaloff>:/icons/breeze-icons/actions/16/help-about.svg</iconset>
+     <normaloff>:/icons/toolbar/16/help-about.svg</normaloff>:/icons/toolbar/16/help-about.svg</iconset>
    </property>
    <property name="text">
     <string>Help_Documentation</string>

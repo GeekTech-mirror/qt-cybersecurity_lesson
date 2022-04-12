@@ -35,9 +35,9 @@ Main_Window::Main_Window (QWidget *parent)
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
 
     // Setup Tree View to display networks
-    QVector<QNetworkModel::ItemRole> roles ({QNetworkModel::ConnectionIconRole,
-                                            QNetworkModel::SsidRole,
-                                            QNetworkModel::SecurityTypeRole});
+    QVector<ItemRole> roles ({ItemRole::ConnectionIconRole,
+                              ItemRole::SsidRole,
+                              ItemRole::SecurityTypeRole});
 
     QNetworkModel *network_model = new QNetworkModel(roles);
 

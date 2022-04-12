@@ -3,7 +3,10 @@
 
 #include <QIcon>
 
+#include <NetworkManagerQt/Manager>
+
 #include "network_model.h"
+
 
 class QNetworkModelPrivate
 {
@@ -27,31 +30,31 @@ public:
         QNetworkItem *item = getItem(index, dd);
 
         switch (dd->columnRoles.at(index.column())) {
-        case QNetworkModel::DeviceName:
+        case DeviceName:
             return item->deviceName();
             break;
 
-        case QNetworkModel::DevicePathRole:
+        case DevicePathRole:
             return item->devicePath();
             break;
 
-        case QNetworkModel::ConnectionIconRole:
+        case ConnectionIconRole:
             return QIcon (item->icon());
             break;
 
-        case QNetworkModel::SpecificPathRole:
+        case SpecificPathRole:
             return item->specificPath();
             break;
 
-        case QNetworkModel::SecurityTypeRole:
+        case SecurityTypeRole:
             return getSecurityString(item->securityType());
             break;
 
-        case QNetworkModel::SsidRole:
+        case SsidRole:
             return item->ssid();
             break;
 
-        case QNetworkModel::TypeRole:
+        case TypeRole:
             return item->type();
             break;
 

@@ -7,7 +7,9 @@
 
 #include <NetworkManagerQt/WirelessDevice>
 
+#include "network_enums.h"
 #include "network_item.h"
+#include "network_scan.h"
 
 
 class QNetworkModelPrivate;
@@ -17,48 +19,8 @@ class QNetworkModel : public QAbstractItemModel
     Q_DECLARE_PRIVATE (QNetworkModel)
 
 public:
-    /* Network Model */
-    enum HandlerAction {
-        ActivateConnection,
-        AddAndActivateConnection,
-        AddConnection,
-        DeactivateConnection,
-        RemoveConnection,
-        RequestScan,
-        UpdateConnection,
-    };
-
-    enum ItemRole {
-        ConnectionDetailsRole = Qt::UserRole + 1,
-        ConnectionIconRole,
-        ConnectionPathRole,
-        ConnectionStateRole,
-        DeviceName,
-        DevicePathRole,
-        DeviceStateRole,
-        DuplicateRole,
-        ItemUniqueNameRole,
-        ItemTypeRole,
-        LastUsedRole,
-        LastUsedDateOnlyRole,
-        NameRole,
-        SecurityTypeRole,
-        SecurityTypeStringRole,
-        SectionRole,
-        SignalRole,
-        SlaveRole,
-        SsidRole,
-        SpecificPathRole,
-        TimeStampRole,
-        TypeRole,
-        UniRole,
-        UuidRole,
-    };
-    Q_ENUM(ItemRole)
-    QHash<int, QByteArray> roleNames() const override;
-
     /* Constructor */
-    explicit QNetworkModel (const QVector<QNetworkModel::ItemRole> &roles,
+    explicit QNetworkModel (const QVector<ItemRole> &roles,
                             QObject *parent = nullptr);
     ~QNetworkModel ();
 
@@ -94,35 +56,31 @@ public:
 
     void sort(int column, Qt::SortOrder order) override;
 
-public Q_SLOTS:
-    void updateConnection (const NetworkManager::Connection::Ptr &connection,
-                           const NMVariantMapMap &map);
-    void requestScan (const QString &interface  = QString());
+
+    /* Network Model */
+    QHash<int, QByteArray> roleNames() const override;
+
 
 private Q_SLOTS:
-//    void replyFinished(QDBusPendingCallWatcher *watcher);
     void wirelessNetworkAppeared (const QString &ssid);
 
 private:
     /* Tree Model */
     QNetworkItem *rootItem;
-    QVector<QNetworkModel::ItemRole> columnRoles;
+    QVector<ItemRole> columnRoles;
     void setupModelData (QNetworkItem *parent);
 
     /* Network Model */
     void addConnection (const NetworkManager::Connection::Ptr &connection,
-                        QVector<QNetworkModel::ItemRole> &list);
+                        QVector<ItemRole> &list);
     void addDevice (const NetworkManager::Device::Ptr &device, QNetworkItem *parent);
     void addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
                              const NetworkManager::WirelessDevice::Ptr &device,
                              QNetworkItem *parent);
 
     /* Scan Networks */
+    QNetworkScan *m_scanHandler;
     QTimer *m_timer = nullptr;
-    QMap<QString, QTimer *> m_wirelessScanRetryTimer;
-    bool checkRequestScanRateLimit(const NetworkManager::WirelessDevice::Ptr &wifiDevice);
-    void scheduleRequestScan(const QString &interface, int timeout);
-    void scanRequestFailed(const QString &interface);
 
 protected:
     QNetworkModel(QNetworkModelPrivate &dd);

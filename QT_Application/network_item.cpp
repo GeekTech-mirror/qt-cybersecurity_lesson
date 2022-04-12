@@ -1,5 +1,3 @@
-#include <QAbstractListModel>
-
 #include <NetworkManagerQt/BridgeDevice>
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
@@ -9,7 +7,7 @@
 #include <NetworkManagerQt/AccessPoint>
 
 #include "network_item.h"
-#include "network_model.h"
+#include "network_enums.h"
 
 QNetworkItem::QNetworkItem(const QVector<QVariant> &data, QNetworkItem *parent)
     : m_itemData(data)
@@ -154,7 +152,7 @@ void QNetworkItem::setConnectionState(NetworkManager::ActiveConnection::State st
 {
     if (m_connectionState != state) {
         m_connectionState = state;
-        m_changedRoles << QNetworkModel::ConnectionStateRole << QNetworkModel::SectionRole;
+        m_changedRoles << ItemRole::ConnectionStateRole << ItemRole::SectionRole;
         refreshIcon();
     }
 }
@@ -169,7 +167,7 @@ void QNetworkItem::setDeviceName(const QVariant &name)
 {
     if (m_deviceName != name) {
         m_deviceName = name;
-        m_changedRoles << QNetworkModel::DeviceName;
+        m_changedRoles << ItemRole::DeviceName;
     }
 }
 
@@ -183,9 +181,9 @@ void QNetworkItem::setDevicePath(const QVariant &path)
 {
     if (m_devicePath != path) {
         m_devicePath = path;
-        m_changedRoles << QNetworkModel::DevicePathRole
-                       << QNetworkModel::ItemTypeRole
-                       << QNetworkModel::UniRole;
+        m_changedRoles << ItemRole::DevicePathRole
+                       << ItemRole::ItemTypeRole
+                       << ItemRole::UniRole;
     }
 }
 
@@ -199,7 +197,7 @@ void QNetworkItem::setIcon(const QString &icon)
 {
     if (icon != m_icon) {
         m_icon = icon;
-        m_changedRoles << QNetworkModel::ConnectionIconRole;
+        m_changedRoles << ItemRole::ConnectionIconRole;
     }
 }
 
@@ -213,27 +211,30 @@ QString QNetworkItem::computeIcon() const
     switch (m_type) {
     case NetworkManager::ConnectionSettings::Bridge:
         break;
+
     case NetworkManager::ConnectionSettings::Wired:
-        if (m_connectionState == NetworkManager::ActiveConnection::Activated) {
+        if (m_connectionState == NetworkManager::ActiveConnection::Activated)
             return QStringLiteral("network-wired");
-        } else {
+        else
             return QStringLiteral("network-wired");
-        }
         break;
+
     case NetworkManager::ConnectionSettings::Wireless:
-        return (m_securityType <= NetworkManager::NoneSecurity) ?
-                    QStringLiteral(":/icons/network/24/network-wireless.svg") :
-                    QStringLiteral(":/icons/network/24/network-wireless-locked.svg");
+        if (m_securityType <= NetworkManager::NoneSecurity)
+            return QStringLiteral(":/icons/network/24/network-wireless.svg");
+        else if (m_securityType <= NetworkManager::UnknownSecurity)
+            return QStringLiteral(":/icons/network/24/network-wireless-available.svg");
+        else
+            return QStringLiteral(":/icons/network/24/network-wireless-locked.svg");
 
     default:
         break;
     }
 
-    if (m_connectionState == NetworkManager::ActiveConnection::Activated) {
+    if (m_connectionState == NetworkManager::ActiveConnection::Activated)
         return QStringLiteral("network-wired");
-    } else {
+    else
         return QStringLiteral("network-wired");
-    }
 }
 
 
@@ -246,7 +247,7 @@ void QNetworkItem::setSpecificPath(const QVariant &path)
 {
     if (m_specificPath != path) {
         m_specificPath = path;
-        m_changedRoles << QNetworkModel::SpecificPathRole;
+        m_changedRoles << ItemRole::SpecificPathRole;
     }
 }
 
@@ -260,7 +261,7 @@ void QNetworkItem::setSecurityType(NetworkManager::WirelessSecurityType type)
 {
     if (m_securityType != type) {
         m_securityType = type;
-        m_changedRoles << QNetworkModel::SecurityTypeStringRole << QNetworkModel::SecurityTypeRole;
+        m_changedRoles << ItemRole::SecurityTypeStringRole << ItemRole::SecurityTypeRole;
         refreshIcon();
     }
 }
@@ -275,7 +276,7 @@ void QNetworkItem::setSsid(const QVariant &ssid)
 {
     if (m_ssid != ssid) {
         m_ssid = ssid;
-        m_changedRoles << QNetworkModel::SsidRole << QNetworkModel::UniRole;
+        m_changedRoles << ItemRole::SsidRole << ItemRole::UniRole;
     }
 }
 
@@ -289,7 +290,7 @@ void QNetworkItem::setUuid(const QVariant &uuid)
 {
     if (m_uuid != uuid) {
         m_uuid = uuid;
-        m_changedRoles << QNetworkModel::UuidRole;
+        m_changedRoles << ItemRole::UuidRole;
     }
 }
 
@@ -303,7 +304,7 @@ void QNetworkItem::setType(NetworkManager::ConnectionSettings::ConnectionType ty
 {
     if (m_type != type) {
         m_type = type;
-        m_changedRoles << QNetworkModel::TypeRole << QNetworkModel::ItemTypeRole << QNetworkModel::UniRole;
+        m_changedRoles << ItemRole::TypeRole << ItemRole::ItemTypeRole << ItemRole::UniRole;
 
         refreshIcon();
     }

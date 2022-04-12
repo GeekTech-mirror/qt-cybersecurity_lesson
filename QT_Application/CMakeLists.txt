@@ -23,11 +23,16 @@ set(PROJECT_SOURCES
         style_custom.cpp
         style_custom.h
         style_custom_p.h
+        network_delegate.cpp
+        network_delegate.h
+        network_enums.h
         network_item.cpp
         network_item.h
         network_model.cpp
         network_model.h
         network_model_p.h
+        network_scan.cpp
+        network_scan.h
         war_driving.cpp
         war_driving.h
         icons.qrc

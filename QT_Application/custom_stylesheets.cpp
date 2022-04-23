@@ -6,55 +6,15 @@
 #include "custom_colors.h"
 
 CustomStyleSheets::CustomStyleSheets()
+    : sb_metrics (new ScrollBar_Metrics),
+      sb_colors (new CustomColors::ScrollBar_Colors),
+      sb_treeview (new CustomColors::ScrollBar_TreeView)
 {
 }
-
-struct ScrollBar_Colors
-{
-    // ScrollBar
-    const int width = 22;
-    const int padding = 4; // distance between handle and border
-
-    // Handle
-    const QColor handle_bgColor =
-            CustomColors::merged_colors (CustomColors::highlight(),
-                                         CustomColors::background_color(),
-                                         40);
-    const QColor handle_outline =
-            CustomColors::merged_colors (CustomColors::highlight(),
-                                         CustomColors::background_color(),
-                                         80);
-    const int handle_radius = 6;
-};
-
-struct TreeView_ScrollBar
-{
-    /* ScrollBar colors */
-    const QColor background = CustomColors::background_color().darker(145);
-    const QColor inner_border = QColor (255, 255, 255, 30);
-    const QColor outer_border =
-            (CustomColors::merged_colors(CustomColors::highlight(),
-                                         CustomColors::background_color().darker(145),
-                                         90));;
-
-    /* Header colors */
-    const QColor gradient_start = CustomColors::background_color().lighter(130);
-    const QColor gradient_stop = CustomColors::background_color().lighter(123);
-
-    const QColor midColor1 = CustomColors::merged_colors (gradient_start, gradient_stop, 60);
-    const QColor midColor2 = CustomColors::merged_colors (gradient_start, gradient_stop, 40);
-
-    const QColor header_shadow = QColor (21,24,28);
-    const int header_height = 27;
-};
 
 
 QString CustomStyleSheets::scrollbar_vertical (void)
 {
-    ScrollBar_Colors sb_colors;
-    QColor handle_bg = sb_colors.handle_bgColor;
-    QColor handle_outline = sb_colors.handle_outline;
-
     QString stylesheet =
     "QScrollBar::Vertical { \
          border: none; \
@@ -64,7 +24,7 @@ QString CustomStyleSheets::scrollbar_vertical (void)
          padding-right: %2px; \
          border-radius: 0px; \
     }";
-    stylesheet = stylesheet.arg(sb_colors.width).arg(sb_colors.padding);
+    stylesheet = stylesheet.arg(sb_metrics->width).arg(sb_metrics->padding);
 
 
     stylesheet +=
@@ -74,15 +34,15 @@ QString CustomStyleSheets::scrollbar_vertical (void)
          min-height: 30px; \
          border-radius: %7px; \
     }";
-    stylesheet = stylesheet.arg(handle_outline.red())
-                           .arg(handle_outline.green())
-                           .arg(handle_outline.blue());
+    stylesheet = stylesheet.arg(sb_colors->handle_outline.red())
+                           .arg(sb_colors->handle_outline.green())
+                           .arg(sb_colors->handle_outline.blue());
 
-    stylesheet = stylesheet.arg(handle_bg.red())
-                           .arg(handle_bg.green())
-                           .arg(handle_bg.blue());
+    stylesheet = stylesheet.arg(sb_colors->handle_bgColor.red())
+                           .arg(sb_colors->handle_bgColor.green())
+                           .arg(sb_colors->handle_bgColor.blue());
 
-    stylesheet = stylesheet.arg(sb_colors.handle_radius);
+    stylesheet = stylesheet.arg(sb_metrics->handle_radius);
 
 
     stylesheet +=
@@ -110,10 +70,6 @@ QString CustomStyleSheets::scrollbar_vertical (void)
 
 QString CustomStyleSheets::scrollbar_horizontal (void)
 {
-    ScrollBar_Colors sb_colors;
-    QColor handle_bg = sb_colors.handle_bgColor;
-    QColor handle_outline = sb_colors.handle_outline;
-
     QString stylesheet =
     "QScrollBar::Horizontal { \
          border: none; \
@@ -123,7 +79,7 @@ QString CustomStyleSheets::scrollbar_horizontal (void)
          padding-bottom: %2px; \
          border-radius: 0px; \
     }";
-    stylesheet = stylesheet.arg(sb_colors.width).arg(sb_colors.padding);
+    stylesheet = stylesheet.arg(sb_metrics->width).arg(sb_metrics->padding);
 
 
     stylesheet +=
@@ -133,15 +89,15 @@ QString CustomStyleSheets::scrollbar_horizontal (void)
          min-width: 30px; \
          border-radius: %7px; \
     }";
-    stylesheet = stylesheet.arg(handle_outline.red())
-                           .arg(handle_outline.green())
-                           .arg(handle_outline.blue());
+    stylesheet = stylesheet.arg(sb_colors->handle_outline.red())
+                           .arg(sb_colors->handle_outline.green())
+                           .arg(sb_colors->handle_outline.blue());
 
-    stylesheet = stylesheet.arg(handle_bg.red())
-                           .arg(handle_bg.green())
-                           .arg(handle_bg.blue());
+    stylesheet = stylesheet.arg(sb_colors->handle_bgColor.red())
+                           .arg(sb_colors->handle_bgColor.green())
+                           .arg(sb_colors->handle_bgColor.blue());
 
-    stylesheet = stylesheet.arg(sb_colors.handle_radius);
+    stylesheet = stylesheet.arg(sb_metrics->handle_radius);
 
 
     stylesheet +=
@@ -167,42 +123,32 @@ QString CustomStyleSheets::scrollbar_horizontal (void)
 }
 
 
-QString CustomStyleSheets::scrollbar_treeview (void)
+QString CustomStyleSheets::scrollbar_treeview ()
 {
-    TreeView_ScrollBar sb_treeview;
-    QColor background = sb_treeview.background;
-    QColor inner_border = sb_treeview.inner_border;
-    QColor outer_border = sb_treeview.outer_border;
-
-    QColor gradient_start = sb_treeview.gradient_start;
-    QColor gradient_stop = sb_treeview.gradient_stop;
-    QColor midColor1 = sb_treeview.midColor1;
-    QColor midColor2 = sb_treeview.midColor2;
-
-    QColor header_shadow = sb_treeview.header_shadow;
-
     /* Vertical ScrollBar */
     QString stylesheet =
     "QScrollBar::Vertical { \
          border-left: 1px solid rgba(%1,%2,%3,%4); \
          border-right: 1px solid rgba(%5,%6,%7,%8); \
          background: rgb(%9,%10,%11); \
-         padding-top: 35px; \
+         padding-top: %12px; \
          padding-bottom: 10px; \
     }";
-    stylesheet = stylesheet.arg(inner_border.red())
-                           .arg(inner_border.green())
-                           .arg(inner_border.blue())
-                           .arg(inner_border.alpha());
+    stylesheet = stylesheet.arg(sb_treeview->inner_border.red())
+                           .arg(sb_treeview->inner_border.green())
+                           .arg(sb_treeview->inner_border.blue())
+                           .arg(sb_treeview->inner_border.alpha());
 
-    stylesheet = stylesheet.arg(outer_border.red())
-                           .arg(outer_border.green())
-                           .arg(outer_border.blue())
-                           .arg(outer_border.alpha());
+    stylesheet = stylesheet.arg(sb_treeview->outer_border.red())
+                           .arg(sb_treeview->outer_border.green())
+                           .arg(sb_treeview->outer_border.blue())
+                           .arg(sb_treeview->outer_border.alpha());
 
-    stylesheet = stylesheet.arg(background.red())
-                           .arg(background.green())
-                           .arg(background.blue());
+    stylesheet = stylesheet.arg(sb_treeview->background.red())
+                           .arg(sb_treeview->background.green())
+                           .arg(sb_treeview->background.blue());
+
+    stylesheet = stylesheet.arg(sb_metrics->header_padding);
 
 
     stylesheet +=
@@ -218,37 +164,37 @@ QString CustomStyleSheets::scrollbar_treeview (void)
          height: %23px; \
     }";
      // header borders
-     stylesheet = stylesheet.arg(inner_border.red())
-                            .arg(inner_border.green())
-                            .arg(inner_border.blue())
-                            .arg(inner_border.alpha());
+     stylesheet = stylesheet.arg(sb_treeview->inner_border.red())
+                            .arg(sb_treeview->inner_border.green())
+                            .arg(sb_treeview->inner_border.blue())
+                            .arg(sb_treeview->inner_border.alpha());
 
-    stylesheet = stylesheet.arg(header_shadow.red())
-                           .arg(header_shadow.green())
-                           .arg(header_shadow.blue());
+    stylesheet = stylesheet.arg(sb_treeview->header_shadow.red())
+                           .arg(sb_treeview->header_shadow.green())
+                           .arg(sb_treeview->header_shadow.blue());
 
     // header gradient
-    stylesheet = stylesheet.arg(gradient_start.red())
-                           .arg(gradient_start.green())
-                           .arg(gradient_start.blue());
+    stylesheet = stylesheet.arg(sb_treeview->gradient_start.red())
+                           .arg(sb_treeview->gradient_start.green())
+                           .arg(sb_treeview->gradient_start.blue());
 
-    stylesheet = stylesheet.arg(midColor1.red())
-                           .arg(midColor1.green())
-                           .arg(midColor1.blue());
+    stylesheet = stylesheet.arg(sb_treeview->midColor1.red())
+                           .arg(sb_treeview->midColor1.green())
+                           .arg(sb_treeview->midColor1.blue());
 
-    stylesheet = stylesheet.arg(midColor2.red())
-                           .arg(midColor2.green())
-                           .arg(midColor2.blue());
+    stylesheet = stylesheet.arg(sb_treeview->midColor2.red())
+                           .arg(sb_treeview->midColor2.green())
+                           .arg(sb_treeview->midColor2.blue());
 
-    stylesheet = stylesheet.arg(gradient_stop.red())
-                           .arg(gradient_stop.green())
-                           .arg(gradient_stop.blue());
+    stylesheet = stylesheet.arg(sb_treeview->gradient_stop.red())
+                           .arg(sb_treeview->gradient_stop.green())
+                           .arg(sb_treeview->gradient_stop.blue());
 
-    stylesheet = stylesheet.arg(gradient_stop.darker(104).red())
-                           .arg(gradient_stop.darker(104).green())
-                           .arg(gradient_stop.darker(104).blue());
+    stylesheet = stylesheet.arg(sb_treeview->gradient_stop.darker(104).red())
+                           .arg(sb_treeview->gradient_stop.darker(104).green())
+                           .arg(sb_treeview->gradient_stop.darker(104).blue());
 
-    stylesheet = stylesheet.arg(sb_treeview.header_height);
+    stylesheet = stylesheet.arg(sb_metrics->header_height);
 
 
     /* Horizontal ScrollBar */
@@ -261,22 +207,29 @@ QString CustomStyleSheets::scrollbar_treeview (void)
          padding-left: %12px; \
          padding-right: %12px; \
     }";
-     stylesheet = stylesheet.arg(inner_border.red())
-                            .arg(inner_border.green())
-                            .arg(inner_border.blue())
-                            .arg(inner_border.alpha());
+     stylesheet = stylesheet.arg(sb_treeview->inner_border.red())
+                            .arg(sb_treeview->inner_border.green())
+                            .arg(sb_treeview->inner_border.blue())
+                            .arg(sb_treeview->inner_border.alpha());
 
-     stylesheet = stylesheet.arg(outer_border.red())
-                            .arg(outer_border.green())
-                            .arg(outer_border.blue())
-                            .arg(outer_border.alpha());
+     stylesheet = stylesheet.arg(sb_treeview->outer_border.red())
+                            .arg(sb_treeview->outer_border.green())
+                            .arg(sb_treeview->outer_border.blue())
+                            .arg(sb_treeview->outer_border.alpha());
 
-     stylesheet = stylesheet.arg(background.red())
-                            .arg(background.green())
-                            .arg(background.blue());
+     stylesheet = stylesheet.arg(sb_treeview->background.red())
+                            .arg(sb_treeview->background.green())
+                            .arg(sb_treeview->background.blue());
 
      stylesheet = stylesheet.arg(12);
 
 
     return stylesheet;
+}
+
+
+void CustomStyleSheets::setHeaderHeight(int height)
+{
+    sb_metrics->header_height = height - 2;
+    sb_metrics->header_padding = height + 6;
 }

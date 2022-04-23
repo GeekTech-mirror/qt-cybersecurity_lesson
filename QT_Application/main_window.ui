@@ -366,7 +366,7 @@
          <enum>Qt::ScrollBarAlwaysOn</enum>
         </property>
         <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOn</enum>
+         <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::NoSelection</enum>

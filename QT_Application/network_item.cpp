@@ -220,9 +220,9 @@ QString QNetworkItem::computeIcon() const
         break;
 
     case NetworkManager::ConnectionSettings::Wireless:
-        if (m_securityType <= NetworkManager::NoneSecurity)
+        if (m_securityType == NetworkManager::NoneSecurity)
             return QStringLiteral(":/icons/network/24/network-wireless.svg");
-        else if (m_securityType <= NetworkManager::UnknownSecurity)
+        else if (m_securityType == NetworkManager::UnknownSecurity)
             return QStringLiteral(":/icons/network/24/network-wireless-available.svg");
         else
             return QStringLiteral(":/icons/network/24/network-wireless-locked.svg");

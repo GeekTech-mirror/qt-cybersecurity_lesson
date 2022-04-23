@@ -1,11 +1,11 @@
 #include "main_window.h"
-#include "style_custom.h"
+#include "custom_style.h"
 
 #include <QApplication>
 
 int main (int argc, char *argv[])
 {
-    QApplication::setStyle(new QStyleCustom);
+    QApplication::setStyle(new CustomStyle);
 
     QApplication app (argc, argv);
 

@@ -9,7 +9,10 @@
 #include <QList>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class Main_Window; }
+namespace Ui
+{
+    class Main_Window;
+}
 QT_END_NAMESPACE
 
 class Main_Window : public QMainWindow

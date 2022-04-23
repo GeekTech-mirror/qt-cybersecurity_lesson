@@ -1,10 +1,6 @@
-#include <arpa/inet.h>
+#include <QCommonStyle>
 #include <QDebug>
-#include <QThread>
-#include <QTextStream>
-#include <QStringListModel>
-#include <QAbstractItemModel>
-#include <QDebug>
+#include <QScrollBar>
 
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
@@ -15,7 +11,11 @@
 #include "main_window.h"
 #include "./ui_main_window.h"
 
+#include "custom_stylesheets.h"
+
 #include "network_model.h"
+#include "network_delegate.h"
+//#include "custom_scrollbar.h"
 
 Main_Window::Main_Window (QWidget *parent)
     : QMainWindow (parent)
@@ -46,6 +46,29 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->setColumnWidth(0, 64);
     ui->network_list->setColumnWidth(1, 210);
 
+//    ui->network_list->header()->setSectionResizeMode (QHeaderView::ResizeToContents);
+
+    ui->network_list->setStyleSheet ("QHeaderView { font-size: " + QString::number(16) + "pt; }" + CustomStyleSheets::scrollbar_treeview());
+
+    qDebug() << "font-size: " + QString::number(16) + "pt;" + CustomStyleSheets::scrollbar_treeview();
+
+    ui->Central_Widget->setStyleSheet(QString("* { background-color: rgb(30, 34, 39); }") +
+                                      CustomStyleSheets::scrollbar_vertical() +
+                                      CustomStyleSheets::scrollbar_horizontal());
+
+    /* 	background-color: rgb(60,66,78); */
+    /*rgb(56, 58, 64);*/
+//    ui->Stacked_Widget->setStyleSheet
+/*    QScrollBar
+    {
+
+    };
+
+    QScrollBar::Vertical
+    {
+
+    };
+*/
     // Set starting point to main menu
     ui->Stacked_Widget->setCurrentIndex(0);
 }

@@ -25,9 +25,6 @@
   <property name="windowTitle">
    <string>Main_Window</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background-color: rgb(40, 44, 52);</string>
-  </property>
   <widget class="QWidget" name="Central_Widget">
    <property name="styleSheet">
     <string notr="true">background-color: rgb(30, 34, 39);
@@ -38,6 +35,9 @@
      <widget class="QStackedWidget" name="Stacked_Widget">
       <property name="enabled">
        <bool>true</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <property name="currentIndex">
        <number>4</number>
@@ -343,7 +343,7 @@
           <x>11</x>
           <y>21</y>
           <width>441</width>
-          <height>281</height>
+          <height>531</height>
          </rect>
         </property>
         <property name="minimumSize">
@@ -359,6 +359,15 @@
           <bold>false</bold>
          </font>
         </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOn</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOn</enum>
+        </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::NoSelection</enum>
         </property>
@@ -367,6 +376,19 @@
           <width>40</width>
           <height>40</height>
          </size>
+        </property>
+       </widget>
+       <widget class="QScrollBar" name="verticalScrollBar">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>569</y>
+          <width>22</width>
+          <height>161</height>
+         </rect>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </widget>
@@ -382,7 +404,10 @@
     <enum>Qt::RightToLeft</enum>
    </property>
    <property name="styleSheet">
-    <string notr="true">QToolButton {
+    <string notr="true">background-color: rgb(40, 44, 52);
+
+QToolButton 
+{
 	margin: 0px 10px;
 }</string>
    </property>

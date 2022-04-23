@@ -20,9 +20,13 @@ set(PROJECT_SOURCES
         main_window.cpp
         main_window.h
         main_window.ui
-        style_custom.cpp
-        style_custom.h
-        style_custom_p.h
+        custom_colors.cpp
+        custom_colors.h
+        custom_style.cpp
+        custom_style.h
+        custom_style_p.h
+        custom_stylesheets.cpp
+        custom_stylesheets.h
         network_delegate.cpp
         network_delegate.h
         network_enums.h

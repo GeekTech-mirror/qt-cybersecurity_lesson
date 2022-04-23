@@ -1,11 +1,22 @@
 #ifndef QNETWORKDELEGATE_H
 #define QNETWORKDELEGATE_H
 
+#include <QStyledItemDelegate>
 
-class QNetworkDelegate
+
+class QNetworkDelegatePrivate;
+
+class QNetworkDelegate : public QStyledItemDelegate
 {
+    Q_OBJECT
+
 public:
-    QNetworkDelegate();
+    using QStyledItemDelegate::QStyledItemDelegate;
+
+protected:
+
+
+private:
 };
 
 #endif // QNETWORKDELEGATE_H

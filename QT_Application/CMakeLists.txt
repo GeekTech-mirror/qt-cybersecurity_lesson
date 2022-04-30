@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
         main_window.ui
         custom_colors.cpp
         custom_colors.h
+        custom_metrics.h
         custom_style.cpp
         custom_style.h
         custom_style_p.h

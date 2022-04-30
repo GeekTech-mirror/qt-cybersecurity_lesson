@@ -8,16 +8,16 @@
 #include "network_model.h"
 
 
-class QNetworkModelPrivate
+class NetworkModelPrivate
 {
 public:
-    QNetworkModelPrivate ();
+    NetworkModelPrivate ();
 
 
-    QNetworkItem *getItem(const QModelIndex &index, const QNetworkModel *dd) const
+    NetworkItem *getItem(const QModelIndex &index, const NetworkModel *dd) const
     {
         if (index.isValid()) {
-            QNetworkItem *item = static_cast<QNetworkItem*>(index.internalPointer());
+            NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
             if (item)
                 return item;
         }
@@ -25,11 +25,11 @@ public:
     }
 
 
-    QVariant getColumn(const QModelIndex &index, QNetworkModel *dd) const
+    QVariant getColumn(const QModelIndex &index, NetworkModel *dd) const
     {
-        QNetworkItem *item = getItem(index, dd);
+        NetworkItem *item = getItem(index, dd);
 
-        switch (dd->columnRoles.at(index.column())) {
+        switch (dd->rootItem->role(index.column())) {
         case DeviceName:
             return item->deviceName();
             break;
@@ -118,23 +118,23 @@ public:
     void initializeSignals () const
     {
     //    connect(NetworkManager::notifier(), &NetworkManager::Notifier::activeConnectionAdded,
-    //        this, &QNetworkModel::activeConnectionAdded, Qt::UniqueConnection);
+    //        this, &NetworkModel::activeConnectionAdded, Qt::UniqueConnection);
     //    connect(NetworkManager::notifier(), &NetworkManager::Notifier::deviceAdded,
-    //        this, &QNetworkModel::deviceAdded, Qt::UniqueConnection);
+    //        this, &NetworkModel::deviceAdded, Qt::UniqueConnection);
     //    connect(NetworkManager::notifier(), &NetworkManager::Notifier::statusChanged,
-    //        this, &QNetworkModel::statusChanged, Qt::UniqueConnection);
+    //        this, &NetworkModel::statusChanged, Qt::UniqueConnection);
     }
 
     void initializeSignals (const NetworkManager::Connection::Ptr &connection) const
     {
     //    connect(connection.data(), &NetworkManager::Connection::updated,
-    //        this, &QNetworkModel::connectionUpdated, Qt::UniqueConnection);
+    //        this, &NetworkModel::connectionUpdated, Qt::UniqueConnection);
     }
 
-    void initializeSignals (const NetworkManager::Device::Ptr &device, QNetworkModel *dd) const
+    void initializeSignals (const NetworkManager::Device::Ptr &device, NetworkModel *dd) const
     {
     //    connect(device.data(), &NetworkManager::Device::stateChanged,
-    //        this, &QNetworkModel::deviceStateChanged, Qt::UniqueConnection);
+    //        this, &NetworkModel::deviceStateChanged, Qt::UniqueConnection);
 
         if (device->type () == NetworkManager::Device::Wifi)
         {
@@ -144,7 +144,7 @@ public:
             dd->connect (wifiDev.data(),
                          &NetworkManager::WirelessDevice::networkAppeared,
                          dd,
-                         &QNetworkModel::wirelessNetworkAppeared,
+                         &NetworkModel::wirelessNetworkAppeared,
                          Qt::UniqueConnection);
         }
     }
@@ -154,7 +154,7 @@ public:
     //    connect(network.data(),
     //            &NetworkManager::WirelessNetwork::referenceAccessPointChanged,
     //            this,
-    //            &QNetworkModel::wirelessNetworkReferenceApChanged,
+    //            &NetworkModel::wirelessNetworkReferenceApChanged,
     //            Qt::UniqueConnection);
     }
 };

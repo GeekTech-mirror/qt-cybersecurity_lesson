@@ -13,6 +13,9 @@ class QNetworkDelegate : public QStyledItemDelegate
 public:
     using QStyledItemDelegate::QStyledItemDelegate;
 
+//    void setModelData(QWidget *editor, QAbstractItemModel *model,
+//                      const QModelIndex &index) const override;
+
 protected:
 
 

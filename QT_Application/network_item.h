@@ -1,5 +1,5 @@
-#ifndef QNetworkItem_H
-#define QNetworkItem_H
+#ifndef NetworkItem_H
+#define NetworkItem_H
 
 #include <NetworkManagerQt/ActiveConnection>
 #include <NetworkManagerQt/Connection>
@@ -7,16 +7,19 @@
 #include <NetworkManagerQt/Device>
 #include <NetworkManagerQt/Utils>
 
-class QNetworkItem
+#include "network_enums.h"
+
+class NetworkItem
 {
 public:
-    explicit QNetworkItem(const QVector<QVariant> &data,
-                          QNetworkItem *parent = nullptr);
-    ~QNetworkItem();
+    explicit NetworkItem(NetworkItem *parent = nullptr);
+    explicit NetworkItem(const QVector<QVariant> &data,
+                          NetworkItem *parent = nullptr);
+    ~NetworkItem();
 
     /* Tree Items */
-    QNetworkItem *parent();
-    QNetworkItem *child(int row);
+    NetworkItem *parent();
+    NetworkItem *child(int row);
     int childNumber() const;
     int childCount() const;
     int columnCount() const;
@@ -29,6 +32,9 @@ public:
 
     QVariant data(int column) const;
     bool setData(int column, const QVariant &value);
+
+    QVariant headerData(int column) const;
+    bool setHeaderData(int column, const QVariant &value);
 
 
     /* Network Items */
@@ -61,7 +67,17 @@ public:
 
     QVariant uni() const;
 
-    QVector<int> changedRoles() const
+
+    int role(int index) const
+    {
+        return m_roles.at(index);
+    }
+    void setRole(const ItemRole roles)
+    {
+            m_roles << roles;
+    }
+
+    QVector<int> changedRoles()
     {
         return m_changedRoles;
     }
@@ -72,9 +88,10 @@ public:
 
 private:
     /* Tree Items */
-    QNetworkItem *m_parentItem;
-    QVector<QNetworkItem*> m_childItems;
+    NetworkItem *m_parentItem;
+    QVector<NetworkItem*> m_childItems;
     QVector<QVariant> m_itemData;
+    QVector<QVariant> m_headerData;
 
     /* Network Items */
     QString computeIcon() const;
@@ -90,7 +107,8 @@ private:
     QVariant m_uuid;
     QString m_icon;
 
+    QVector<int> m_roles;
     QVector<int> m_changedRoles;
 };
 
-#endif // QNetworkItem_H
+#endif // NetworkItem_H

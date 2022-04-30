@@ -79,9 +79,6 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
     QColor outline = CustomColors::outline(option->palette);
     QColor highlighted_outline = CustomColors::highlighted_outline(option->palette);
 
-    //QColor c = CustomColors::background_color().darker(145);
-    //qDebug() << QString("#%1%2%3%4").arg(c.red(),2,16).arg(c.green(),2,16).arg(c.blue(),2,16).arg(c.alpha(),2,16);
-
     // Initialize button shape
     QRect button_shape;
     QRect rect = option->rect;
@@ -155,7 +152,8 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
     }
     case PE_Frame:
     {
-        if (widget && widget->inherits("QComboBoxPrivateContainer")){
+        if (widget && widget->inherits("QComboBoxPrivateContainer"))
+        {
             QStyleOption copy = *option;
             copy.state |= State_Raised;
             proxy()->drawPrimitive(PE_PanelMenu, &copy, painter, widget);
@@ -207,7 +205,9 @@ void CustomStyle::drawControl(ControlElement element,
     case CE_HeaderSection:
         painter->save();
         // Draws the header in tables.
-        if (const QStyleOptionHeader *header = qstyleoption_cast<const QStyleOptionHeader *>(option)) {
+        if (const QStyleOptionHeader *header =
+                qstyleoption_cast<const QStyleOptionHeader *>(option))
+        {
             const QStyleOptionHeaderV2 *headerV2 = qstyleoption_cast<const QStyleOptionHeaderV2 *>(option);
             QString pixmapName = d_ptr->unique_name(u"headersection"_qs, option, option->rect.size());
             pixmapName += QString::number(- int(header->position));
@@ -226,9 +226,6 @@ void CustomStyle::drawControl(ControlElement element,
                 QColor gradientStartColor = background_color.lighter(130);
                 QColor gradientStopColor = background_color.lighter(123);
 
-                qDebug() << button_color;
-                qDebug() << button_color.darker(102);
-                qDebug() << background_color.lighter(123);
                 if (headerV2 && headerV2->isSectionDragTarget)
                 {
                     gradientStopColor = gradientStartColor.darker(130);
@@ -284,5 +281,20 @@ void CustomStyle::drawControl(ControlElement element,
         break;
     }
 
+}
+
+
+
+int CustomStyle::pixelMetric (PixelMetric metric,
+                              const QStyleOption *option,
+                              const QWidget *widget) const
+{
+    switch (metric) {
+    case PM_ScrollBarExtent:
+        return sb_metrics.width;
+        break;
+    default:
+        return QProxyStyle::pixelMetric(metric, option, widget);
+    }
 }
 

@@ -5,6 +5,8 @@
 #include <QProxyStyle>
 #include <QStyleOption>
 
+#include "custom_metrics.h"
+
 class CustomStylePrivate;
 class CustomStyle : public QProxyStyle
 {
@@ -27,6 +29,12 @@ public:
                       QPainter *painter,
                       const QWidget *widget) const override;
 
+    int pixelMetric(PixelMetric metric,
+                    const QStyleOption *option = nullptr,
+                    const QWidget *widget = nullptr) const override;
+
+private:
+    ScrollBar_Metrics sb_metrics;
 
 protected:
     CustomStyle(CustomStylePrivate &dd);

@@ -1,5 +1,5 @@
-#ifndef QNetworkModel_H
-#define QNetworkModel_H
+#ifndef NetworkModel_H
+#define NetworkModel_H
 
 #include <QAbstractItemModel>
 #include <QQueue>
@@ -12,20 +12,20 @@
 #include "network_scan.h"
 
 
-class QNetworkModelPrivate;
-class QNetworkModel : public QAbstractItemModel
+class NetworkModelPrivate;
+class NetworkModel : public QAbstractItemModel
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE (QNetworkModel)
+    Q_DECLARE_PRIVATE (NetworkModel)
 
 public:
     /* Constructor */
-    explicit QNetworkModel (const QVector<ItemRole> &roles,
+    explicit NetworkModel (const QVector<ItemRole> &roles,
                             QObject *parent = nullptr);
-    ~QNetworkModel ();
+    ~NetworkModel ();
 
     /* Tree Model */
-    QVariant data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant data (const QModelIndex &index, int role) const override;
     bool setData (const QModelIndex &index, const QVariant &value,
                   int role = Qt::EditRole) override;
 
@@ -66,25 +66,25 @@ private Q_SLOTS:
 
 private:
     /* Tree Model */
-    QNetworkItem *rootItem;
-    QVector<ItemRole> columnRoles;
-    void setupModelData (QNetworkItem *parent);
+    NetworkItem *rootItem;
+//    QVector<ItemRole> columnRoles;
+    void setupModelData (const QVector<ItemRole> &roles, NetworkItem *parent);
 
     /* Network Model */
     void addConnection (const NetworkManager::Connection::Ptr &connection,
                         QVector<ItemRole> &list);
-    void addDevice (const NetworkManager::Device::Ptr &device, QNetworkItem *parent);
+    void addDevice (const NetworkManager::Device::Ptr &device, NetworkItem *parent);
     void addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
                              const NetworkManager::WirelessDevice::Ptr &device,
-                             QNetworkItem *parent);
+                             NetworkItem *parent);
 
     /* Scan Networks */
     QNetworkScan *m_scanHandler;
     QTimer *m_timer = nullptr;
 
 protected:
-    QNetworkModel(QNetworkModelPrivate &dd);
-    QNetworkModelPrivate *d_ptr;
+    NetworkModel(NetworkModelPrivate &dd);
+    NetworkModelPrivate *d_ptr;
 };
 
-#endif // QNetworkModel_H
+#endif // NetworkModel_H

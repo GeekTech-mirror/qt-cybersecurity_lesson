@@ -23,18 +23,17 @@
 
 
 /* Constructor */
-QNetworkModel::QNetworkModel (const QVector<ItemRole> &roles,
+NetworkModel::NetworkModel (const QVector<ItemRole> &roles,
                               QObject *parent)
     : QAbstractItemModel (parent),
-      columnRoles (roles),
       m_scanHandler (new QNetworkScan (this))
 
 {
     // Create header titles based on column roles
     QVector<QVariant> rootData;
-    for (int i = 0; i < columnRoles.count(); ++i)
+    for (int i = 0; i < roles.count(); ++i)
     {
-        switch (columnRoles.at(i)) {
+        switch (roles.at(i)) {
         case ItemRole::DeviceName:
             rootData << "Device Name";
             break;
@@ -67,8 +66,7 @@ QNetworkModel::QNetworkModel (const QVector<ItemRole> &roles,
             break;
         }
     }
-    rootItem = new QNetworkItem(rootData);
-
+    rootItem = new NetworkItem(rootData);
 
     // Initialize first scan and then scan every 2 seconds
     m_scanHandler = new QNetworkScan (this);
@@ -93,17 +91,17 @@ QNetworkModel::QNetworkModel (const QVector<ItemRole> &roles,
 
 
     // Fill initial table with network data
-    setupModelData (rootItem);
+    setupModelData (roles, rootItem);
 }
 
 /* Constructor for private functions */
-QNetworkModel::QNetworkModel (QNetworkModelPrivate &dd)
+NetworkModel::NetworkModel (NetworkModelPrivate &dd)
     : d_ptr (&dd)
 {
 }
 
 /* Destructor */
-QNetworkModel::~QNetworkModel ()
+NetworkModel::~NetworkModel ()
 {
     delete rootItem;
 }
@@ -121,12 +119,42 @@ QNetworkModel::~QNetworkModel ()
 **     role: controls the display method for the model contents
 ** Return: value stored in the model index
 */
-QVariant QNetworkModel::data (const QModelIndex &index, int role) const
+QVariant NetworkModel::data (const QModelIndex &index, int role) const
 {
     // Checks for valid index
     if (!index.isValid())
         return QVariant();
+    qDebug() << role;
 
+    NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
+    const int row = index.row();
+/*
+    if (row >= 0 && row < item->childCount())
+    {
+        switch (role) {
+        case ConnectionIconRole:
+            return item->icon();
+        case ConnectionStateRole:
+            return item->connectionState();
+        case DeviceName:
+            return item->deviceName();
+        case DevicePathRole:
+            return item->devicePath();
+        case SsidRole:
+            return item->ssid();
+        case SpecificPathRole:
+            return item->specificPath();
+        case SecurityTypeRole:
+            return item->securityType();
+        case TypeRole:
+            return item->type();
+        case UuidRole:
+            return item->uuid();
+        default:
+            break;
+        }
+    }
+*/
     // Define roles that are allowed
     // (all others return empty value)
     if (role != Qt::DisplayRole &&
@@ -136,25 +164,25 @@ QVariant QNetworkModel::data (const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    QNetworkItem *item = static_cast<QNetworkItem*>(index.internalPointer());
-
     return item->data(index.column());
 }
 
 /* Store value in model index */
-bool QNetworkModel::setData (const QModelIndex &index,
+bool NetworkModel::setData (const QModelIndex &index,
                              const QVariant &value,
                              int role)
 {
     if (role != Qt::EditRole)
         return false;
 
-    QNetworkItem *item = d_ptr->getItem (index, this);
+    NetworkItem *item = d_ptr->getItem (index, this);
     index.column();
 
     bool result = item->setData (index.column(), value);
     if (result)
-        emit dataChanged (index, index, {Qt::DisplayRole, Qt::EditRole});
+        Q_EMIT dataChanged (index, index, item->changedRoles());
+        item->clearChangedRoles();
+
 
     return result;
 }
@@ -167,7 +195,7 @@ bool QNetworkModel::setData (const QModelIndex &index,
 **     role: controls the display method for the model contents
 ** Return: value stored in the model index
 */
-QVariant QNetworkModel::headerData (int section,
+QVariant NetworkModel::headerData (int section,
                                     Qt::Orientation orientation,
                                     int role) const
 {
@@ -178,14 +206,14 @@ QVariant QNetworkModel::headerData (int section,
 }
 
 /* Store header data in model index */
-bool QNetworkModel::setHeaderData (int section,
+bool NetworkModel::setHeaderData (int section,
                                    Qt::Orientation orientation,
                                    const QVariant &value, int role)
 {
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
         return false;
 
-    const bool result = rootItem->setData (section, value);
+    const bool result = rootItem->setHeaderData (section, value);
 
     if (result)
         emit headerDataChanged (orientation, section, section);
@@ -195,18 +223,18 @@ bool QNetworkModel::setHeaderData (int section,
 
 
 /* Return index to model */
-QModelIndex QNetworkModel::index (int row, int column,
+QModelIndex NetworkModel::index (int row, int column,
                                   const QModelIndex &parent) const
 {
     if (parent.isValid() && parent.column() != 0)
         return QModelIndex();
 
-    QNetworkItem *parentItem = d_ptr->getItem (parent, this);
+    NetworkItem *parentItem = d_ptr->getItem (parent, this);
 
     if (!parentItem)
         return QModelIndex();
 
-    QNetworkItem *childItem = parentItem->child (row);
+    NetworkItem *childItem = parentItem->child (row);
     if (childItem)
         return createIndex (row, column, childItem);
 
@@ -215,13 +243,13 @@ QModelIndex QNetworkModel::index (int row, int column,
 
 
 /* Return index to parent in model */
-QModelIndex QNetworkModel::parent (const QModelIndex &index) const
+QModelIndex NetworkModel::parent (const QModelIndex &index) const
 {
     if (!index.isValid())
         return QModelIndex();
 
-    QNetworkItem *childItem = static_cast<QNetworkItem*>(index.internalPointer());
-    QNetworkItem *parentItem = childItem->parent();
+    NetworkItem *childItem = static_cast<NetworkItem*>(index.internalPointer());
+    NetworkItem *parentItem = childItem->parent();
 
     if (parentItem == rootItem)
         return QModelIndex();
@@ -231,22 +259,22 @@ QModelIndex QNetworkModel::parent (const QModelIndex &index) const
 
 
 /* Return total number of rows */
-int QNetworkModel::rowCount (const QModelIndex &parent) const
+int NetworkModel::rowCount (const QModelIndex &parent) const
 {
     if (parent.isValid() && parent.column() > 0)
         return 0;
 
-    const QNetworkItem *parentItem = d_ptr->getItem(parent, this);
+    const NetworkItem *parentItem = d_ptr->getItem(parent, this);
 
     return parentItem ? parentItem->childCount() : 0;
 }
 
 
 /* Insert number of rows below specified position */
-bool QNetworkModel::insertRows (int position, int rows,
+bool NetworkModel::insertRows (int position, int rows,
                                 const QModelIndex &parent)
 {
-    QNetworkItem *parentItem = d_ptr->getItem (parent, this);
+    NetworkItem *parentItem = d_ptr->getItem (parent, this);
     if (!parentItem)
         return false;
 
@@ -260,10 +288,10 @@ bool QNetworkModel::insertRows (int position, int rows,
 }
 
 /* Remove number of rows below specified position */
-bool QNetworkModel::removeRows (int position, int rows,
+bool NetworkModel::removeRows (int position, int rows,
                                 const QModelIndex &parent)
 {
-    QNetworkItem *parentItem = d_ptr->getItem (parent, this);
+    NetworkItem *parentItem = d_ptr->getItem (parent, this);
     if (!parentItem)
         return false;
 
@@ -276,14 +304,14 @@ bool QNetworkModel::removeRows (int position, int rows,
 
 
 /* Return total number of columns */
-int QNetworkModel::columnCount (const QModelIndex &parent) const
+int NetworkModel::columnCount (const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     return rootItem->columnCount();
 }
 
 /* Insert number of columns below specified position */
-bool QNetworkModel::insertColumns (int position, int columns,
+bool NetworkModel::insertColumns (int position, int columns,
                                    const QModelIndex &parent)
 {
     beginInsertColumns (parent, position, position + columns - 1);
@@ -294,7 +322,7 @@ bool QNetworkModel::insertColumns (int position, int columns,
 }
 
 /* Remove number of columns below specified position */
-bool QNetworkModel::removeColumns (int position, int columns,
+bool NetworkModel::removeColumns (int position, int columns,
                                    const QModelIndex &parent)
 {
     beginRemoveColumns (parent, position, position + columns -1);
@@ -309,7 +337,7 @@ bool QNetworkModel::removeColumns (int position, int columns,
 
 
 /* Returns list of item flags present on index (See Qt::ItemFlags) */
-Qt::ItemFlags QNetworkModel::flags(const QModelIndex &index) const
+Qt::ItemFlags NetworkModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::NoItemFlags;
@@ -318,45 +346,52 @@ Qt::ItemFlags QNetworkModel::flags(const QModelIndex &index) const
 }
 
 
-void QNetworkModel::sort(int column, Qt::SortOrder order)
+void NetworkModel::sort(int column, Qt::SortOrder order)
 {
 
 }
 
 
-void QNetworkModel::setupModelData (QNetworkItem *parent)
+void NetworkModel::setupModelData (const QVector<ItemRole> &roles, NetworkItem *parent)
 {
     for (int i = 0; i < parent->childCount(); ++i)
     {
-        QNetworkItem *item = parent->child(i);
-        for (int j = 0; j < parent->columnCount(); ++j)
+        NetworkItem *item = parent->child(i);
+        for (int j = 0; j < roles.count(); ++j)
         {
-            switch (columnRoles.at(j)) {
+            switch (roles.at(j)) {
             case ItemRole::DeviceName:
+                item->setRole(ItemRole::DeviceName);
                 item->setData(j, item->deviceName());
                 break;
 
             case ItemRole::DevicePathRole:
+                item->setRole(ItemRole::DevicePathRole);
                 item->setData(j, item->devicePath());
                 break;
 
             case ItemRole::ConnectionIconRole:
+                item->setRole(ItemRole::ConnectionIconRole);
                 item->setData(j, QIcon (item->icon()));
                 break;
 
             case ItemRole::SpecificPathRole:
+                item->setRole(ItemRole::SpecificPathRole);
                 item->setData(j, item->specificPath());
                 break;
 
             case ItemRole::SecurityTypeRole:
+                item->setRole(ItemRole::SecurityTypeRole);
                 item->setData(j, d_ptr->getSecurityString (item->securityType()));
                 break;
 
             case ItemRole::SsidRole:
+                item->setRole(ItemRole::SsidRole);
                 item->setData(j, item->ssid());
                 break;
 
             case ItemRole::TypeRole:
+                item->setRole(ItemRole::TypeRole);
                 item->setData(j, item->type());
                 break;
 
@@ -364,6 +399,7 @@ void QNetworkModel::setupModelData (QNetworkItem *parent)
                 item->setData(j, "");
             }
         }
+
     }
 
 }
@@ -374,7 +410,7 @@ void QNetworkModel::setupModelData (QNetworkItem *parent)
 ** Implement functions to add wireless networks to the model
 ** --------
 **/
-QHash<int, QByteArray> QNetworkModel::roleNames() const
+QHash<int, QByteArray> NetworkModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
     roles[ConnectionDetailsRole] = "ConnectionDetails";
@@ -385,6 +421,7 @@ QHash<int, QByteArray> QNetworkModel::roleNames() const
     roles[DevicePathRole] = "DevicePath";
     roles[DeviceStateRole] = "DeviceState";
     roles[DuplicateRole] = "Duplicate";
+    roles[HeaderRole] = "Header";
     roles[ItemUniqueNameRole] = "ItemUniqueName";
     roles[ItemTypeRole] = "ItemType";
     roles[NameRole] = "Name";
@@ -392,6 +429,8 @@ QHash<int, QByteArray> QNetworkModel::roleNames() const
     roles[SlaveRole] = "Slave";
     roles[SsidRole] = "Ssid";
     roles[SpecificPathRole] = "SpecificPath";
+    roles[SecurityTypeRole] = "SecurityType";
+    roles[SecurityTypeStringRole] = "SecurityTypeString";
     roles[TimeStampRole] = "TimeStamp";
     roles[TypeRole] = "Type";
     roles[UniRole] = "Uni";
@@ -401,8 +440,8 @@ QHash<int, QByteArray> QNetworkModel::roleNames() const
 }
 
 
-void QNetworkModel::addDevice (const NetworkManager::Device::Ptr &device,
-                               QNetworkItem *parent)
+void NetworkModel::addDevice (const NetworkManager::Device::Ptr &device,
+                               NetworkItem *parent)
 {
     d_ptr->initializeSignals(device, this);
 
@@ -421,13 +460,13 @@ void QNetworkModel::addDevice (const NetworkManager::Device::Ptr &device,
 }
 
 
-void QNetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
+void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
                                         const NetworkManager::WirelessDevice::Ptr &device,
-                                        QNetworkItem *parent)
+                                        NetworkItem *parent)
 {
     d_ptr->initializeSignals(network);
 
-    QVector<QNetworkItem *> parents;
+    QVector<NetworkItem *> parents;
     parents << parent;
 
 
@@ -449,7 +488,7 @@ void QNetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::P
                  ap->rsnFlags());
     }
 
-    QNetworkItem *item = parents.last();
+    NetworkItem *item = parents.last();
 
     const int index = rootItem->childCount();
     beginInsertRows (QModelIndex(), index, index);
@@ -470,7 +509,7 @@ void QNetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::P
 }
 
 
-void QNetworkModel::wirelessNetworkAppeared (const QString &ssid)
+void NetworkModel::wirelessNetworkAppeared (const QString &ssid)
 {
     NetworkManager::Device::Ptr device =
             NetworkManager::findNetworkInterface (qobject_cast<NetworkManager::Device *>
@@ -493,7 +532,7 @@ void QNetworkModel::wirelessNetworkAppeared (const QString &ssid)
         addWirelessNetwork(network, wirelessDevice, rootItem);
 
         int row = rootItem->childCount()-1;
-        QNetworkItem *item = rootItem->child(row);
+        NetworkItem *item = rootItem->child(row);
         for (int i = 0; i < rootItem->columnCount(); ++i)
         {
             item->setData(i, d_ptr->getColumn(index(row, i), this));

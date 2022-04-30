@@ -1,3 +1,5 @@
+#include <QIcon>
+
 #include <NetworkManagerQt/BridgeDevice>
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
@@ -9,25 +11,35 @@
 #include "network_item.h"
 #include "network_enums.h"
 
-QNetworkItem::QNetworkItem(const QVector<QVariant> &data, QNetworkItem *parent)
-    : m_itemData(data)
-    , m_parentItem(parent)
+NetworkItem::NetworkItem(NetworkItem *parent)
+    : m_parentItem(parent)
 {
 }
 
-QNetworkItem::~QNetworkItem()
+NetworkItem::NetworkItem(const QVector<QVariant> &data, NetworkItem *parent)
+    : m_headerData(data)
+    , m_parentItem(parent)
+{
+    for (int i = 0; i < m_headerData.size(); ++i)
+    {
+        this->setRole(ItemRole::HeaderRole);
+    }
+}
+
+NetworkItem::~NetworkItem()
 {
     qDeleteAll(m_childItems);
 }
 
+
 /* return pointer to parent */
-QNetworkItem *QNetworkItem::parent()
+NetworkItem *NetworkItem::parent()
 {
     return m_parentItem;
 }
 
 /* return pointer to child at "row" */
-QNetworkItem *QNetworkItem::child(int number)
+NetworkItem *NetworkItem::child(int number)
 {
     if (number < 0 || number >= m_childItems.size())
         return nullptr;
@@ -35,35 +47,35 @@ QNetworkItem *QNetworkItem::child(int number)
 }
 
 /* return total number of children */
-int QNetworkItem::childCount() const
+int NetworkItem::childCount() const
 {
     return m_childItems.count();
 }
 
 /* return index of child in its parent's list of children */
 /* return zero for the root item */
-int QNetworkItem::childNumber() const
+int NetworkItem::childNumber() const
 {
     if (m_parentItem)
-        return m_parentItem->m_childItems.indexOf(const_cast<QNetworkItem*>(this));
+        return m_parentItem->m_childItems.indexOf(const_cast<NetworkItem*>(this));
     return 0;
 }
 
 /* return number of elements in the internal itemData list */
-int QNetworkItem::columnCount() const
+int NetworkItem::columnCount() const
 {
-    return m_itemData.count();
+    return m_roles.count();
 }
 
 /* insert row below specified index  */
-bool QNetworkItem::insertChildren(int position, int count, int columns)
+bool NetworkItem::insertChildren(int position, int count, int columns)
 {
     if (position < 0 || position > m_childItems.size())
         return false;
 
     for (int row = 0; row < count; ++row) {
         QVector<QVariant> data(columns);
-        QNetworkItem *item = new QNetworkItem(data, this);
+        NetworkItem *item = new NetworkItem(this);
         m_childItems.insert(position, item);
     }
 
@@ -71,7 +83,7 @@ bool QNetworkItem::insertChildren(int position, int count, int columns)
 }
 
 /* remove row at specified index */
-bool QNetworkItem::removeChildren(int position, int count)
+bool NetworkItem::removeChildren(int position, int count)
 {
     if (position < 0 || position + count > m_childItems.size())
         return false;
@@ -83,7 +95,7 @@ bool QNetworkItem::removeChildren(int position, int count)
 }
 
 /* insert column (perform action on every row) */
-bool QNetworkItem::insertColumns(int position, int columns)
+bool NetworkItem::insertColumns(int position, int columns)
 {
     if (position < 0 || position > m_itemData.size())
         return false;
@@ -91,14 +103,14 @@ bool QNetworkItem::insertColumns(int position, int columns)
     for (int column = 0; column < columns; ++column)
         m_itemData.insert(position, int());
 
-    for (QNetworkItem *child : qAsConst(m_childItems))
+    for (NetworkItem *child : qAsConst(m_childItems))
         child->insertColumns(position, columns);
 
     return true;
 }
 
 /* remove column */
-bool QNetworkItem::removeColumns(int position, int columns)
+bool NetworkItem::removeColumns(int position, int columns)
 {
     if (position < 0 || position + columns > m_itemData.size())
         return false;
@@ -106,7 +118,7 @@ bool QNetworkItem::removeColumns(int position, int columns)
     for (int column = 0; column < columns; ++column)
         m_itemData.remove(position);
 
-    for (QNetworkItem *child : qAsConst(m_childItems))
+    for (NetworkItem *child : qAsConst(m_childItems))
         child->removeColumns(position, columns);
 
     return true;
@@ -114,16 +126,41 @@ bool QNetworkItem::removeColumns(int position, int columns)
 
 
 /* retrieve data from itemData list at specified column */
-QVariant QNetworkItem::data(int column) const
+QVariant NetworkItem::data(int column) const
 {
-    if (column < 0 || column >= m_itemData.size())
+    if (column < 0 || column >= m_roles.size())
         return QVariant();
+
+    switch (m_roles.at(column)) {
+    case ConnectionIconRole:
+        return QIcon (m_icon);
+    case ConnectionStateRole:
+        return m_connectionState;
+    case DeviceName:
+        return m_deviceName;
+    case DevicePathRole:
+        return m_devicePath;
+    case HeaderRole:
+        return m_headerData[column];
+    case SsidRole:
+        return m_ssid;
+    case SpecificPathRole:
+        return m_specificPath;
+    case SecurityTypeRole:
+        return m_securityType;
+    case TypeRole:
+        return m_type;
+    case UuidRole:
+        return m_uuid;
+    default:
+        break;
+    }
 
     return m_itemData.at(column);
 }
 
 /* store values in the itemData list for valid list indexes */
-bool QNetworkItem::setData(int column, const QVariant &value)
+bool NetworkItem::setData(int column, const QVariant &value)
 {
 
     if (column < 0 || column >= m_itemData.size())
@@ -139,31 +176,57 @@ bool QNetworkItem::setData(int column, const QVariant &value)
 }
 
 
+/* retrieve data from headerData list at specified column */
+QVariant NetworkItem::headerData(int column) const
+{
+    if (column < 0 || column >= m_itemData.size())
+        return QVariant();
+
+    return m_headerData[column];
+}
+
+
+
+bool NetworkItem::setHeaderData(int column, const QVariant &value)
+{
+
+    if (column < 0 || column >= m_itemData.size())
+        return false;
+
+    if (m_headerData[column] != value) {
+        m_headerData[column] = value;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 
 /*
  *  Network Items
  */
-NetworkManager::ActiveConnection::State QNetworkItem::connectionState() const
+NetworkManager::ActiveConnection::State NetworkItem::connectionState() const
 {
     return m_connectionState;
 }
 
-void QNetworkItem::setConnectionState(NetworkManager::ActiveConnection::State state)
+void NetworkItem::setConnectionState(NetworkManager::ActiveConnection::State state)
 {
     if (m_connectionState != state) {
         m_connectionState = state;
-        m_changedRoles << ItemRole::ConnectionStateRole << ItemRole::SectionRole;
+        m_changedRoles << ItemRole::ConnectionStateRole;
         refreshIcon();
     }
 }
 
 
-QVariant QNetworkItem::deviceName() const
+QVariant NetworkItem::deviceName() const
 {
     return m_deviceName;
 }
 
-void QNetworkItem::setDeviceName(const QVariant &name)
+void NetworkItem::setDeviceName(const QVariant &name)
 {
     if (m_deviceName != name) {
         m_deviceName = name;
@@ -172,28 +235,26 @@ void QNetworkItem::setDeviceName(const QVariant &name)
 }
 
 
-QVariant QNetworkItem::devicePath() const
+QVariant NetworkItem::devicePath() const
 {
     return m_devicePath;
 }
 
-void QNetworkItem::setDevicePath(const QVariant &path)
+void NetworkItem::setDevicePath(const QVariant &path)
 {
     if (m_devicePath != path) {
         m_devicePath = path;
-        m_changedRoles << ItemRole::DevicePathRole
-                       << ItemRole::ItemTypeRole
-                       << ItemRole::UniRole;
+        m_changedRoles << ItemRole::DevicePathRole;
     }
 }
 
 
-QString QNetworkItem::icon() const
+QString NetworkItem::icon() const
 {
     return m_icon;
 }
 
-void QNetworkItem::setIcon(const QString &icon)
+void NetworkItem::setIcon(const QString &icon)
 {
     if (icon != m_icon) {
         m_icon = icon;
@@ -201,12 +262,12 @@ void QNetworkItem::setIcon(const QString &icon)
     }
 }
 
-void QNetworkItem::refreshIcon()
+void NetworkItem::refreshIcon()
 {
     setIcon(computeIcon());
 }
 
-QString QNetworkItem::computeIcon() const
+QString NetworkItem::computeIcon() const
 {
     switch (m_type) {
     case NetworkManager::ConnectionSettings::Bridge:
@@ -238,12 +299,12 @@ QString QNetworkItem::computeIcon() const
 }
 
 
-QVariant QNetworkItem::specificPath() const
+QVariant NetworkItem::specificPath() const
 {
     return m_specificPath;
 }
 
-void QNetworkItem::setSpecificPath(const QVariant &path)
+void NetworkItem::setSpecificPath(const QVariant &path)
 {
     if (m_specificPath != path) {
         m_specificPath = path;
@@ -252,12 +313,12 @@ void QNetworkItem::setSpecificPath(const QVariant &path)
 }
 
 
-NetworkManager::WirelessSecurityType QNetworkItem::securityType() const
+NetworkManager::WirelessSecurityType NetworkItem::securityType() const
 {
     return m_securityType;
 }
 
-void QNetworkItem::setSecurityType(NetworkManager::WirelessSecurityType type)
+void NetworkItem::setSecurityType(NetworkManager::WirelessSecurityType type)
 {
     if (m_securityType != type) {
         m_securityType = type;
@@ -267,12 +328,12 @@ void QNetworkItem::setSecurityType(NetworkManager::WirelessSecurityType type)
 }
 
 
-QVariant QNetworkItem::ssid() const
+QVariant NetworkItem::ssid() const
 {
     return m_ssid;
 }
 
-void QNetworkItem::setSsid(const QVariant &ssid)
+void NetworkItem::setSsid(const QVariant &ssid)
 {
     if (m_ssid != ssid) {
         m_ssid = ssid;
@@ -281,12 +342,12 @@ void QNetworkItem::setSsid(const QVariant &ssid)
 }
 
 
-QVariant QNetworkItem::uuid() const
+QVariant NetworkItem::uuid() const
 {
     return m_uuid;
 }
 
-void QNetworkItem::setUuid(const QVariant &uuid)
+void NetworkItem::setUuid(const QVariant &uuid)
 {
     if (m_uuid != uuid) {
         m_uuid = uuid;
@@ -295,16 +356,16 @@ void QNetworkItem::setUuid(const QVariant &uuid)
 }
 
 
-NetworkManager::ConnectionSettings::ConnectionType QNetworkItem::type() const
+NetworkManager::ConnectionSettings::ConnectionType NetworkItem::type() const
 {
     return m_type;
 }
 
-void QNetworkItem::setType(NetworkManager::ConnectionSettings::ConnectionType type)
+void NetworkItem::setType(NetworkManager::ConnectionSettings::ConnectionType type)
 {
     if (m_type != type) {
         m_type = type;
-        m_changedRoles << ItemRole::TypeRole << ItemRole::ItemTypeRole << ItemRole::UniRole;
+        m_changedRoles << ItemRole::TypeRole << ItemRole::ItemTypeRole;
 
         refreshIcon();
     }
@@ -312,7 +373,7 @@ void QNetworkItem::setType(NetworkManager::ConnectionSettings::ConnectionType ty
 
 
 /*
-QVariant QNetworkItem::uni() const
+QVariant NetworkItem::uni() const
 {
     if (m_type == NetworkManager::ConnectionSettings::Wireless && m_uuid.toString().isEmpty()) {
         return m_ssid.toString() + '%' + m_devicePath.toString();

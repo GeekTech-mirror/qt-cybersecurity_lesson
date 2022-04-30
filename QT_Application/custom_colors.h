@@ -82,6 +82,7 @@ public:
     }
 
 
+    /* ScrollBar Colors */
     struct ScrollBar_Colors
     {
         // Handle
@@ -95,6 +96,7 @@ public:
                                              80);
     };
 
+    /* Unique ScrollBar Colors for TreeView Frame */
     struct ScrollBar_TreeView
     {
         /* ScrollBar colors */

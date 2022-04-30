@@ -1,6 +1,7 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
+#include <QAbstractItemModel>
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <QFontDatabase>

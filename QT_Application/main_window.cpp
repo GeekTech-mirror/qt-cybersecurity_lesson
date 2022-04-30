@@ -1,3 +1,4 @@
+#include <QAbstractSlider>
 #include <QCommonStyle>
 #include <QDebug>
 #include <QHeaderView>
@@ -40,9 +41,10 @@ Main_Window::Main_Window (QWidget *parent)
                               ItemRole::SsidRole,
                               ItemRole::SecurityTypeRole});
 
-    QNetworkModel *network_model = new QNetworkModel(roles);
+    NetworkModel *network_model = new NetworkModel(roles);
 
     ui->network_list->setModel (network_model);
+    ui->network_list->resizeColumnToContents(network_model->columnCount()-1);
     ui->network_list->setIndentation(10);
     ui->network_list->setColumnWidth(0, 64);
     ui->network_list->setColumnWidth(1, 210);
@@ -54,11 +56,10 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->header()->setStyleSheet ("QHeaderView { font-size: " +
                                                QString::number(16) + "pt; }");
 
-    stylesheets->setHeaderHeight(ui->network_list->header()->sizeHint().height());
-    ui->network_list->setStyleSheet (stylesheets->scrollbar_treeview());
-
-
-
+    //stylesheets->setHeaderHeight(ui->network_list->header()->sizeHint().height());
+    ui->network_list->setStyleSheet (stylesheets->scrollbar_treeview(
+                                         ui->network_list->header()->
+                                         sizeHint().height()));
 
     ui->Central_Widget->setStyleSheet(QString("* { background-color: rgb(30, 34, 39); }") +
                                       stylesheets->scrollbar_vertical() +

@@ -6,25 +6,23 @@
 #include "custom_colors.h"
 
 CustomStyleSheets::CustomStyleSheets()
-    : sb_metrics (new ScrollBar_Metrics),
-      sb_colors (new CustomColors::ScrollBar_Colors),
+    : sb_colors (new CustomColors::ScrollBar_Colors),
       sb_treeview (new CustomColors::ScrollBar_TreeView)
 {
 }
 
 
-QString CustomStyleSheets::scrollbar_vertical (void)
+QString CustomStyleSheets::scrollbar_vertical ()
 {
     QString stylesheet =
     "QScrollBar::Vertical { \
          border: none; \
          background: transparent; \
-         width: %1px; \
          padding-left: %2px; \
          padding-right: %2px; \
          border-radius: 0px; \
     }";
-    stylesheet = stylesheet.arg(sb_metrics->width).arg(sb_metrics->padding);
+    stylesheet = stylesheet.arg(sb_metrics.padding);
 
 
     stylesheet +=
@@ -42,7 +40,7 @@ QString CustomStyleSheets::scrollbar_vertical (void)
                            .arg(sb_colors->handle_bgColor.green())
                            .arg(sb_colors->handle_bgColor.blue());
 
-    stylesheet = stylesheet.arg(sb_metrics->handle_radius);
+    stylesheet = stylesheet.arg(sb_metrics.handle_radius);
 
 
     stylesheet +=
@@ -74,12 +72,11 @@ QString CustomStyleSheets::scrollbar_horizontal (void)
     "QScrollBar::Horizontal { \
          border: none; \
          background: transparent; \
-         height: %1px; \
          padding-top: %2px; \
          padding-bottom: %2px; \
          border-radius: 0px; \
     }";
-    stylesheet = stylesheet.arg(sb_metrics->width).arg(sb_metrics->padding);
+    stylesheet = stylesheet.arg(sb_metrics.padding);
 
 
     stylesheet +=
@@ -97,7 +94,7 @@ QString CustomStyleSheets::scrollbar_horizontal (void)
                            .arg(sb_colors->handle_bgColor.green())
                            .arg(sb_colors->handle_bgColor.blue());
 
-    stylesheet = stylesheet.arg(sb_metrics->handle_radius);
+    stylesheet = stylesheet.arg(sb_metrics.handle_radius);
 
 
     stylesheet +=
@@ -123,8 +120,10 @@ QString CustomStyleSheets::scrollbar_horizontal (void)
 }
 
 
-QString CustomStyleSheets::scrollbar_treeview ()
+QString CustomStyleSheets::scrollbar_treeview (int header_height)
 {
+    setHeaderHeight(header_height);
+
     /* Vertical ScrollBar */
     QString stylesheet =
     "QScrollBar::Vertical { \
@@ -148,7 +147,7 @@ QString CustomStyleSheets::scrollbar_treeview ()
                            .arg(sb_treeview->background.green())
                            .arg(sb_treeview->background.blue());
 
-    stylesheet = stylesheet.arg(sb_metrics->header_padding);
+    stylesheet = stylesheet.arg(sb_metrics.header_padding);
 
 
     stylesheet +=
@@ -194,7 +193,7 @@ QString CustomStyleSheets::scrollbar_treeview ()
                            .arg(sb_treeview->gradient_stop.darker(104).green())
                            .arg(sb_treeview->gradient_stop.darker(104).blue());
 
-    stylesheet = stylesheet.arg(sb_metrics->header_height);
+    stylesheet = stylesheet.arg(sb_metrics.header_height);
 
 
     /* Horizontal ScrollBar */
@@ -230,6 +229,6 @@ QString CustomStyleSheets::scrollbar_treeview ()
 
 void CustomStyleSheets::setHeaderHeight(int height)
 {
-    sb_metrics->header_height = height - 2;
-    sb_metrics->header_padding = height + 6;
+    sb_metrics.header_height = height - 2;
+    sb_metrics.header_padding = height + 6;
 }

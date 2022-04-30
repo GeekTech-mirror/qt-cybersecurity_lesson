@@ -27,6 +27,7 @@ enum ItemRole {
     DevicePathRole,
     DeviceStateRole,
     DuplicateRole,
+    HeaderRole,
     ItemUniqueNameRole,
     ItemTypeRole,
     LastUsedRole,

@@ -12,7 +12,7 @@ CustomStyleSheets::CustomStyleSheets()
 }
 
 
-QString CustomStyleSheets::scrollbar_vertical ()
+QString CustomStyleSheets::vertical_scrollbar ()
 {
     QString stylesheet =
     "QScrollBar::Vertical { \
@@ -66,7 +66,7 @@ QString CustomStyleSheets::scrollbar_vertical ()
 }
 
 
-QString CustomStyleSheets::scrollbar_horizontal (void)
+QString CustomStyleSheets::horizontal_scrollbar (void)
 {
     QString stylesheet =
     "QScrollBar::Horizontal { \
@@ -120,7 +120,7 @@ QString CustomStyleSheets::scrollbar_horizontal (void)
 }
 
 
-QString CustomStyleSheets::scrollbar_treeview (int header_height)
+QString CustomStyleSheets::treeview_scrollbar (int header_height)
 {
     setHeaderHeight(header_height);
 
@@ -226,6 +226,20 @@ QString CustomStyleSheets::scrollbar_treeview (int header_height)
     return stylesheet;
 }
 
+QString CustomStyleSheets::treeview_vertical_scrollbar_quirk (void)
+{
+    QString stylesheet =
+    "QScrollBar::add-line:vertical { \
+         border-bottom: 1px solid rgba(%5,%6,%7,%8); \
+    }";
+
+    stylesheet = stylesheet.arg(sb_treeview->outer_border.red())
+                           .arg(sb_treeview->outer_border.green())
+                           .arg(sb_treeview->outer_border.blue())
+                           .arg(sb_treeview->outer_border.alpha());
+
+    return stylesheet;
+}
 
 void CustomStyleSheets::setHeaderHeight(int height)
 {

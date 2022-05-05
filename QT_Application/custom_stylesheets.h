@@ -11,10 +11,10 @@ class CustomStyleSheets
 public:
     CustomStyleSheets ();
 
-    QString scrollbar_vertical (void);
-    QString scrollbar_horizontal (void);
-    QString scrollbar_treeview (int);
-
+    QString vertical_scrollbar (void);
+    QString horizontal_scrollbar (void);
+    QString treeview_scrollbar (int);
+    QString treeview_vertical_scrollbar_quirk (void);
 
 
 private:

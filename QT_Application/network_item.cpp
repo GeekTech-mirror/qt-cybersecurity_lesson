@@ -125,6 +125,58 @@ bool NetworkItem::removeColumns(int position, int columns)
 }
 
 
+/* temporary until better role handling */
+QString getSecurityString(NetworkManager::WirelessSecurityType type)
+{
+    switch (type) {
+    case NetworkManager::NoneSecurity:
+        return QStringLiteral("None");
+        break;
+
+    case NetworkManager::StaticWep:
+        return QStringLiteral("Static-Wep");
+        break;
+
+    case NetworkManager::DynamicWep:
+        return QStringLiteral("Dynamic-Wep");
+        break;
+
+    case NetworkManager::Leap:
+        return QStringLiteral("Leap");
+        break;
+
+    case NetworkManager::WpaPsk:
+        return QStringLiteral("Wpa-Psk");
+        break;
+
+    case NetworkManager::WpaEap:
+        return QStringLiteral("Wpa-Eap");
+        break;
+
+    case NetworkManager::Wpa2Psk:
+        return QStringLiteral("Wpa2-Psk");
+        break;
+
+    case NetworkManager::Wpa2Eap:
+        return QStringLiteral("Wpa2-Eap");
+        break;
+
+    case NetworkManager::SAE:
+        return QStringLiteral("SAE");
+        break;
+
+    case NetworkManager::Wpa3SuiteB192:
+        return QStringLiteral("Wpa3-Suite-B192");
+        break;
+
+    default:
+        return QStringLiteral("Unknown");
+    }
+
+    return QStringLiteral("error");
+}
+
+
 /* retrieve data from itemData list at specified column */
 QVariant NetworkItem::data(int column) const
 {
@@ -147,7 +199,7 @@ QVariant NetworkItem::data(int column) const
     case SpecificPathRole:
         return m_specificPath;
     case SecurityTypeRole:
-        return m_securityType;
+        return getSecurityString(m_securityType);
     case TypeRole:
         return m_type;
     case UuidRole:

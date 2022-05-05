@@ -9,6 +9,8 @@
 #include <QIcon>
 #include <QList>
 
+#include "custom_stylesheets.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -37,6 +39,12 @@ private slots:
 
 private:
     Ui::Main_Window *ui;
+
+    CustomStyleSheets *stylesheets;
+    QString treeview_stylesheet;
+
+protected:
+    bool eventFilter (QObject *object, QEvent *event) override;
 };
 
 #endif // MAIN_WINDOW_H

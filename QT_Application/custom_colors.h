@@ -6,9 +6,9 @@
 #include <QLinearGradient>
 
 
-
 class CustomColors
 {
+
 private:
     enum Direction {
         TopDown,

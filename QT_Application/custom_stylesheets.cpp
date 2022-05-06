@@ -12,6 +12,7 @@ CustomStyleSheets::CustomStyleSheets()
 }
 
 
+// Consider flickable for better touch compatibility (ScrollDecorator)
 QString CustomStyleSheets::vertical_scrollbar ()
 {
     QString stylesheet =

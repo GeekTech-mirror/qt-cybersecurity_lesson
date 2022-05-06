@@ -199,8 +199,6 @@ void CustomStyle::drawControl(ControlElement element,
     QRect rect = option->rect;
     QColor background_color = CustomColors::background_color();
 
-    int corner_radius = qMin(rect.width(), rect.height()) / 6;
-
     switch (element) {
     case CE_HeaderSection:
         painter->save();

@@ -68,11 +68,11 @@ public:
     QVariant uni() const;
 
 
-    int role(int index) const
+    int getRole(int index) const
     {
         return m_roles.at(index);
     }
-    void setRole(const ItemRole roles)
+    void insertRole(const ItemRole roles)
     {
             m_roles << roles;
     }

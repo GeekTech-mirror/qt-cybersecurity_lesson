@@ -67,6 +67,7 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles,
         }
     }
     rootItem = new NetworkItem(rootData);
+    columnRoles = roles;
 
     // Initialize first scan and then scan every 2 seconds
     m_scanHandler = new QNetworkScan (this);
@@ -88,10 +89,6 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles,
 
         addDevice (dev, rootItem);
     }
-
-
-    // Fill initial table with network data
-    setupModelData (roles, rootItem);
 }
 
 /* Constructor for private functions */
@@ -124,7 +121,8 @@ QVariant NetworkModel::data (const QModelIndex &index, int role) const
     // Checks for valid index
     if (!index.isValid())
         return QVariant();
-    qDebug() << role;
+
+    //qDebug() << role;
 
     NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
     const int row = index.row();
@@ -352,58 +350,6 @@ void NetworkModel::sort(int column, Qt::SortOrder order)
 }
 
 
-void NetworkModel::setupModelData (const QVector<ItemRole> &roles, NetworkItem *parent)
-{
-    for (int i = 0; i < parent->childCount(); ++i)
-    {
-        NetworkItem *item = parent->child(i);
-        for (int j = 0; j < roles.count(); ++j)
-        {
-            switch (roles.at(j)) {
-            case ItemRole::DeviceName:
-                item->setRole(ItemRole::DeviceName);
-                item->setData(j, item->deviceName());
-                break;
-
-            case ItemRole::DevicePathRole:
-                item->setRole(ItemRole::DevicePathRole);
-                item->setData(j, item->devicePath());
-                break;
-
-            case ItemRole::ConnectionIconRole:
-                item->setRole(ItemRole::ConnectionIconRole);
-                item->setData(j, QIcon (item->icon()));
-                break;
-
-            case ItemRole::SpecificPathRole:
-                item->setRole(ItemRole::SpecificPathRole);
-                item->setData(j, item->specificPath());
-                break;
-
-            case ItemRole::SecurityTypeRole:
-                item->setRole(ItemRole::SecurityTypeRole);
-                item->setData(j, d_ptr->getSecurityString (item->securityType()));
-                break;
-
-            case ItemRole::SsidRole:
-                item->setRole(ItemRole::SsidRole);
-                item->setData(j, item->ssid());
-                break;
-
-            case ItemRole::TypeRole:
-                item->setRole(ItemRole::TypeRole);
-                item->setData(j, item->type());
-                break;
-
-            default:
-                item->setData(j, "");
-            }
-        }
-
-    }
-
-}
-
 
 /* Network Model
 ** --------
@@ -469,12 +415,13 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
     QVector<NetworkItem *> parents;
     parents << parent;
 
-
+    // Set default security info
     NetworkManager::WirelessSetting::NetworkMode mode =
             NetworkManager::WirelessSetting::Infrastructure;
     NetworkManager::WirelessSecurityType securityType =
             NetworkManager::UnknownSecurity;
 
+    // Look for security info
     NetworkManager::AccessPoint::Ptr ap = network->referenceAccessPoint();
     if (ap && (ap->capabilities().testFlag(NetworkManager::AccessPoint::Privacy)
         || ap->wpaFlags() || ap->rsnFlags()))
@@ -488,24 +435,28 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
                  ap->rsnFlags());
     }
 
-    NetworkItem *item = parents.last();
-
+    // Insert new row at end of table
     const int index = rootItem->childCount();
     beginInsertRows (QModelIndex(), index, index);
-    item->insertChildren (item->childCount(), 1, rootItem->columnCount());
+    parent->insertChildren (parent->childCount(), 1, rootItem->columnCount());
     endInsertRows ();
 
+    // Fill Network Item with WiFi info
+    NetworkItem *item = parent->child(parent->childCount()-1);
     if (device->ipInterfaceName().isEmpty()) {
-        item->child(item->childCount()-1)->setDeviceName(device->interfaceName());
+        item->setDeviceName(device->interfaceName());
     }
     else {
-        item->child(item->childCount()-1)->setDeviceName (device->ipInterfaceName());
+        item->setDeviceName (device->ipInterfaceName());
     }
-    item->child(item->childCount()-1)->setSsid (network->ssid());
-    item->child(item->childCount()-1)->setDevicePath (device->uni());
-    item->child(item->childCount()-1)->setSpecificPath (network->referenceAccessPoint()->uni());
-    item->child(item->childCount()-1)->setType (NetworkManager::ConnectionSettings::Wireless);
-    item->child(item->childCount()-1)->setSecurityType (securityType);
+    item->setSsid (network->ssid());
+    item->setDevicePath (device->uni());
+    item->setSpecificPath (network->referenceAccessPoint()->uni());
+    item->setType (NetworkManager::ConnectionSettings::Wireless);
+    item->setSecurityType (securityType);
+
+    // Set WiFi info to display
+    d_ptr->setItemRoles(columnRoles, parent->child(parent->childCount()-1));
 }
 
 

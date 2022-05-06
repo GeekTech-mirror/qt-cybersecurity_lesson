@@ -22,7 +22,7 @@ NetworkItem::NetworkItem(const QVector<QVariant> &data, NetworkItem *parent)
 {
     for (int i = 0; i < m_headerData.size(); ++i)
     {
-        this->setRole(ItemRole::HeaderRole);
+        this->insertRole(ItemRole::HeaderRole);
     }
 }
 
@@ -73,8 +73,8 @@ bool NetworkItem::insertChildren(int position, int count, int columns)
     if (position < 0 || position > m_childItems.size())
         return false;
 
-    for (int row = 0; row < count; ++row) {
-        QVector<QVariant> data(columns);
+    for (int row = 0; row < count; ++row)
+    {
         NetworkItem *item = new NetworkItem(this);
         m_childItems.insert(position, item);
     }

@@ -50,7 +50,7 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->resizeColumnToContents(network_model->columnCount()-1);
     ui->network_list->setIndentation(10);
     ui->network_list->setColumnWidth(0, 64);
-    ui->network_list->setColumnWidth(1, 210);
+    ui->network_list->setColumnWidth(1, 200);
 
 //    ui->network_list->header()->setSectionResizeMode (QHeaderView::ResizeToContents);
 

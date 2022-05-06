@@ -67,7 +67,7 @@ private Q_SLOTS:
 private:
     /* Tree Model */
     NetworkItem *rootItem;
-//    QVector<ItemRole> columnRoles;
+    QVector<ItemRole> columnRoles;
     void setupModelData (const QVector<ItemRole> &roles, NetworkItem *parent);
 
     /* Network Model */

@@ -29,7 +29,7 @@ public:
     {
         NetworkItem *item = getItem(index, dd);
 
-        switch (dd->rootItem->role(index.column())) {
+        switch (dd->rootItem->getRole(index.column())) {
         case DeviceName:
             return item->deviceName();
             break;
@@ -112,6 +112,57 @@ public:
         }
 
         return QStringLiteral("error");
+    }
+
+
+    void setItemRoles (const QVector<ItemRole> &roles, NetworkItem *row)
+    {
+
+        //NetworkItem *item = parent->child(i);
+        for (int j = 0; j < roles.count(); ++j)
+        {
+            switch (roles.at(j)) {
+            case ItemRole::DeviceName:
+                row->insertRole(ItemRole::DeviceName);
+                //item->setData(j, item->deviceName());
+                break;
+
+            case ItemRole::DevicePathRole:
+                row->insertRole(ItemRole::DevicePathRole);
+                //item->setData(j, item->devicePath());
+                break;
+
+            case ItemRole::ConnectionIconRole:
+                row->insertRole(ItemRole::ConnectionIconRole);
+                //item->setData(j, QIcon (item->icon()));
+                break;
+
+            case ItemRole::SpecificPathRole:
+                row->insertRole(ItemRole::SpecificPathRole);
+                //item->setData(j, item->specificPath());
+                break;
+
+            case ItemRole::SecurityTypeRole:
+                row->insertRole(ItemRole::SecurityTypeRole);
+                //item->setData(j, d_ptr->getSecurityString (item->securityType()));
+                break;
+
+            case ItemRole::SsidRole:
+                row->insertRole(ItemRole::SsidRole);
+                //item->setData(j, item->ssid());
+                break;
+
+            case ItemRole::TypeRole:
+                row->insertRole(ItemRole::TypeRole);
+                //item->setData(j, item->type());
+                break;
+
+            default:
+                row->setData(j, "");
+            }
+
+        }
+
     }
 
 

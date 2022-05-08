@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(QT_Application VERSION 0.1 LANGUAGES CXX)
+project(QT_Application VERSION 0.4 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
 
@@ -20,29 +20,12 @@ set(PROJECT_SOURCES
         main_window.cpp
         main_window.h
         main_window.ui
-        custom_colors.cpp
-        custom_colors.h
-        custom_metrics.h
-        custom_style.cpp
-        custom_style.h
-        custom_style_p.h
-        custom_stylesheets.cpp
-        custom_stylesheets.h
-        network_delegate.cpp
-        network_delegate.h
-        network_enums.h
-        network_item.cpp
-        network_item.h
-        network_model.cpp
-        network_model.h
-        network_model_p.h
-        network_scan.cpp
-        network_scan.h
         war_driving.cpp
         war_driving.h
         icons.qrc
         fonts.qrc
 )
+
 
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -57,8 +40,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 else()
     if(ANDROID)
         add_library(QT_Application SHARED
-            ${PROJECT_SOURCES}
-        )
+                    ${PROJECT_SOURCES})
 # Define properties for Android with Qt 6 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
@@ -71,6 +53,8 @@ endif()
 target_link_libraries(QT_Application PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(QT_Application PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(QT_Application PRIVATE NetworkManagerQt)
+target_link_libraries(QT_Application PRIVATE Network_Model)
+target_link_libraries(QT_Application PRIVATE Styles)
 
 set_target_properties(QT_Application PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -92,4 +76,10 @@ install(TARGETS QT_Application
     LIBRARY DESTINATION "${INSTALL_DESTDIR}"
 )
 
+
 add_subdirectory(networkmanager-qt)
+add_subdirectory(styles)
+add_subdirectory(network_model)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/styles)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)

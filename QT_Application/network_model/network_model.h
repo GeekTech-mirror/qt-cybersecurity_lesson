@@ -2,7 +2,6 @@
 #define NetworkModel_H
 
 #include <QAbstractItemModel>
-#include <QQueue>
 #include <QTimer>
 
 #include <NetworkManagerQt/WirelessDevice>
@@ -75,8 +74,7 @@ private:
                         QVector<ItemRole> &list);
     void addDevice (const NetworkManager::Device::Ptr &device, NetworkItem *parent);
     void addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
-                             const NetworkManager::WirelessDevice::Ptr &device,
-                             NetworkItem *parent);
+                             const NetworkManager::WirelessDevice::Ptr &device);
 
     /* Scan Networks */
     QNetworkScan *m_scanHandler;

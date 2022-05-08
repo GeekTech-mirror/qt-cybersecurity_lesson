@@ -1,16 +1,17 @@
-#include <QAbstractSlider>
-#include <QCommonStyle>
+/* Main Menu
+** File: main_window.cpp
+** --------
+** Set-up the main app ui
+** --------
+*/
+
+/* Qt include files */
 #include <QDebug>
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QStringBuilder>
 
-#include <NetworkManagerQt/Manager>
-#include <NetworkManagerQt/Settings>
-#include <NetworkManagerQt/Device>
-#include <NetworkManagerQt/WirelessDevice>
-#include <NetworkManagerQt/AccessPoint>
-
+/* local include files */
 #include "main_window.h"
 #include "./ui_main_window.h"
 
@@ -19,7 +20,7 @@
 
 #include "network_model.h"
 #include "network_delegate.h"
-//#include "custom_scrollbar.h"
+
 
 Main_Window::Main_Window (QWidget *parent)
     : QMainWindow (parent),
@@ -52,8 +53,9 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->setColumnWidth(0, 64);
     ui->network_list->setColumnWidth(1, 200);
 
-//    ui->network_list->header()->setSectionResizeMode (QHeaderView::ResizeToContents);
+    //ui->network_list->setForegroundRole(CustomColors::merged_colors(CustomColors::background_color().darker(145), QColor(255,255,255), 255));
 
+    // Set treeview scrollbar colors
     ui->network_list->header()->setStyleSheet ("QHeaderView { font-size: " +
                                                QString::number(16) + "pt; }");
 
@@ -69,6 +71,11 @@ Main_Window::Main_Window (QWidget *parent)
 
     ui->network_list->horizontalScrollBar()->installEventFilter(this);
 
+
+    /* Set global style sheets
+    **     Background color
+    **     Scrollbar colors
+    */
     ui->Central_Widget->setStyleSheet(QString("* { background-color: rgb(30, 34, 39); }")
                                       + stylesheets->vertical_scrollbar()
                                       + stylesheets->horizontal_scrollbar());
@@ -122,8 +129,8 @@ bool Main_Window::eventFilter(QObject *object, QEvent *event)
         QString update_scrollbar;
 
         update_scrollbar =
-                treeview_stylesheet %
-                stylesheets->treeview_vertical_scrollbar_quirk();
+                treeview_stylesheet
+                % stylesheets->treeview_vertical_scrollbar_quirk();
 
         ui->network_list->setStyleSheet (update_scrollbar);
     }

@@ -69,6 +69,7 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles,
     rootItem = new NetworkItem(rootData);
     columnRoles = roles;
 
+
     // Initialize first scan and then scan every 2 seconds
     m_scanHandler = new QNetworkScan (this);
     m_scanHandler->requestScan();
@@ -125,7 +126,7 @@ QVariant NetworkModel::data (const QModelIndex &index, int role) const
     //qDebug() << role;
 
     NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
-    const int row = index.row();
+    //const int row = index.row();
 /*
     if (row >= 0 && row < item->childCount())
     {
@@ -356,6 +357,8 @@ void NetworkModel::sort(int column, Qt::SortOrder order)
 ** Implement functions to add wireless networks to the model
 ** --------
 **/
+
+/* Add network roles to the model */
 QHash<int, QByteArray> NetworkModel::roleNames() const
 {
     QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
@@ -386,9 +389,15 @@ QHash<int, QByteArray> NetworkModel::roleNames() const
 }
 
 
+/* Add physical network devices
+** Parameters:
+**     device: name of the physical wifi adapter
+*/
 void NetworkModel::addDevice (const NetworkManager::Device::Ptr &device,
-                               NetworkItem *parent)
+                              NetworkItem *parent)
 {
+    // Connect NetworkManager::networkAppear SIGNAL to
+    // NetworkModel::wirlessNetworkAppeared SLOT
     d_ptr->initializeSignals(device, this);
 
     if (device->type() == NetworkManager::Device::Wifi)
@@ -399,21 +408,22 @@ void NetworkModel::addDevice (const NetworkManager::Device::Ptr &device,
         for (const NetworkManager::WirelessNetwork::Ptr &wifiNetwork :
              wifiDev->networks())
         {
-            addWirelessNetwork(wifiNetwork, wifiDev, parent);
+            addWirelessNetwork(wifiNetwork, wifiDev);
         }
     }
 
 }
 
 
+/* Adds new network
+** Parameters:
+**     network: the new network to be added
+**     device: name of the physical wifi adapter
+*/
 void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
-                                        const NetworkManager::WirelessDevice::Ptr &device,
-                                        NetworkItem *parent)
+                                       const NetworkManager::WirelessDevice::Ptr &device)
 {
     d_ptr->initializeSignals(network);
-
-    QVector<NetworkItem *> parents;
-    parents << parent;
 
     // Set default security info
     NetworkManager::WirelessSetting::NetworkMode mode =
@@ -438,11 +448,11 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
     // Insert new row at end of table
     const int index = rootItem->childCount();
     beginInsertRows (QModelIndex(), index, index);
-    parent->insertChildren (parent->childCount(), 1, rootItem->columnCount());
+    rootItem->insertChildren (rootItem->childCount(), 1, rootItem->columnCount());
     endInsertRows ();
 
-    // Fill Network Item with WiFi info
-    NetworkItem *item = parent->child(parent->childCount()-1);
+    // Fill Network Item with wifi info
+    NetworkItem *item = rootItem->child(rootItem->childCount()-1);
     if (device->ipInterfaceName().isEmpty()) {
         item->setDeviceName(device->interfaceName());
     }
@@ -456,23 +466,34 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
     item->setSecurityType (securityType);
 
     // Set WiFi info to display
-    d_ptr->setItemRoles(columnRoles, parent->child(parent->childCount()-1));
+    d_ptr->setItemRoles(columnRoles, item);
 }
 
 
+/* Triggers when new network appears
+** Parameters:
+**     ssid: takes a network name
+*/
 void NetworkModel::wirelessNetworkAppeared (const QString &ssid)
 {
+    // Find the physical network device
     NetworkManager::Device::Ptr device =
-            NetworkManager::findNetworkInterface (qobject_cast<NetworkManager::Device *>
-                                                  (sender())->uni());
+            NetworkManager::findNetworkInterface
+            (qobject_cast<NetworkManager::Device *>
+             (sender())->uni());
 
+    // Ensure the device is a wifi adapter
     if (device && device->type() == NetworkManager::Device::Wifi)
     {
+        // Find the specific wirless device
         NetworkManager::WirelessDevice::Ptr wirelessDevice =
                 device.objectCast<NetworkManager::WirelessDevice>();
+
+        // Find the network with the specific ssid
         NetworkManager::WirelessNetwork::Ptr network =
                 wirelessDevice->findNetwork(ssid);
 
+        // Look for duplicates
         QString ssid = network->ssid();
         for (int i = 0; i < rootItem->childCount(); ++i)
         {
@@ -480,7 +501,8 @@ void NetworkModel::wirelessNetworkAppeared (const QString &ssid)
                 return;
         }
 
-        addWirelessNetwork(network, wirelessDevice, rootItem);
+        // Add new network
+        addWirelessNetwork(network, wirelessDevice);
 
         int row = rootItem->childCount()-1;
         NetworkItem *item = rootItem->child(row);

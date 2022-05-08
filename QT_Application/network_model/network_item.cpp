@@ -1,13 +1,15 @@
+
+/* Qt include files */
 #include <QIcon>
 
-#include <NetworkManagerQt/BridgeDevice>
+/* NetworkManager Include files */
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/Settings>
-#include <NetworkManagerQt/WiredDevice>
 #include <NetworkManagerQt/WirelessDevice>
 #include <NetworkManagerQt/WirelessSetting>
 #include <NetworkManagerQt/AccessPoint>
 
+/* local include files */
 #include "network_item.h"
 #include "network_enums.h"
 

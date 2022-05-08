@@ -9,7 +9,7 @@
 #include <QIcon>
 #include <QList>
 
-#include "custom_stylesheets.h"
+#include "styles/custom_stylesheets.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui

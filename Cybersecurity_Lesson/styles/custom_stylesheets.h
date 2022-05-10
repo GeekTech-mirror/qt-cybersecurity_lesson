@@ -22,7 +22,6 @@ private:
 
     ScrollBar_Metrics sb_metrics;
     const CustomColors::ScrollBar_Colors *sb_colors;
-    const CustomColors::ScrollBar_TreeView *sb_treeview;
 
     //int header_height = 27;
 };

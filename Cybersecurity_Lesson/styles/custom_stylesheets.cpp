@@ -6,8 +6,7 @@
 #include "custom_colors.h"
 
 CustomStyleSheets::CustomStyleSheets()
-    : sb_colors (new CustomColors::ScrollBar_Colors),
-      sb_treeview (new CustomColors::ScrollBar_TreeView)
+    : sb_colors (new CustomColors::ScrollBar_Colors)
 {
 }
 
@@ -134,21 +133,22 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
          padding-top: %12px; \
          padding-bottom: 10px; \
     }";
-    stylesheet = stylesheet.arg(sb_treeview->inner_border.red())
-                           .arg(sb_treeview->inner_border.green())
-                           .arg(sb_treeview->inner_border.blue())
-                           .arg(sb_treeview->inner_border.alpha());
 
-    stylesheet = stylesheet.arg(sb_treeview->outer_border.red())
-                           .arg(sb_treeview->outer_border.green())
-                           .arg(sb_treeview->outer_border.blue())
-                           .arg(sb_treeview->outer_border.alpha());
+    stylesheet = stylesheet.arg(CustomColors::inner_contrast_line().red())
+                           .arg(CustomColors::inner_contrast_line().green())
+                           .arg(CustomColors::inner_contrast_line().blue())
+                           .arg(CustomColors::inner_contrast_line().alpha());
 
-    stylesheet = stylesheet.arg(sb_treeview->background.red())
-                           .arg(sb_treeview->background.green())
-                           .arg(sb_treeview->background.blue());
+    stylesheet = stylesheet.arg(CustomColors::outer_frame_border_color().red())
+                           .arg(CustomColors::outer_frame_border_color().green())
+                           .arg(CustomColors::outer_frame_border_color().blue())
+                           .arg(CustomColors::outer_frame_border_color().alpha());
 
-    stylesheet = stylesheet.arg(sb_metrics.header_padding);
+    stylesheet = stylesheet.arg(CustomColors::frame_color().red())
+                           .arg(CustomColors::frame_color().green())
+                           .arg(CustomColors::frame_color().blue());
+
+    stylesheet = stylesheet.arg(sb_metrics.treeview_scrollbar_padding);
 
 
     stylesheet +=
@@ -163,36 +163,37 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
                                            stop:1 rgb(%20,%21,%22)); \
          height: %23px; \
     }";
-     // header borders
-     stylesheet = stylesheet.arg(sb_treeview->inner_border.red())
-                            .arg(sb_treeview->inner_border.green())
-                            .arg(sb_treeview->inner_border.blue())
-                            .arg(sb_treeview->inner_border.alpha());
+    // header top border
+    stylesheet = stylesheet.arg(CustomColors::inner_contrast_line().red())
+                           .arg(CustomColors::inner_contrast_line().green())
+                           .arg(CustomColors::inner_contrast_line().blue())
+                           .arg(CustomColors::inner_contrast_line().alpha());
 
-    stylesheet = stylesheet.arg(sb_treeview->header_shadow.red())
-                           .arg(sb_treeview->header_shadow.green())
-                           .arg(sb_treeview->header_shadow.blue());
+    // header bottom border
+    stylesheet = stylesheet.arg(CustomColors::outline().red())
+                           .arg(CustomColors::outline().green())
+                           .arg(CustomColors::outline().blue());
 
     // header gradient
-    stylesheet = stylesheet.arg(sb_treeview->gradient_start.red())
-                           .arg(sb_treeview->gradient_start.green())
-                           .arg(sb_treeview->gradient_start.blue());
+    stylesheet = stylesheet.arg(CustomColors::header_gradientStart().red())
+                           .arg(CustomColors::header_gradientStart().green())
+                           .arg(CustomColors::header_gradientStart().blue());
 
-    stylesheet = stylesheet.arg(sb_treeview->midColor1.red())
-                           .arg(sb_treeview->midColor1.green())
-                           .arg(sb_treeview->midColor1.blue());
+    stylesheet = stylesheet.arg(CustomColors::header_midColor1().red())
+                           .arg(CustomColors::header_midColor1().green())
+                           .arg(CustomColors::header_midColor1().blue());
 
-    stylesheet = stylesheet.arg(sb_treeview->midColor2.red())
-                           .arg(sb_treeview->midColor2.green())
-                           .arg(sb_treeview->midColor2.blue());
+    stylesheet = stylesheet.arg(CustomColors::header_midColor2().red())
+                           .arg(CustomColors::header_midColor2().green())
+                           .arg(CustomColors::header_midColor2().blue());
 
-    stylesheet = stylesheet.arg(sb_treeview->gradient_stop.red())
-                           .arg(sb_treeview->gradient_stop.green())
-                           .arg(sb_treeview->gradient_stop.blue());
+    stylesheet = stylesheet.arg(CustomColors::header_gradientStop().red())
+                           .arg(CustomColors::header_gradientStop().green())
+                           .arg(CustomColors::header_gradientStop().blue());
 
-    stylesheet = stylesheet.arg(sb_treeview->gradient_stop.darker(104).red())
-                           .arg(sb_treeview->gradient_stop.darker(104).green())
-                           .arg(sb_treeview->gradient_stop.darker(104).blue());
+    stylesheet = stylesheet.arg(CustomColors::header_gradientStop().darker(104).red())
+                           .arg(CustomColors::header_gradientStop().darker(104).green())
+                           .arg(CustomColors::header_gradientStop().darker(104).blue());
 
     stylesheet = stylesheet.arg(sb_metrics.header_height);
 
@@ -207,21 +208,23 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
          padding-left: %12px; \
          padding-right: %12px; \
     }";
-     stylesheet = stylesheet.arg(sb_treeview->inner_border.red())
-                            .arg(sb_treeview->inner_border.green())
-                            .arg(sb_treeview->inner_border.blue())
-                            .arg(sb_treeview->inner_border.alpha());
 
-     stylesheet = stylesheet.arg(sb_treeview->outer_border.red())
-                            .arg(sb_treeview->outer_border.green())
-                            .arg(sb_treeview->outer_border.blue())
-                            .arg(sb_treeview->outer_border.alpha());
 
-     stylesheet = stylesheet.arg(sb_treeview->background.red())
-                            .arg(sb_treeview->background.green())
-                            .arg(sb_treeview->background.blue());
+    stylesheet = stylesheet.arg(CustomColors::inner_contrast_line().red())
+                           .arg(CustomColors::inner_contrast_line().green())
+                           .arg(CustomColors::inner_contrast_line().blue())
+                           .arg(CustomColors::inner_contrast_line().alpha());
 
-     stylesheet = stylesheet.arg(12);
+    stylesheet = stylesheet.arg(CustomColors::outer_frame_border_color().red())
+                           .arg(CustomColors::outer_frame_border_color().green())
+                           .arg(CustomColors::outer_frame_border_color().blue())
+                           .arg(CustomColors::outer_frame_border_color().alpha());
+
+    stylesheet = stylesheet.arg(CustomColors::frame_color().red())
+                           .arg(CustomColors::frame_color().green())
+                           .arg(CustomColors::frame_color().blue());
+
+    stylesheet = stylesheet.arg(12);
 
 
     return stylesheet;
@@ -234,10 +237,10 @@ QString CustomStyleSheets::treeview_vertical_scrollbar_quirk (void)
          border-bottom: 1px solid rgba(%5,%6,%7,%8); \
     }";
 
-    stylesheet = stylesheet.arg(sb_treeview->outer_border.red())
-                           .arg(sb_treeview->outer_border.green())
-                           .arg(sb_treeview->outer_border.blue())
-                           .arg(sb_treeview->outer_border.alpha());
+    stylesheet = stylesheet.arg(CustomColors::outer_frame_border_color().red())
+                           .arg(CustomColors::outer_frame_border_color().green())
+                           .arg(CustomColors::outer_frame_border_color().blue())
+                           .arg(CustomColors::outer_frame_border_color().alpha());
 
     return stylesheet;
 }
@@ -245,5 +248,5 @@ QString CustomStyleSheets::treeview_vertical_scrollbar_quirk (void)
 void CustomStyleSheets::setHeaderHeight(int height)
 {
     sb_metrics.header_height = height - 2;
-    sb_metrics.header_padding = height + 6;
+    sb_metrics.treeview_scrollbar_padding = height + 6;
 }

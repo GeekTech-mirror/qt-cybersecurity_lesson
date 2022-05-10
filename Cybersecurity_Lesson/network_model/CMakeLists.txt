@@ -1,4 +1,4 @@
-set(NETWORK_MODEL_SOURCES
+set(NETWORK_MODEL_SRCS
         network_delegate.cpp
         network_delegate.h
         network_enums.h
@@ -11,7 +11,7 @@ set(NETWORK_MODEL_SOURCES
         network_scan.h
 )
 
-add_library(Network_Model STATIC ${NETWORK_MODEL_SOURCES})
+add_library(Network_Model STATIC ${NETWORK_MODEL_SRCS})
 
 target_link_libraries(Network_Model PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Network_Model PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)

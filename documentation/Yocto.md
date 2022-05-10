@@ -47,10 +47,11 @@ cd poky
 
 git clone -b honister git://git.openembedded.org/meta-openembedded
 git clone -b honister git://git.yoctoproject.org/meta-raspberrypi
-git clone -b 6.2.3 git://code.qt.io/cgit/yocto/meta-qt6
-git clone -b 6.3 git://code.qt.io/cgit/yocto/meta-boot2qt
+git clone -b 6.2.3 git://code.qt.io/yocto/meta-qt6.git
+git clone https://invent.kde.org/packaging/yocto-meta-kf5.git
+>git clone -b 6.3 git://code.qt.io/cgit/yocto/meta-boot2qt
 
-meta-boot2qt/b2qt-init-build-env init --device raspberrypi4-64
+>meta-boot2qt/b2qt-init-build-env init --device raspberrypi4-64
 
 source oe-init-build-env
 

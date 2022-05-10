@@ -3,7 +3,9 @@
 
 #include <QColor>
 #include <QCommonStyle>
+#include <QDebug>
 #include <QLinearGradient>
+#include <QPen>
 
 
 class CustomColors
@@ -28,7 +30,9 @@ public:
                                                const QBrush &baseColor,
                                                Direction direction = TopDown);
 
-    /* Color Palette */
+    /*
+     *  Color Palette
+    */
     static QColor light_shade() {
         return QColor(255, 255, 255, 90);
     }
@@ -62,6 +66,10 @@ public:
         return pal.window().color().darker(140);
     }
 
+    static QColor outline(void) {
+        return QColor(30, 34, 39).darker(140);
+    }
+
     static QColor highlighted_outline(const QPalette &pal) {
         QColor highlighted_outline = highlight(pal).darker(125);
         if (highlighted_outline.value() > 160)
@@ -82,7 +90,87 @@ public:
     }
 
 
-    /* ScrollBar Colors */
+    /*
+     *  Primitive Colors
+    */
+    static int button_brightness() {
+        return 125;
+    }
+
+    static QColor button_color() {
+        return background_color().lighter(CustomColors::button_brightness());
+    }
+
+    static QColor frame_color() {
+        return background_color().darker(145);
+    }
+
+    static QPen inner_frame_border() {
+        QPen inner_border(QColor(255,255,255,2));
+
+        inner_border.setWidth(2);
+        inner_border.setCosmetic(false);
+        return inner_border;
+    }
+
+    static QColor outer_frame_border_color() {
+        return QColor(CustomColors::merged_colors
+                          (CustomColors::highlight(),
+                           CustomColors::frame_color(),
+                           90));
+    }
+
+    static QPen outer_frame_border() {
+        QPen outer_border (CustomColors::outer_frame_border_color());
+
+        outer_border.setWidth(1);
+        outer_border.setCosmetic(false);
+        return outer_border;
+    }
+
+    static QColor header_gradientStart() {
+        return CustomColors::background_color().lighter(130);
+    }
+
+    static QColor header_gradientStop() {
+        return CustomColors::background_color().lighter(123);
+    }
+
+    static QColor header_midColor1() {
+        return CustomColors::merged_colors
+                   (CustomColors::header_gradientStart(),
+                    CustomColors::header_gradientStop(),
+                    60);
+    }
+
+    static QColor header_midColor2() {
+        return CustomColors::merged_colors
+                   (CustomColors::header_gradientStart(),
+                    CustomColors::header_gradientStop(),
+                    40);
+    }
+
+    static QLinearGradient header_gradient(QRect *rect)
+    {
+        QLinearGradient gradient(rect->topLeft(), rect->bottomLeft());
+
+        gradient.setColorAt(0, header_gradientStart());
+        gradient.setColorAt(0.5, header_midColor1());
+        gradient.setColorAt(0.501, header_midColor2());
+        gradient.setColorAt(0.92, header_gradientStop());
+        gradient.setColorAt(1, header_gradientStop().darker(104));
+
+        return gradient;
+    }
+
+    static QColor header_bottom_border() {
+        return QColor(0, 0, 0, 40);
+    }
+
+
+    /*
+     * ScrollBar Colors
+    */
     struct ScrollBar_Colors
     {
         // Handle
@@ -94,27 +182,6 @@ public:
                 CustomColors::merged_colors (CustomColors::highlight(),
                                              CustomColors::background_color(),
                                              80);
-    };
-
-    /* Unique ScrollBar Colors for TreeView Frame */
-    struct ScrollBar_TreeView
-    {
-        /* ScrollBar colors */
-        const QColor background = CustomColors::background_color().darker(145);
-        const QColor inner_border = QColor (255, 255, 255, 30);
-        const QColor outer_border =
-                (CustomColors::merged_colors(CustomColors::highlight(),
-                                             CustomColors::background_color().darker(145),
-                                             90));;
-
-        /* Header colors */
-        const QColor gradient_start = CustomColors::background_color().lighter(130);
-        const QColor gradient_stop = CustomColors::background_color().lighter(123);
-
-        const QColor midColor1 = CustomColors::merged_colors (gradient_start, gradient_stop, 60);
-        const QColor midColor2 = CustomColors::merged_colors (gradient_start, gradient_stop, 40);
-
-        const QColor header_shadow = QColor (21,24,28);
     };
 };
 

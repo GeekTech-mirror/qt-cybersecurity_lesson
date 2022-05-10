@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(QT_Application VERSION 0.4 LANGUAGES CXX)
+project(Cybersecurity_Lesson VERSION 0.4 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -15,7 +15,7 @@ find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
 
-set(PROJECT_SOURCES
+set(CYBERSECURITY_SRCS
         main.cpp
         main_window.cpp
         main_window.h
@@ -29,34 +29,34 @@ set(PROJECT_SOURCES
 
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(QT_Application
+    qt_add_executable(Cybersecurity_Lesson
         MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
+        ${CYBERSECURITY_SRCS}
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET QT_Application APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET Cybersecurity_Lesson APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(QT_Application SHARED
-                    ${PROJECT_SOURCES})
+        add_library(Cybersecurity_Lesson SHARED
+                    ${CYBERSECURITY_SRCS})
 # Define properties for Android with Qt 6 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(QT_Application
-            ${PROJECT_SOURCES}
+        add_executable(Cybersecurity_Lesson
+            ${CYBERSECURITY_SRCS}
         )
     endif()
 endif()
 
-target_link_libraries(QT_Application PRIVATE Qt${QT_VERSION_MAJOR}::Network)
-target_link_libraries(QT_Application PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(QT_Application PRIVATE NetworkManagerQt)
-target_link_libraries(QT_Application PRIVATE Network_Model)
-target_link_libraries(QT_Application PRIVATE Styles)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Network_Model)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Styles)
 
-set_target_properties(QT_Application PROPERTIES
+set_target_properties(Cybersecurity_Lesson PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -65,12 +65,12 @@ set_target_properties(QT_Application PROPERTIES
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(QT_Application)
+    qt_finalize_executable(Cybersecurity_Lesson)
 endif()
 
 set(INSTALL_DESTDIR "/usr/bin")
 
-install(TARGETS QT_Application
+install(TARGETS Cybersecurity_Lesson
     RUNTIME DESTINATION "${INSTALL_DESTDIR}"
     BUNDLE DESTINATION "${INSTALL_DESTDIR}"
     LIBRARY DESTINATION "${INSTALL_DESTDIR}"
@@ -78,8 +78,8 @@ install(TARGETS QT_Application
 
 
 add_subdirectory(networkmanager-qt)
-add_subdirectory(styles)
 add_subdirectory(network_model)
+add_subdirectory(styles)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/styles)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)

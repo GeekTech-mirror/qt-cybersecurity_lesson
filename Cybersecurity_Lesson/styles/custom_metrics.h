@@ -12,7 +12,7 @@ struct ScrollBar_Metrics
     const int handle_radius = 4;
 
     // TreeView Settings
-    int header_padding = 35;
+    int treeview_scrollbar_padding = 35;
     int header_height = 27;
 };
 

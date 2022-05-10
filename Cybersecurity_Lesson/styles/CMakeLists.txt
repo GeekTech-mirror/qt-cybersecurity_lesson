@@ -1,4 +1,4 @@
-set(STYLE_SOURCES
+set(STYLE_SRCS
         custom_colors.cpp
         custom_colors.h
         custom_metrics.h
@@ -9,7 +9,7 @@ set(STYLE_SOURCES
         custom_stylesheets.h
 )
 
-add_library(Styles STATIC ${STYLE_SOURCES})
+add_library(Styles STATIC ${STYLE_SRCS})
 
 target_link_libraries(Styles PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Styles PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)

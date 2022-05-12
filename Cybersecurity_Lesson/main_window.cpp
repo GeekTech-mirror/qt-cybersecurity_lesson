@@ -41,8 +41,7 @@ Main_Window::Main_Window (QWidget *parent)
     ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
 
     // Setup Tree View to display networks
-    QVector<ItemRole> roles ({ItemRole::ConnectionIconRole,
-                              ItemRole::SsidRole,
+    QVector<ItemRole> roles ({ItemRole::NetworkItemRole,
                               ItemRole::SecurityTypeRole});
 
     NetworkModel *network_model = new NetworkModel(roles);
@@ -50,8 +49,8 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->setModel (network_model);
     ui->network_list->resizeColumnToContents(network_model->columnCount()-1);
     ui->network_list->setIndentation(10);
-    ui->network_list->setColumnWidth(0, 64);
-    ui->network_list->setColumnWidth(1, 200);
+    ui->network_list->setIconSize(QSize (36,36));
+    ui->network_list->setColumnWidth(0, 300);
 
     //ui->network_list->setForegroundRole(CustomColors::merged_colors(CustomColors::background_color().darker(145), QColor(255,255,255), 255));
 
@@ -59,6 +58,7 @@ Main_Window::Main_Window (QWidget *parent)
     ui->network_list->header()->setStyleSheet ("QHeaderView { font-size: " +
                                                QString::number(16) + "pt; }");
 
+    // Set treeview stylesheet with current header height
     treeview_stylesheet = stylesheets->
                           treeview_scrollbar
                           (

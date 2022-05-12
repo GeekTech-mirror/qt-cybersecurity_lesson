@@ -9,6 +9,7 @@
 /* Qt include files */
 #include <QDBusInterface>
 #include <QIcon>
+#include <QStringBuilder>
 #include <QTimer>
 
 /* NetworkManager Include files */
@@ -24,7 +25,7 @@
 
 /* Constructor */
 NetworkModel::NetworkModel (const QVector<ItemRole> &roles,
-                              QObject *parent)
+                            QObject *parent)
     : QAbstractItemModel (parent),
       m_scanHandler (new QNetworkScan (this))
 
@@ -34,6 +35,10 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles,
     for (int i = 0; i < roles.count(); ++i)
     {
         switch (roles.at(i)) {
+        case ItemRole::ConnectionIconRole:
+            rootData << "";
+            break;
+
         case ItemRole::DeviceName:
             rootData << "Device Name";
             break;
@@ -42,8 +47,8 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles,
             rootData << "Device Path";
             break;
 
-        case ItemRole::ConnectionIconRole:
-            rootData << "";
+        case ItemRole::NetworkItemRole:
+            rootData << "Networks";
             break;
 
         case ItemRole::SpecificPathRole:
@@ -126,39 +131,19 @@ QVariant NetworkModel::data (const QModelIndex &index, int role) const
     //qDebug() << role;
 
     NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
-    //const int row = index.row();
-/*
-    if (row >= 0 && row < item->childCount())
+
+    if (index.column() == 0)
     {
-        switch (role) {
-        case ConnectionIconRole:
-            return item->icon();
-        case ConnectionStateRole:
-            return item->connectionState();
-        case DeviceName:
-            return item->deviceName();
-        case DevicePathRole:
-            return item->devicePath();
-        case SsidRole:
-            return item->ssid();
-        case SpecificPathRole:
-            return item->specificPath();
-        case SecurityTypeRole:
-            return item->securityType();
-        case TypeRole:
-            return item->type();
-        case UuidRole:
-            return item->uuid();
-        default:
-            break;
+        if (role == Qt::DecorationRole)
+        {
+            return QIcon (item->icon());
         }
     }
-*/
+
     // Define roles that are allowed
     // (all others return empty value)
-    if (role != Qt::DisplayRole &&
-        role != Qt::EditRole &&
-        role != Qt::DecorationRole)
+    if (role != Qt::DisplayRole
+        && role != Qt::EditRole)
     {
         return QVariant();
     }
@@ -167,6 +152,7 @@ QVariant NetworkModel::data (const QModelIndex &index, int role) const
 }
 
 /* Store value in model index */
+
 bool NetworkModel::setData (const QModelIndex &index,
                              const QVariant &value,
                              int role)
@@ -175,13 +161,12 @@ bool NetworkModel::setData (const QModelIndex &index,
         return false;
 
     NetworkItem *item = d_ptr->getItem (index, this);
-    index.column();
 
-    bool result = item->setData (index.column(), value);
+    // Set WiFi info to display
+    bool result = d_ptr->setItemRole(value, index, this);
     if (result)
         Q_EMIT dataChanged (index, index, item->changedRoles());
         item->clearChangedRoles();
-
 
     return result;
 }
@@ -309,31 +294,6 @@ int NetworkModel::columnCount (const QModelIndex &parent) const
     return rootItem->columnCount();
 }
 
-/* Insert number of columns below specified position */
-bool NetworkModel::insertColumns (int position, int columns,
-                                   const QModelIndex &parent)
-{
-    beginInsertColumns (parent, position, position + columns - 1);
-    const bool success = rootItem->insertColumns (position, columns);
-    endInsertColumns ();
-
-    return success;
-}
-
-/* Remove number of columns below specified position */
-bool NetworkModel::removeColumns (int position, int columns,
-                                   const QModelIndex &parent)
-{
-    beginRemoveColumns (parent, position, position + columns -1);
-    const bool success = rootItem->removeColumns (position, columns);
-    endRemoveColumns ();
-
-    if (rootItem->columnCount() == 0)
-        removeRows(0, rowCount());
-
-    return success;
-}
-
 
 /* Returns list of item flags present on index (See Qt::ItemFlags) */
 Qt::ItemFlags NetworkModel::flags(const QModelIndex &index) const
@@ -374,6 +334,7 @@ QHash<int, QByteArray> NetworkModel::roleNames() const
     roles[ItemUniqueNameRole] = "ItemUniqueName";
     roles[ItemTypeRole] = "ItemType";
     roles[NameRole] = "Name";
+    roles[NetworkItemRole] = "NetworkItem";
     roles[SectionRole] = "Section";
     roles[SlaveRole] = "Slave";
     roles[SsidRole] = "Ssid";
@@ -459,14 +420,20 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
     else {
         item->setDeviceName (device->ipInterfaceName());
     }
+    item->setNetworkName(network->ssid());
     item->setSsid (network->ssid());
     item->setDevicePath (device->uni());
     item->setSpecificPath (network->referenceAccessPoint()->uni());
     item->setType (NetworkManager::ConnectionSettings::Wireless);
     item->setSecurityType (securityType);
 
-    // Set WiFi info to display
-    d_ptr->setItemRoles(columnRoles, item);
+
+    // Set column role
+    int row = rootItem->childCount()-1;
+    for (int i=0; i < columnRoles.count(); ++i)
+    {
+        setData(this->index(row,i), columnRoles.at(i));
+    }
 }
 
 
@@ -503,12 +470,5 @@ void NetworkModel::wirelessNetworkAppeared (const QString &ssid)
 
         // Add new network
         addWirelessNetwork(network, wirelessDevice);
-
-        int row = rootItem->childCount()-1;
-        NetworkItem *item = rootItem->child(row);
-        for (int i = 0; i < rootItem->columnCount(); ++i)
-        {
-            item->setData(i, d_ptr->getColumn(index(row, i), this));
-        }
     }
 }

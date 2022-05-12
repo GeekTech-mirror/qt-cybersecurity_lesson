@@ -4,15 +4,17 @@
 #include <QStyledItemDelegate>
 
 
-class QNetworkDelegatePrivate;
+class NetworkDelegatePrivate;
 
-class QNetworkDelegate : public QStyledItemDelegate
+class NetworkDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
     using QStyledItemDelegate::QStyledItemDelegate;
 
+    void paint (QPainter *painter, const QStyleOptionViewItem &option,
+                const QModelIndex &index) const override;
 //    void setModelData(QWidget *editor, QAbstractItemModel *model,
 //                      const QModelIndex &index) const override;
 

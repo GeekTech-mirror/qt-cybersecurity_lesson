@@ -27,9 +27,6 @@ public:
     bool insertChildren(int position, int count, int columns);
     bool removeChildren(int position, int count);
 
-    bool insertColumns(int position, int columns);
-    bool removeColumns(int position, int columns);
-
     QVariant data(int column) const;
     bool setData(int column, const QVariant &value);
 
@@ -47,8 +44,11 @@ public:
     QVariant devicePath() const;
     void setDevicePath(const QVariant &path);
 
-    void setIcon(const QString &icon);
     QString icon() const;
+    void setIcon(const QString &icon);
+
+    QVariant networkName() const;
+    void setNetworkName(const QVariant &network);
 
     QVariant specificPath() const;
     void setSpecificPath(const QVariant &path);
@@ -90,8 +90,8 @@ private:
     /* Tree Items */
     NetworkItem *m_parentItem;
     QVector<NetworkItem*> m_childItems;
-    QVector<QVariant> m_itemData;
     QVector<QVariant> m_headerData;
+    QString indent;
 
     /* Network Items */
     QString computeIcon() const;
@@ -100,6 +100,7 @@ private:
     NetworkManager::ActiveConnection::State m_connectionState;
     QVariant m_deviceName;
     QVariant m_devicePath;
+    QVariant m_networkName;
     QVariant m_specificPath;
     NetworkManager::WirelessSecurityType m_securityType;
     QVariant m_ssid;

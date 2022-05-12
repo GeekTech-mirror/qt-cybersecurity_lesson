@@ -42,6 +42,10 @@ public:
             return QIcon (item->icon());
             break;
 
+        case NetworkItemRole:
+            return item->networkName();
+            break;
+
         case SpecificPathRole:
             return item->specificPath();
             break;
@@ -115,45 +119,51 @@ public:
     }
 
 
-    void setItemRoles (const QVector<ItemRole> &roles, NetworkItem *row)
+    bool setItemRole (const QVariant &role,
+                       const QModelIndex &index,
+                       const NetworkModel *dd)
     {
-        for (int j = 0; j < roles.count(); ++j)
-        {
-            switch (roles.at(j)) {
-            case ItemRole::DeviceName:
-                row->insertRole(ItemRole::DeviceName);
-                break;
+        NetworkItem *item = getItem (index, dd);
 
-            case ItemRole::DevicePathRole:
-                row->insertRole(ItemRole::DevicePathRole);
-                break;
+        switch (role.toInt()) {
+        case ItemRole::DeviceName:
+            item->insertRole(ItemRole::DeviceName);
+            break;
 
-            case ItemRole::ConnectionIconRole:
-                row->insertRole(ItemRole::ConnectionIconRole);
-                break;
+        case ItemRole::DevicePathRole:
+            item->insertRole(ItemRole::DevicePathRole);
+            break;
 
-            case ItemRole::SpecificPathRole:
-                row->insertRole(ItemRole::SpecificPathRole);
-                break;
+        case ItemRole::ConnectionIconRole:
+            item->insertRole(ItemRole::ConnectionIconRole);
+            break;
 
-            case ItemRole::SecurityTypeRole:
-                row->insertRole(ItemRole::SecurityTypeRole);
-                break;
+        case ItemRole::NetworkItemRole:
+            item->insertRole(ItemRole::NetworkItemRole);
+            break;
 
-            case ItemRole::SsidRole:
-                row->insertRole(ItemRole::SsidRole);
-                break;
+        case ItemRole::SpecificPathRole:
+            item->insertRole(ItemRole::SpecificPathRole);
+            break;
 
-            case ItemRole::TypeRole:
-                row->insertRole(ItemRole::TypeRole);
-                break;
+        case ItemRole::SecurityTypeRole:
+            item->insertRole(ItemRole::SecurityTypeRole);
+            break;
 
-            default:
-                row->setData(j, "");
-            }
+        case ItemRole::SsidRole:
+            item->insertRole(ItemRole::SsidRole);
+            break;
 
+        case ItemRole::TypeRole:
+            item->insertRole(ItemRole::TypeRole);
+            break;
+
+        default:
+            return false;
+            break;
         }
 
+        return true;
     }
 
 

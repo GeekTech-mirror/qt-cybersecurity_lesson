@@ -1,6 +1,7 @@
 
 /* Qt include files */
 #include <QIcon>
+#include <QStringBuilder>
 
 /* NetworkManager Include files */
 #include <NetworkManagerQt/Manager>
@@ -15,12 +16,14 @@
 
 NetworkItem::NetworkItem(NetworkItem *parent)
     : m_parentItem(parent)
+    , indent(1,' ')
 {
 }
 
 NetworkItem::NetworkItem(const QVector<QVariant> &data, NetworkItem *parent)
     : m_headerData(data)
     , m_parentItem(parent)
+    , indent(1,' ')
 {
     for (int i = 0; i < m_headerData.size(); ++i)
     {
@@ -96,40 +99,10 @@ bool NetworkItem::removeChildren(int position, int count)
     return true;
 }
 
-/* insert column (perform action on every row) */
-bool NetworkItem::insertColumns(int position, int columns)
-{
-    if (position < 0 || position > m_itemData.size())
-        return false;
-
-    for (int column = 0; column < columns; ++column)
-        m_itemData.insert(position, int());
-
-    for (NetworkItem *child : qAsConst(m_childItems))
-        child->insertColumns(position, columns);
-
-    return true;
-}
-
-/* remove column */
-bool NetworkItem::removeColumns(int position, int columns)
-{
-    if (position < 0 || position + columns > m_itemData.size())
-        return false;
-
-    for (int column = 0; column < columns; ++column)
-        m_itemData.remove(position);
-
-    for (NetworkItem *child : qAsConst(m_childItems))
-        child->removeColumns(position, columns);
-
-    return true;
-}
-
 
 /* temporary until better role handling */
 QString getSecurityString(NetworkManager::WirelessSecurityType type)
-{
+{   
     switch (type) {
     case NetworkManager::NoneSecurity:
         return QStringLiteral("None");
@@ -191,49 +164,35 @@ QVariant NetworkItem::data(int column) const
     case ConnectionStateRole:
         return m_connectionState;
     case DeviceName:
-        return m_deviceName;
+        return indent + m_deviceName.toString();
     case DevicePathRole:
-        return m_devicePath;
+        return indent + m_devicePath.toString();
     case HeaderRole:
-        return m_headerData[column];
+        return indent + m_headerData[column].toString();
+    case NetworkItemRole:
+        return indent + m_networkName.toString();
     case SsidRole:
-        return m_ssid;
+        return indent + m_ssid.toString();
     case SpecificPathRole:
-        return m_specificPath;
+        return indent + m_specificPath.toString();
     case SecurityTypeRole:
-        return getSecurityString(m_securityType);
+        return indent + getSecurityString(m_securityType);
     case TypeRole:
         return m_type;
     case UuidRole:
-        return m_uuid;
+        return indent + m_uuid.toString();
     default:
         break;
     }
 
-    return m_itemData.at(column);
-}
-
-/* store values in the itemData list for valid list indexes */
-bool NetworkItem::setData(int column, const QVariant &value)
-{
-
-    if (column < 0 || column >= m_itemData.size())
-        return false;
-
-    if (m_itemData[column] != value) {
-        m_itemData[column] = value;
-        return true;
-    }
-    else {
-        return false;
-    }
+    return QVariant();
 }
 
 
 /* retrieve data from headerData list at specified column */
 QVariant NetworkItem::headerData(int column) const
 {
-    if (column < 0 || column >= m_itemData.size())
+    if (column < 0 || column >= m_headerData.size())
         return QVariant();
 
     return m_headerData[column];
@@ -244,7 +203,7 @@ QVariant NetworkItem::headerData(int column) const
 bool NetworkItem::setHeaderData(int column, const QVariant &value)
 {
 
-    if (column < 0 || column >= m_itemData.size())
+    if (column < 0 || column >= m_headerData.size())
         return false;
 
     if (m_headerData[column] != value) {
@@ -350,6 +309,20 @@ QString NetworkItem::computeIcon() const
         return QStringLiteral("network-wired");
     else
         return QStringLiteral("network-wired");
+}
+
+
+QVariant NetworkItem::networkName() const
+{
+    return m_networkName;
+}
+
+void NetworkItem::setNetworkName(const QVariant &network)
+{
+    if (m_networkName != network) {
+        m_networkName = network;
+        m_changedRoles << ItemRole::NetworkItemRole << ItemRole::UniRole;
+    }
 }
 
 

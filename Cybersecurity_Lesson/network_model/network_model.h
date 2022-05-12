@@ -46,11 +46,6 @@ public:
 
     int columnCount (const QModelIndex &parent = QModelIndex()) const override;
 
-    bool insertColumns (int position, int columns,
-                        const QModelIndex &parent = QModelIndex()) override;
-    bool removeColumns (int position, int columns,
-                        const QModelIndex &parent = QModelIndex()) override;
-
     Qt::ItemFlags flags (const QModelIndex &index) const override;
 
     void sort(int column, Qt::SortOrder order) override;

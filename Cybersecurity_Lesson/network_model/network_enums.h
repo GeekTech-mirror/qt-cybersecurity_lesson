@@ -33,6 +33,7 @@ enum ItemRole {
     LastUsedRole,
     LastUsedDateOnlyRole,
     NameRole,
+    NetworkItemRole,
     SecurityTypeRole,
     SecurityTypeStringRole,
     SectionRole,

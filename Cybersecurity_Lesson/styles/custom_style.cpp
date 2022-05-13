@@ -76,20 +76,20 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
 {
     // Access color options from private data pointer
     QColor outline = CustomColors::outline(option->palette);
-    QColor highlighted_outline = CustomColors::highlighted_outline(option->palette);
+    QColor highlighted_outline = CustomColors::highlighted_outline (option->palette);
 
     // Initialize button shape
     QRect button_shape;
     QRect rect = option->rect;
 
-    int corner_radius = qMin(rect.width(), rect.height()) / 6;
+    int corner_radius = qMin (rect.width(), rect.height()) / 6;
 
     // Primitive element selector
     switch (element) {
     case PE_PanelButtonCommand:
     {
 
-        // Increase color brightness
+        // Set button color
         QColor button_color = CustomColors::button_color();
 
         // Check button state
@@ -97,20 +97,22 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
         bool isDown = (option->state & State_Sunken) || (option->state & State_On);
 
         if (const QStyleOptionButton *button =
-                qstyleoption_cast<const QStyleOptionButton*>(option)) {
+            qstyleoption_cast<const QStyleOptionButton*>(option))
+        {
             isDefault =
-                (button->features & QStyleOptionButton::DefaultButton) &&
-                (button->state & State_Enabled);
+                (button->features & QStyleOptionButton::DefaultButton)
+                && (button->state & State_Enabled);
         }
 
         bool isEnabled = option->state & State_Enabled;
         bool hasFocus =
-            (option->state & State_HasFocus &&
-             option->state & State_KeyboardFocusChange);
+                (option->state & State_HasFocus &&
+                 option->state & State_KeyboardFocusChange);
 
         // Set highlight color for selected (default) button
         QColor dark_outline = outline;
-        if (hasFocus | isDefault) {
+        if (hasFocus | isDefault)
+        {
             dark_outline = highlighted_outline;
         }
 
@@ -129,8 +131,9 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
 
         // Draw subtle gradient from top to bottum
         QLinearGradient gradient =
-            CustomColors::qt_fusion_gradient (rect, (isEnabled && option->state & State_MouseOver)
-                                              ? button_color : button_color.darker (104));
+                CustomColors::qt_fusion_gradient
+                (rect, (isEnabled && option->state & State_MouseOver)
+                 ? button_color : button_color.darker (104));
 
         // Paint button color based on whether button's pressed
         p->setPen (Qt::transparent);
@@ -154,7 +157,7 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
         {
             QStyleOption copy = *option;
             copy.state |= State_Raised;
-            proxy()->drawPrimitive(PE_PanelMenu, &copy, painter, widget);
+            proxy()->drawPrimitive (PE_PanelMenu, &copy, painter, widget);
             break;
         }
         painter->save();
@@ -168,12 +171,12 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
         painter->setBrush (Qt::NoBrush);
 
         // Draw inner border line
-        painter->setPen(CustomColors::inner_frame_border());
-        painter->drawRoundedRect(option->rect.adjusted(1,1,-2,-2), 1, 1);
+        painter->setPen (CustomColors::inner_frame_border());
+        painter->drawRoundedRect (option->rect.adjusted(1,1,-2,-2), 1, 1);
 
         // Draw outer border line
-        painter->setPen(CustomColors::outer_frame_border());
-        painter->drawRoundedRect(option->rect.adjusted(1,10,-2,-2), 1, 1);
+        painter->setPen (CustomColors::outer_frame_border());
+        painter->drawRoundedRect (option->rect.adjusted(1,1,-2,-2), 1, 1);
 
         painter->restore();
         break;
@@ -193,7 +196,7 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
 ** Return: none
 ** Notes: re-implementation of fusion style
 */
-void CustomStyle::drawControl(ControlElement element,
+void CustomStyle::drawControl (ControlElement element,
                                const QStyleOption *option,
                                QPainter *painter,
                                const QWidget *widget) const
@@ -206,66 +209,73 @@ void CustomStyle::drawControl(ControlElement element,
 
         // Draw header view for frame objects
         if (const QStyleOptionHeader *header =
-                qstyleoption_cast<const QStyleOptionHeader *>(option))
+            qstyleoption_cast<const QStyleOptionHeader *>(option))
         {
-            const QStyleOptionHeaderV2 *headerV2 = qstyleoption_cast<const QStyleOptionHeaderV2 *>(option);
-            QString pixmapName = d_ptr->unique_name(u"headersection"_qs, option, option->rect.size());
+            const QStyleOptionHeaderV2 *headerV2 =
+                    qstyleoption_cast<const QStyleOptionHeaderV2 *>(option);
+            QString pixmapName =
+                    d_ptr->unique_name
+                    (u"headersection"_qs, option, option->rect.size());
             pixmapName += QString::number(- int(header->position));
             pixmapName += QString::number(- int(header->orientation));
             if (headerV2)
                 pixmapName += QString::number(- int(headerV2->isSectionDragTarget));
 
             QPixmap cache;
-            if (!QPixmapCache::find(pixmapName, &cache))
+            if (!QPixmapCache::find (pixmapName, &cache))
             {
-                cache = d_ptr->style_cache_pixmap(rect.size());
-                cache.fill(Qt::transparent);
+                cache = d_ptr->style_cache_pixmap (rect.size());
+                cache.fill (Qt::transparent);
 
                 // Draw header background
                 QRect pixmapRect(0, 0, rect.width(), rect.height());
-                QPainter cachePainter(&cache);
-                cachePainter.fillRect(pixmapRect, CustomColors::header_gradient(&pixmapRect));
+                QPainter cachePainter (&cache);
+                cachePainter.fillRect (pixmapRect,
+                                       CustomColors::header_gradient (&pixmapRect));
 
                 // Draw top border
-                cachePainter.setPen(CustomColors::inner_contrast_line());
-                cachePainter.setBrush(Qt::NoBrush);
-                cachePainter.drawLine(pixmapRect.topLeft(), pixmapRect.topRight());
+                cachePainter.setPen (CustomColors::inner_contrast_line());
+                cachePainter.setBrush (Qt::NoBrush);
+                cachePainter.drawLine (pixmapRect.topLeft(), pixmapRect.topRight());
 
                 // Draw bottom border
-                cachePainter.setPen(CustomColors::outline(option->palette));
-                cachePainter.drawLine(pixmapRect.bottomLeft(), pixmapRect.bottomRight());
+                cachePainter.setPen (CustomColors::outline(option->palette));
+                cachePainter.drawLine (pixmapRect.bottomLeft(), pixmapRect.bottomRight());
 
 
                 // Draw borders for horizontal header
-                if (header->orientation == Qt::Horizontal &&
-                        header->position != QStyleOptionHeader::End &&
-                        header->position != QStyleOptionHeader::OnlyOneSection)
+                if (header->orientation == Qt::Horizontal
+                    && header->position != QStyleOptionHeader::End
+                    && header->position != QStyleOptionHeader::OnlyOneSection)
                 {
                     // Draw right border
-                    cachePainter.setPen(CustomColors::header_bottom_border());
-                    cachePainter.drawLine(pixmapRect.topRight(), pixmapRect.bottomRight() + QPoint(0, -1));
+                    cachePainter.setPen (CustomColors::header_bottom_border());
+                    cachePainter.drawLine (pixmapRect.topRight(),
+                                           pixmapRect.bottomRight() + QPoint(0, -1));
 
                     // Draw left border
-                    cachePainter.setPen(CustomColors::inner_contrast_line());
-                    cachePainter.drawLine(pixmapRect.topRight() + QPoint(-1, 0), pixmapRect.bottomRight() + QPoint(-1, -1));
+                    cachePainter.setPen (CustomColors::inner_contrast_line());
+                    cachePainter.drawLine (pixmapRect.topRight() + QPoint(-1, 0),
+                                           pixmapRect.bottomRight() + QPoint(-1, -1));
                 }
                 // Draw borders for vertical header
                 else if (header->orientation == Qt::Vertical)
                 {
                     // Draw right border
-                    cachePainter.setPen(CustomColors::outline(option->palette));
-                    cachePainter.drawLine(pixmapRect.topRight(), pixmapRect.bottomRight());
+                    cachePainter.setPen (CustomColors::outline(option->palette));
+                    cachePainter.drawLine (pixmapRect.topRight(), pixmapRect.bottomRight());
                 }
                 cachePainter.end();
-                QPixmapCache::insert(pixmapName, cache);
+
+                QPixmapCache::insert (pixmapName, cache);
             }
-            painter->drawPixmap(rect.topLeft(), cache);
+            painter->drawPixmap (rect.topLeft(), cache);
         }
         painter->restore();
         break;
 
     default:
-        QProxyStyle::drawControl(element,option,painter,widget);
+        QProxyStyle::drawControl (element,option,painter,widget);
         break;
     }
 

@@ -21,8 +21,8 @@ public Q_SLOTS:
 
 private:
     QMap<QString, QTimer *> m_wirelessScanRetryTimer;
-    bool checkRequestScanRateLimit (const NetworkManager::WirelessDevice::Ptr
-                                    &wifiDevice);
+    bool checkRequestScanRateLimit(const NetworkManager::WirelessDevice::Ptr
+                                   &wifiDevice);
     void scheduleRequestScan (const QString &interface, int timeout);
     void scanRequestFailed (const QString &interface);
 };

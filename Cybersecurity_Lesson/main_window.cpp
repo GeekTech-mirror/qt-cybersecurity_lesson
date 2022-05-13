@@ -19,12 +19,11 @@
 #include "custom_colors.h"
 
 #include "network_model.h"
-#include "network_delegate.h"
 
 
 Main_Window::Main_Window (QWidget *parent)
     : QMainWindow (parent),
-      ui(new Ui::Main_Window),
+      ui (new Ui::Main_Window),
       stylesheets (new CustomStyleSheets)
 {
     ui->setupUi (this);
@@ -44,21 +43,19 @@ Main_Window::Main_Window (QWidget *parent)
     QVector<ItemRole> roles ({ItemRole::NetworkItemRole,
                               ItemRole::SecurityTypeRole});
 
-    NetworkModel *network_model = new NetworkModel(roles);
+    NetworkModel *network_model = new NetworkModel (roles);
 
     ui->network_list->setModel (network_model);
-    ui->network_list->resizeColumnToContents(network_model->columnCount()-1);
-    ui->network_list->setIndentation(10);
-    ui->network_list->setIconSize(QSize (36,36));
-    ui->network_list->setColumnWidth(0, 300);
+    ui->network_list->resizeColumnToContents (network_model->columnCount()-1);
+    ui->network_list->setIndentation (10);
+    ui->network_list->setIconSize (QSize (36,36));
+    ui->network_list->setColumnWidth (0, 300);
 
-    //ui->network_list->setForegroundRole(CustomColors::merged_colors(CustomColors::background_color().darker(145), QColor(255,255,255), 255));
-
-    // Set treeview scrollbar colors
+    // Set treeview header font size
     ui->network_list->header()->setStyleSheet ("QHeaderView { font-size: " +
                                                QString::number(16) + "pt; }");
 
-    // Set treeview stylesheet with current header height
+    // Set treeview scrollbar colors
     treeview_stylesheet = stylesheets->
                           treeview_scrollbar
                           (
@@ -76,12 +73,12 @@ Main_Window::Main_Window (QWidget *parent)
     **     Background color
     **     Scrollbar colors
     */
-    ui->Central_Widget->setStyleSheet(QString("* { background-color: rgb(30, 34, 39); }")
-                                      + stylesheets->vertical_scrollbar()
-                                      + stylesheets->horizontal_scrollbar());
+    ui->Central_Widget->setStyleSheet (QString("* { background-color: rgb(30, 34, 39); }")
+                                       + stylesheets->vertical_scrollbar()
+                                       + stylesheets->horizontal_scrollbar());
 
     // Set starting point to main menu
-    ui->Stacked_Widget->setCurrentIndex(0);
+    ui->Stacked_Widget->setCurrentIndex (0);
 }
 
 
@@ -121,7 +118,12 @@ void Main_Window::on_action_home_triggered ()
 }
 
 
-/* Filter to fix vertical scrollbar border when horizontal scrollbar appears*/
+/* Filter to fix vertical scrollbar border when horizontal scrollbar appears
+**
+** Add bottom border to vertical scrollbar on horizontal scrollbar hide
+**
+** Remove bottom border to vertical scrollbar on horizontal scrollbar appear
+**/
 bool Main_Window::eventFilter(QObject *object, QEvent *event)
 {
     if (event->type() == QEvent::Hide)
@@ -139,6 +141,6 @@ bool Main_Window::eventFilter(QObject *object, QEvent *event)
         ui->network_list->setStyleSheet (treeview_stylesheet);
     }
 
-    return QMainWindow::eventFilter(object, event);
+    return QMainWindow::eventFilter (object, event);
 }
 

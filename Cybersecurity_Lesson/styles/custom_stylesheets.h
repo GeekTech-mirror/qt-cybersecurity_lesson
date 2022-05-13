@@ -18,7 +18,7 @@ public:
 
 
 private:
-    void setHeaderHeight(int);
+    void setHeaderHeight (int);
 
     ScrollBar_Metrics sb_metrics;
     const CustomColors::ScrollBar_Colors *sb_colors;

@@ -12,12 +12,15 @@ QColor CustomColors::merged_colors (const QColor &colorA,
 {
     const int maxFactor = 100;
     QColor tmp = colorA;
-    tmp.setRed ((tmp.red() * factor) /
-                maxFactor + (colorB.red() * (maxFactor - factor)) / maxFactor);
-    tmp.setGreen ((tmp.green() * factor) /
-                  maxFactor + (colorB.green() * (maxFactor - factor)) / maxFactor);
-    tmp.setBlue ((tmp.blue() * factor) /
-                 maxFactor + (colorB.blue() * (maxFactor - factor)) / maxFactor);
+    tmp.setRed ((tmp.red() * factor)
+                 / maxFactor + (colorB.red() * (maxFactor - factor))
+                 / maxFactor);
+    tmp.setGreen ((tmp.green() * factor)
+                   / maxFactor + (colorB.green() * (maxFactor - factor))
+                   / maxFactor);
+    tmp.setBlue ((tmp.blue() * factor)
+                  / maxFactor + (colorB.blue() * (maxFactor - factor))
+                  / maxFactor);
     return tmp;
 }
 
@@ -32,17 +35,17 @@ QLinearGradient CustomColors::qt_fusion_gradient (const QRect rect,
     QLinearGradient gradient;
     switch (direction) {
     case FromLeft:
-        gradient = QLinearGradient(rect.left(), y, rect.right(), y);
+        gradient = QLinearGradient (rect.left(), y, rect.right(), y);
         break;
     case FromRight:
-        gradient = QLinearGradient(rect.right(), y, rect.left(), y);
+        gradient = QLinearGradient (rect.right(), y, rect.left(), y);
         break;
     case BottomUp:
-        gradient = QLinearGradient(x, rect.bottom(), x, rect.top());
+        gradient = QLinearGradient (x, rect.bottom(), x, rect.top());
         break;
     case TopDown:
     default:
-        gradient = QLinearGradient(x, rect.top(), x, rect.bottom());
+        gradient = QLinearGradient (x, rect.top(), x, rect.bottom());
         break;
     }
     if (baseColor.gradient())

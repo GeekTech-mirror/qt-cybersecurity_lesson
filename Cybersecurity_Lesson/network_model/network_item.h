@@ -19,60 +19,60 @@ public:
 
     /* Tree Items */
     NetworkItem *parent();
-    NetworkItem *child(int row);
+    NetworkItem *child (int row);
     int childNumber() const;
     int childCount() const;
     int columnCount() const;
 
-    bool insertChildren(int position, int count, int columns);
-    bool removeChildren(int position, int count);
+    bool insertChildren (int position, int count, int columns);
+    bool removeChildren (int position, int count);
 
-    QVariant data(int column) const;
-    bool setData(int column, const QVariant &value);
+    QVariant data (int column) const;
+    bool setData (int column, const QVariant &value);
 
-    QVariant headerData(int column) const;
-    bool setHeaderData(int column, const QVariant &value);
+    QVariant headerData (int column) const;
+    bool setHeaderData (int column, const QVariant &value);
 
 
     /* Network Items */
     NetworkManager::ActiveConnection::State connectionState() const;
-    void setConnectionState(NetworkManager::ActiveConnection::State state);
+    void setConnectionState (NetworkManager::ActiveConnection::State state);
 
     QVariant deviceName() const;
-    void setDeviceName(const QVariant &name);
+    void setDeviceName (const QVariant &name);
 
     QVariant devicePath() const;
-    void setDevicePath(const QVariant &path);
+    void setDevicePath (const QVariant &path);
 
     QString icon() const;
-    void setIcon(const QString &icon);
+    void setIcon (const QString &icon);
 
     QVariant networkName() const;
-    void setNetworkName(const QVariant &network);
+    void setNetworkName (const QVariant &network);
 
     QVariant specificPath() const;
-    void setSpecificPath(const QVariant &path);
+    void setSpecificPath (const QVariant &path);
 
     NetworkManager::WirelessSecurityType securityType() const;
-    void setSecurityType(NetworkManager::WirelessSecurityType type);
+    void setSecurityType (NetworkManager::WirelessSecurityType type);
 
     QVariant ssid() const;
-    void setSsid(const QVariant &ssid);
+    void setSsid (const QVariant &ssid);
 
     QVariant uuid() const;
-    void setUuid(const QVariant &uuid);
+    void setUuid (const QVariant &uuid);
 
     NetworkManager::ConnectionSettings::ConnectionType type() const;
-    void setType(NetworkManager::ConnectionSettings::ConnectionType type);
+    void setType (NetworkManager::ConnectionSettings::ConnectionType type);
 
     QVariant uni() const;
 
 
-    int getRole(int index) const
+    int getRole (int index) const
     {
         return m_roles.at(index);
     }
-    void insertRole(const ItemRole roles)
+    void insertRole (const ItemRole roles)
     {
             m_roles << roles;
     }
@@ -98,13 +98,13 @@ private:
     void refreshIcon();
 
     NetworkManager::ActiveConnection::State m_connectionState;
+    NetworkManager::WirelessSecurityType m_securityType;
+    NetworkManager::ConnectionSettings::ConnectionType m_type;
     QVariant m_deviceName;
     QVariant m_devicePath;
     QVariant m_networkName;
     QVariant m_specificPath;
-    NetworkManager::WirelessSecurityType m_securityType;
     QVariant m_ssid;
-    NetworkManager::ConnectionSettings::ConnectionType m_type;
     QVariant m_uuid;
     QString m_icon;
 

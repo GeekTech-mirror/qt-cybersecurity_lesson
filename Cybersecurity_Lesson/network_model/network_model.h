@@ -20,12 +20,12 @@ class NetworkModel : public QAbstractItemModel
 public:
     /* Constructor */
     explicit NetworkModel (const QVector<ItemRole> &roles,
-                            QObject *parent = nullptr);
+                           QObject *parent = nullptr);
     ~NetworkModel ();
 
     /* Tree Model */
     QVariant data (const QModelIndex &index, int role) const override;
-    bool setData (const QModelIndex &index, const QVariant &value,
+    bool setData (const QModelIndex &index, const QVariant &network_role,
                   int role = Qt::EditRole) override;
 
     QVariant headerData (int section, Qt::Orientation orientation,
@@ -48,11 +48,11 @@ public:
 
     Qt::ItemFlags flags (const QModelIndex &index) const override;
 
-    void sort(int column, Qt::SortOrder order) override;
+    void sort (int column, Qt::SortOrder order) override;
 
 
     /* Network Model */
-    QHash<int, QByteArray> roleNames() const override;
+    QHash<int, QByteArray> roleNames (void) const override;
 
 
 private Q_SLOTS:
@@ -76,7 +76,7 @@ private:
     QTimer *m_timer = nullptr;
 
 protected:
-    NetworkModel(NetworkModelPrivate &dd);
+    NetworkModel (NetworkModelPrivate &dd);
     NetworkModelPrivate *d_ptr;
 };
 

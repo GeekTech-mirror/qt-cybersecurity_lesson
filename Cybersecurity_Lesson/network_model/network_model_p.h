@@ -14,7 +14,7 @@ public:
     NetworkModelPrivate ();
 
 
-    NetworkItem *getItem(const QModelIndex &index, const NetworkModel *dd) const
+    NetworkItem *getItem (const QModelIndex &index, const NetworkModel *dd) const
     {
         if (index.isValid()) {
             NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
@@ -25,9 +25,9 @@ public:
     }
 
 
-    QVariant getColumn(const QModelIndex &index, NetworkModel *dd) const
+    QVariant getColumn (const QModelIndex &index, NetworkModel *dd) const
     {
-        NetworkItem *item = getItem(index, dd);
+        NetworkItem *item = getItem (index, dd);
 
         switch (dd->rootItem->getRole(index.column())) {
         case DeviceName:
@@ -68,7 +68,7 @@ public:
     }
 
 
-    QString getSecurityString(NetworkManager::WirelessSecurityType type) const
+    QString getSecurityString (NetworkManager::WirelessSecurityType type) const
     {
         switch (type) {
         case NetworkManager::NoneSecurity:
@@ -120,42 +120,42 @@ public:
 
 
     bool setItemRole (const QVariant &role,
-                       const QModelIndex &index,
-                       const NetworkModel *dd)
+                      const QModelIndex &index,
+                      const NetworkModel *dd)
     {
         NetworkItem *item = getItem (index, dd);
 
         switch (role.toInt()) {
         case ItemRole::DeviceName:
-            item->insertRole(ItemRole::DeviceName);
+            item->insertRole (ItemRole::DeviceName);
             break;
 
         case ItemRole::DevicePathRole:
-            item->insertRole(ItemRole::DevicePathRole);
+            item->insertRole (ItemRole::DevicePathRole);
             break;
 
         case ItemRole::ConnectionIconRole:
-            item->insertRole(ItemRole::ConnectionIconRole);
+            item->insertRole (ItemRole::ConnectionIconRole);
             break;
 
         case ItemRole::NetworkItemRole:
-            item->insertRole(ItemRole::NetworkItemRole);
+            item->insertRole (ItemRole::NetworkItemRole);
             break;
 
         case ItemRole::SpecificPathRole:
-            item->insertRole(ItemRole::SpecificPathRole);
+            item->insertRole (ItemRole::SpecificPathRole);
             break;
 
         case ItemRole::SecurityTypeRole:
-            item->insertRole(ItemRole::SecurityTypeRole);
+            item->insertRole (ItemRole::SecurityTypeRole);
             break;
 
         case ItemRole::SsidRole:
-            item->insertRole(ItemRole::SsidRole);
+            item->insertRole (ItemRole::SsidRole);
             break;
 
         case ItemRole::TypeRole:
-            item->insertRole(ItemRole::TypeRole);
+            item->insertRole (ItemRole::TypeRole);
             break;
 
         default:

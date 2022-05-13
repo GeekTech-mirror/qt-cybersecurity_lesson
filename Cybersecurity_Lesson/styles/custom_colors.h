@@ -34,18 +34,18 @@ public:
      *  Color Palette
     */
     static QColor light_shade() {
-        return QColor(255, 255, 255, 90);
+        return QColor (255, 255, 255, 90);
     }
     static QColor dark_shade() {
-        return QColor(0, 0, 0, 60);
+        return QColor (0, 0, 0, 60);
     }
 
     static QColor top_shadow() {
-        return QColor(0, 0, 0, 18);
+        return QColor (0, 0, 0, 18);
     }
 
     static QColor inner_contrast_line() {
-        return QColor(255, 255, 255, 30);
+        return QColor (255, 255, 255, 30);
     }
 
     static QColor highlight(const QPalette &pal) {
@@ -53,7 +53,7 @@ public:
     }
 
     static QColor highlight(void) {
-        return QColor(61,174,233);
+        return QColor (61,174,233);
     }
 
     static QColor highlighted_text(const QPalette &pal) {
@@ -62,12 +62,12 @@ public:
 
     static QColor outline(const QPalette &pal) {
         if (pal.window().style() == Qt::TexturePattern)
-            return QColor(0, 0, 0, 160);
+            return QColor (0, 0, 0, 160);
         return pal.window().color().darker(140);
     }
 
     static QColor outline(void) {
-        return QColor(30, 34, 39).darker(140);
+        return QColor (30, 34, 39).darker(140);
     }
 
     static QColor highlighted_outline(const QPalette &pal) {
@@ -81,12 +81,12 @@ public:
 
     static QColor tab_frame_color(const QPalette &pal) {
         if (pal.window().style() == Qt::TexturePattern)
-            return QColor(255, 255, 255, 8);
+            return QColor (255, 255, 255, 8);
         return background_color().lighter(104);
     }
 
     static QColor background_color() {
-        return QColor(40,44,52);
+        return QColor (40,44,52);
     }
 
 
@@ -106,7 +106,7 @@ public:
     }
 
     static QPen inner_frame_border() {
-        QPen inner_border(QColor(255,255,255,2));
+        QPen inner_border(QColor (255,255,255,2));
 
         inner_border.setWidth(2);
         inner_border.setCosmetic(false);
@@ -114,10 +114,10 @@ public:
     }
 
     static QColor outer_frame_border_color() {
-        return QColor(CustomColors::merged_colors
-                          (CustomColors::highlight(),
-                           CustomColors::frame_color(),
-                           90));
+        return CustomColors::merged_colors
+                (CustomColors::highlight(),
+                 CustomColors::frame_color(),
+                 90);
     }
 
     static QPen outer_frame_border() {
@@ -138,16 +138,16 @@ public:
 
     static QColor header_midColor1() {
         return CustomColors::merged_colors
-                   (CustomColors::header_gradientStart(),
-                    CustomColors::header_gradientStop(),
-                    60);
+                (CustomColors::header_gradientStart(),
+                 CustomColors::header_gradientStop(),
+                 60);
     }
 
     static QColor header_midColor2() {
         return CustomColors::merged_colors
-                   (CustomColors::header_gradientStart(),
-                    CustomColors::header_gradientStop(),
-                    40);
+                (CustomColors::header_gradientStart(),
+                 CustomColors::header_gradientStop(),
+                 40);
     }
 
     static QLinearGradient header_gradient(QRect *rect)
@@ -164,7 +164,7 @@ public:
     }
 
     static QColor header_bottom_border() {
-        return QColor(0, 0, 0, 40);
+        return QColor (0, 0, 0, 40);
     }
 
 

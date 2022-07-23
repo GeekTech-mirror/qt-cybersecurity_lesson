@@ -45,9 +45,9 @@ git clone --branch honister git://git.yoctoproject.org/poky.git
 
 cd poky
 
-git clone -b honister git://git.openembedded.org/meta-openembedded
-git clone -b honister git://git.yoctoproject.org/meta-raspberrypi
-git clone -b 6.2.3 git://code.qt.io/yocto/meta-qt6.git
+git clone -b kirkstone git://git.openembedded.org/meta-openembedded
+git clone -b kirkstone git://git.yoctoproject.org/meta-raspberrypi
+git clone -b 6.3 git://code.qt.io/yocto/meta-qt6.git
 git clone https://invent.kde.org/packaging/yocto-meta-kf5.git
 >git clone -b 6.3 git://code.qt.io/cgit/yocto/meta-boot2qt
 

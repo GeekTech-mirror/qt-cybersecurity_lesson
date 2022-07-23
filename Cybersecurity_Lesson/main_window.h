@@ -1,6 +1,7 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
+/* Qt include files */
 #include <QAbstractItemModel>
 #include <QMainWindow>
 #include <QStackedWidget>
@@ -9,7 +10,9 @@
 #include <QIcon>
 #include <QList>
 
-#include "styles/custom_stylesheets.h"
+/* local include files */
+#include "custom_stylesheets.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -43,8 +46,9 @@ private:
     CustomStyleSheets *stylesheets;
     QString treeview_stylesheet;
 
-protected:
-    bool eventFilter (QObject *object, QEvent *event) override;
+    void setup_fonts (void);
+    void setup_main_menu (void);
 };
+
 
 #endif // MAIN_WINDOW_H

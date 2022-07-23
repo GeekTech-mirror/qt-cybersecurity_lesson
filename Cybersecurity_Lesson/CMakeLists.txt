@@ -20,12 +20,9 @@ set(CYBERSECURITY_SRCS
         main_window.cpp
         main_window.h
         main_window.ui
-        war_driving.cpp
-        war_driving.h
         icons.qrc
         fonts.qrc
 )
-
 
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -53,8 +50,10 @@ endif()
 target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
-target_link_libraries(Cybersecurity_Lesson PRIVATE Network_Model)
 target_link_libraries(Cybersecurity_Lesson PRIVATE Styles)
+
+target_link_libraries(Cybersecurity_Lesson PRIVATE Rubber_Ducky)
+target_link_libraries(Cybersecurity_Lesson PRIVATE War_Driving)
 
 set_target_properties(Cybersecurity_Lesson PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -77,9 +76,12 @@ install(TARGETS Cybersecurity_Lesson
 )
 
 
+add_subdirectory(rubberducky)
+add_subdirectory(wardriving)
 add_subdirectory(networkmanager-qt)
-add_subdirectory(network_model)
 add_subdirectory(styles)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rubberducky)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wardriving)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/styles)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)
+

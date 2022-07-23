@@ -21,3 +21,9 @@ Size=24
 Context=Network
 Type=Scalable
 #MaxSize=24
+
+[actions/24]
+Size=24
+Context=Actions
+Type=Scalable
+#MaxSize=24

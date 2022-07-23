@@ -1,3 +1,9 @@
+/* Network Item
+** File: network_item.cpp
+** --------
+** Contains network information for a single network
+** --------
+*/
 
 /* Qt include files */
 #include <QIcon>
@@ -159,7 +165,6 @@ QVariant NetworkItem::data (int column) const
     if (column < 0 || column >= m_roles.size())
         return QVariant();
 
-    QString column_data;
     switch (m_roles.at(column)) {
     case ConnectionIconRole:
         return QIcon (m_icon);
@@ -173,8 +178,8 @@ QVariant NetworkItem::data (int column) const
         return indent + m_devicePath.toString();
     case HeaderRole:
         return indent + m_headerData[column].toString();
-    case NetworkItemRole:
-        return indent + m_networkName.toString();
+    case NameRole:
+        return indent + m_name;
     case SsidRole:
         return indent + m_ssid.toString();
     case SpecificPathRole:
@@ -318,17 +323,16 @@ QString NetworkItem::computeIcon() const
 }
 
 
-QVariant NetworkItem::networkName() const
+QString NetworkItem::name() const
 {
-    return m_networkName;
+    return m_name;
 }
 
-void NetworkItem::setNetworkName (const QVariant &network)
+void NetworkItem::setName(const QString &name)
 {
-    if (m_networkName != network)
-    {
-        m_networkName = network;
-        m_changedRoles << ItemRole::NetworkItemRole << ItemRole::UniRole;
+    if (m_name != name) {
+        m_name = name;
+        m_changedRoles << ItemRole::ItemUniqueNameRole << ItemRole::NameRole;
     }
 }
 

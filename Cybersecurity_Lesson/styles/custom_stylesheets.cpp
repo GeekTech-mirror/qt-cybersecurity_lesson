@@ -144,7 +144,7 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
          padding-bottom: 10px; \
     }";
 
-    // visually seperate scrollbar area from treeview contents
+    // line to visually seperate scrollbar area from treeview contents
     stylesheet = stylesheet.arg(CustomColors::inner_contrast_line().red())
                            .arg(CustomColors::inner_contrast_line().green())
                            .arg(CustomColors::inner_contrast_line().blue())
@@ -224,7 +224,7 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
          padding-right: %12px; \
     }";
 
-    // visually seperate scrollbar area from treeview contents
+    // line to visually seperate scrollbar area from treeview contents
     stylesheet = stylesheet.arg(CustomColors::inner_contrast_line().red())
                            .arg(CustomColors::inner_contrast_line().green())
                            .arg(CustomColors::inner_contrast_line().blue())

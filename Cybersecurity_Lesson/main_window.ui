@@ -258,13 +258,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Rubber_Ducky_Widget">
+      <widget class="QWidget" name="Man_in_the_Middle_Widget">
        <widget class="QPushButton" name="pushButton">
         <property name="geometry">
          <rect>
-          <x>90</x>
+          <x>40</x>
           <y>280</y>
-          <width>291</width>
+          <width>381</width>
           <height>81</height>
          </rect>
         </property>
@@ -279,7 +279,7 @@
 }</string>
         </property>
         <property name="text">
-         <string>Rubber Duck</string>
+         <string>Man_in_the_Middle</string>
         </property>
        </widget>
       </widget>
@@ -308,62 +308,8 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="Man_in_the_Middle_Widget">
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="geometry">
-         <rect>
-          <x>50</x>
-          <y>300</y>
-          <width>351</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>28</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
-	background-color: rgb(40, 44, 52);
-}</string>
-        </property>
-        <property name="text">
-         <string>Man in the Middle</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="War_Driving_Widget">
-       <widget class="QTreeView" name="network_list">
-        <property name="geometry">
-         <rect>
-          <x>11</x>
-          <y>21</y>
-          <width>441</width>
-          <height>531</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>441</width>
-          <height>191</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Liberation Sans</family>
-          <pointsize>16</pointsize>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::NoSelection</enum>
-        </property>
-        <property name="verticalScrollMode">
-         <enum>QAbstractItemView::ScrollPerPixel</enum>
-        </property>
-       </widget>
-      </widget>
+      <widget class="RubberDucky" name="Rubber_Ducky_Widget"/>
+      <widget class="WarDriving" name="War_Driving_Widget"/>
      </widget>
     </item>
    </layout>
@@ -423,6 +369,20 @@ QToolButton
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RubberDucky</class>
+   <extends>QWidget</extends>
+   <header>rubberducky.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WarDriving</class>
+   <extends>QWidget</extends>
+   <header>wardriving.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>

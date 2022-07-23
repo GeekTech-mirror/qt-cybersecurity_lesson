@@ -42,8 +42,8 @@ public:
             return QIcon (item->icon());
             break;
 
-        case NetworkItemRole:
-            return item->networkName();
+        case NameRole:
+            return item->name();
             break;
 
         case SpecificPathRole:
@@ -138,8 +138,8 @@ public:
             item->insertRole (ItemRole::ConnectionIconRole);
             break;
 
-        case ItemRole::NetworkItemRole:
-            item->insertRole (ItemRole::NetworkItemRole);
+        case ItemRole::NameRole:
+            item->insertRole (ItemRole::NameRole);
             break;
 
         case ItemRole::SpecificPathRole:

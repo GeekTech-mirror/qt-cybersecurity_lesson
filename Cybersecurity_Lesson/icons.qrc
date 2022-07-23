@@ -8,5 +8,6 @@
         <file>icons/network/24/network-wireless-available.svg</file>
         <file>icons/network/24/network-wireless-locked.svg</file>
         <file>icons/network/24/network-wireless.svg</file>
+        <file>icons/actions/24/key-enter.svg</file>
     </qresource>
 </RCC>

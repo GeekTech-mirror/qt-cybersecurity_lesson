@@ -105,6 +105,11 @@ public:
         return background_color().darker(145);
     }
 
+    static QColor frame_font_color() {
+        // Color set based on frame_color
+        return QColor (233,235,244);
+    }
+
     static QPen inner_frame_border() {
         QPen inner_border(QColor (255,255,255,2));
 

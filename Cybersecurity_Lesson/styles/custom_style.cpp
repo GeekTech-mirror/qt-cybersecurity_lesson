@@ -176,7 +176,7 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
 
         // Draw outer border line
         painter->setPen (CustomColors::outer_frame_border());
-        painter->drawRoundedRect (option->rect.adjusted(1,1,-2,-2), 1, 1);
+        painter->drawRoundedRect (option->rect.adjusted(1,1,-2,-2), -2, -2);
 
         painter->restore();
         break;

@@ -47,8 +47,8 @@ public:
     QString icon() const;
     void setIcon (const QString &icon);
 
-    QVariant networkName() const;
-    void setNetworkName (const QVariant &network);
+    QString name() const;
+    void setName (const QString &network);
 
     QVariant specificPath() const;
     void setSpecificPath (const QVariant &path);
@@ -102,7 +102,7 @@ private:
     NetworkManager::ConnectionSettings::ConnectionType m_type;
     QVariant m_deviceName;
     QVariant m_devicePath;
-    QVariant m_networkName;
+    QString m_name;
     QVariant m_specificPath;
     QVariant m_ssid;
     QVariant m_uuid;

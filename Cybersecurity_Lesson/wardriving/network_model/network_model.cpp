@@ -22,6 +22,7 @@
 #include "network_model_p.h"
 #include "network_item.h"
 
+#include "custom_colors.h"
 
 /* Constructor */
 NetworkModel::NetworkModel (const QVector<ItemRole> &roles, QObject *parent)
@@ -45,7 +46,7 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles, QObject *parent)
             rootData << "Device Path";
             break;
 
-        case ItemRole::NetworkItemRole:
+        case ItemRole::NameRole:
             rootData << "Networks";
             break;
 
@@ -130,23 +131,33 @@ QVariant NetworkModel::data (const QModelIndex &index, int role) const
 
     NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
 
-    if (index.column() == 0)
-    {
-        if (role == Qt::DecorationRole)
+    switch (role) {
+//    case Qt::BackgroundRole:
+//        if (0 == index.row() % 2)
+//            return CustomColors::frame_color();
+//        else
+//            return CustomColors::frame_color().lighter(145);
+
+//        break;
+    case Qt::ForegroundRole:
+        return CustomColors::frame_font_color();
+        break;
+    case Qt::DecorationRole:
+        // Display Network Symbol in first column
+        if (index.column() == 0)
         {
             return QIcon (item->icon());
         }
+        break;
+    case Qt::DisplayRole:
+        return item->data (index.column());
+        break;
+    case Qt::EditRole:
+        return item->data (index.column());
+        break;
     }
 
-    // Define roles that are allowed
-    // (all others return empty value)
-    if (role != Qt::DisplayRole
-        && role != Qt::EditRole)
-    {
-        return QVariant();
-    }
-
-    return item->data (index.column());
+    return QVariant();
 }
 
 
@@ -181,9 +192,13 @@ QVariant NetworkModel::headerData (int section,
                                    Qt::Orientation orientation,
                                    int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    switch (role) {
+    case Qt::ForegroundRole:
+        return CustomColors::frame_font_color();
+    case Qt::DisplayRole:
         return rootItem->data (section);
-
+        break;
+    }
     return QVariant();
 }
 
@@ -332,7 +347,6 @@ QHash<int, QByteArray> NetworkModel::roleNames (void) const
     roles[ItemUniqueNameRole] = "ItemUniqueName";
     roles[ItemTypeRole] = "ItemType";
     roles[NameRole] = "Name";
-    roles[NetworkItemRole] = "NetworkItem";
     roles[SectionRole] = "Section";
     roles[SlaveRole] = "Slave";
     roles[SsidRole] = "Ssid";
@@ -419,7 +433,7 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
     {
         item->setDeviceName (device->ipInterfaceName());
     }
-    item->setNetworkName (network->ssid());
+    item->setName (network->ssid());
     item->setSsid (network->ssid());
     item->setDevicePath (device->uni());
     item->setSpecificPath (network->referenceAccessPoint()->uni());

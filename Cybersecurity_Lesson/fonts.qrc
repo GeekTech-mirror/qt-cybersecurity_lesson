@@ -1,10 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file>fonts/dejavu/DejaVuSerif.ttf</file>
+        <file alias="DejavuSerif">fonts/dejavu/DejaVuSerif.ttf</file>
         <file>fonts/dejavu/DejaVuMathTeXGyre.ttf</file>
-        <file>fonts/dejavu/DejaVuSans.ttf</file>
+        <file alias="DejavuSans">fonts/dejavu/DejaVuSans.ttf</file>
         <file>fonts/dejavu/DejaVuSansCondensed.ttf</file>
         <file>fonts/dejavu/DejaVuSansMono.ttf</file>
         <file>fonts/dejavu/DejaVuSerifCondensed.ttf</file>
+        <file>fonts/dejavu/DejaVuSerif-Bold.ttf</file>
     </qresource>
 </RCC>

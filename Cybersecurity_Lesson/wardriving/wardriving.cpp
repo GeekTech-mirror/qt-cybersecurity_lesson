@@ -41,7 +41,6 @@ void WarDriving::setup_network_list (void)
     ui->network_list->setIconSize (QSize (36,36));
     ui->network_list->setColumnWidth (0, 290);
 
-
     // Set treeview header font
     ui->network_list->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
 
@@ -60,7 +59,7 @@ void WarDriving::setup_network_list (void)
 
     // Set treeview scrollbar colors
     ui->network_list->setStyleSheet (treeview_stylesheet
-                                     % stylesheets->treeview_vertical_scrollbar_quirk());
+                                     % stylesheets->vertical_scrollbar_quirk());
 
     // install filter to correct horizontal scrollbar quirks
     ui->network_list->horizontalScrollBar()->installEventFilter(this);
@@ -81,7 +80,7 @@ bool WarDriving::eventFilter(QObject *object, QEvent *event)
 
         update_scrollbar =
                 treeview_stylesheet
-                % stylesheets->treeview_vertical_scrollbar_quirk();
+                % stylesheets->vertical_scrollbar_quirk();
 
         ui->network_list->setStyleSheet (update_scrollbar);
     }

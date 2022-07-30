@@ -176,18 +176,18 @@ public:
     /*
      * ScrollBar Colors
     */
-    struct ScrollBar_Colors
-    {
-        // Handle
-        const QColor handle_bgColor =
-                CustomColors::merged_colors (CustomColors::highlight(),
-                                             CustomColors::background_color(),
-                                             40);
-        const QColor handle_outline =
-                CustomColors::merged_colors (CustomColors::highlight(),
-                                             CustomColors::background_color(),
-                                             80);
-    };
+    static QColor scrollbar_handle_bgColor() {
+        return CustomColors::merged_colors (CustomColors::highlight(),
+                                            CustomColors::background_color(),
+                                            40);
+    }
+
+    static QColor scrollbar_handle_outline() {
+        return CustomColors::merged_colors (CustomColors::highlight(),
+                                            CustomColors::background_color(),
+                                            80);
+    }
+
 };
 
 #endif // CUSTOMCOLORS_H

@@ -1,0 +1,81 @@
+REM This is a script to download and change the wallpaper in windows 10
+REM In order to work, windows must be using the default app for opening photos 
+
+REM Opens command prompt
+DELAY 2000
+GUI R
+DELAY 2000
+STRING cmd /Q /D /T:7F /F:OFF /V:ON /K
+DELAY 500
+ENTER
+DELAY 500
+DELAY 300
+
+REM Moves command prompt off screen  (Was originally DOWNARROW. Testing with DOWN.)
+ALT SPACE
+STRING M
+DOWN
+REPEAT 100
+ENTER
+
+REM Move to unprotected directory
+STRING CD %TEMP%
+ENTER
+DELAY 100
+
+REM Mount rubberduck (remove error checking for simplicity)
+REM For robust mounting see https://forums.hak5.org/topic/29747-payload-copy-file-to-desktop-payload/
+STRING for /f "tokens=3 delims= " %%A in ('echo list volume ^| diskpart ^| 
+findstr "DUCKY"') do (set DUCKYdrive=%%A:)
+ENTER
+DELAY 100
+
+REM Copy image to desktop
+STRING copy %DUCKYdrive%payload-img.png %userprofile%\Desktop\payload-img.png
+ENTER
+CONTROL z
+ENTER
+
+REM Open image
+CONTROL ESCAPE
+DELAY 300
+STRING %USERPROFILE%\Desktop\payload-img.png
+DELAY 500
+ENTER
+DELAY 500
+
+REM Navigate to dropdown menu on far right
+TAB
+DELAY 500
+TAB
+DELAY 500
+TAB
+DELAY 500
+TAB
+DELAY 500
+TAB
+DELAY 500
+TAB
+DELAY 500
+TAB
+DELAY 500
+ENTER
+
+REM The remaining commands move to Set as > Set as background
+DELAY 500
+DOWN
+DELAY 500
+DOWN
+DELAY 500
+DOWN
+DELAY 500
+DOWN
+DELAY 500
+ENTER
+DELAY 500
+DOWN
+DELAY 500
+DOWN
+DELAY 500
+ENTER
+DELAY 500

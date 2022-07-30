@@ -40,11 +40,16 @@ private slots:
 
     void on_action_home_triggered();
 
+    void on_action_close_triggered();
+
 private:
     Ui::Main_Window *ui;
 
+    QFont title_font = QFont("DejaVuSerif", 45, QFont::Bold);
+    QFont button_font = QFont("DejavuSans", 26, QFont::Bold);
+
     CustomStyleSheets *stylesheets;
-    QString treeview_stylesheet;
+    QString main_window_stylesheet();
 
     void setup_fonts (void);
     void setup_main_menu (void);

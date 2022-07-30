@@ -9,8 +9,8 @@ int main (int argc, char *argv[])
 
     QApplication app (argc, argv);
 
-    Main_Window w;
+    Main_Window main_menu;
 
-    w.show();
+    main_menu.show();
     return app.exec ();
 }

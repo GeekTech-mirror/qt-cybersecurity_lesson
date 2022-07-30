@@ -27,7 +27,7 @@
 /* Constructor */
 NetworkModel::NetworkModel (const QVector<ItemRole> &roles, QObject *parent)
     : QAbstractItemModel (parent),
-      m_scanHandler (new QNetworkScan (this))
+      m_scanHandler (new NetworkScan (this))
 {
     // Create header titles based on column roles
     QVector<QVariant> rootData;
@@ -75,7 +75,7 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles, QObject *parent)
 
 
     // Initialize first scan and then scan every 2 seconds
-    m_scanHandler = new QNetworkScan (this);
+    m_scanHandler = new NetworkScan (this);
     m_scanHandler->requestScan();
 
     m_timer = new QTimer (this);

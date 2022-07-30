@@ -10,6 +10,7 @@
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QStringBuilder>
+#include <QTimer>
 
 /* local include files */
 #include "main_window.h"
@@ -34,14 +35,37 @@ Main_Window::Main_Window (QWidget *parent)
 
     /* Set global style sheets
     **     Background color
+    **     Button font color
     **     Scrollbar colors
     */
-    ui->Central_Widget->setStyleSheet (QString("* { background-color: rgb(30, 34, 39); }")
+    ui->Central_Widget->setStyleSheet (main_window_stylesheet()
                                        + stylesheets->vertical_scrollbar()
                                        + stylesheets->horizontal_scrollbar());
 
     // Set starting point to main menu
     ui->Stacked_Widget->setCurrentIndex (0);
+
+    // Ensures main menu index is set
+    QTimer *timeout = new QTimer();
+    timeout->setSingleShot(true);
+    timeout->setInterval(500);
+
+    timeout->start();
+    while (ui->Stacked_Widget->currentIndex() != 0)
+    {
+        ui->Stacked_Widget->setCurrentIndex (0);
+
+        if (!timeout->remainingTime())
+        {
+            timeout->stop();
+            break;
+        }
+    }
+    delete timeout;
+
+    // alternative to current layout
+    //connect(ui->rubber_ducky_button, &QPushButton::clicked,
+    //        this, [&]{ ui->Stacked_Widget->setCurrentIndex(1); });
 }
 
 
@@ -51,6 +75,9 @@ Main_Window::~Main_Window ()
 }
 
 
+/*
+ * Menu Navigation
+ */
 void Main_Window::on_man_in_the_middle_button_clicked ()
 {
     ui->Stacked_Widget->setCurrentIndex(1);
@@ -81,6 +108,12 @@ void Main_Window::on_action_home_triggered ()
 }
 
 
+void Main_Window::on_action_close_triggered()
+{
+    Main_Window::close();
+}
+
+
 /*
  * Setup UI
  */
@@ -97,11 +130,23 @@ void Main_Window::setup_fonts (void)
 void Main_Window::setup_main_menu (void)
 {
     // Set Title Font
-    ui->title->setFont (QFont("DejaVuSerif", 45, QFont::Bold));
+    ui->title->setFont (Main_Window::title_font);
 
     // Set Main Menu Button Fonts
-    ui->rubber_ducky_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
-    ui->wifi_jammer_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
-    ui->man_in_the_middle_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
-    ui->war_driving_button->setFont (QFont("DejavuSans", 26, QFont::Bold));
+    ui->rubber_ducky_button->setFont (Main_Window::button_font);
+    ui->wifi_jammer_button->setFont (Main_Window::button_font);
+    ui->man_in_the_middle_button->setFont (Main_Window::button_font);
+    ui->war_driving_button->setFont (Main_Window::button_font);
 }
+
+QString Main_Window::main_window_stylesheet()
+{
+    // Set background color and button font color
+    QString stylesheet =
+    "* { background-color: rgb(30, 34, 39); } \
+     QPushButton { color: rgb(209, 213, 218); }";
+
+    return stylesheet;
+}
+
+

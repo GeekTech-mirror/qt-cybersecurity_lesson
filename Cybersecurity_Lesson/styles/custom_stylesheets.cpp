@@ -6,10 +6,8 @@
 #include "custom_colors.h"
 
 CustomStyleSheets::CustomStyleSheets()
-    : sb_colors (new CustomColors::ScrollBar_Colors)
 {
 }
-
 
 
 QString CustomStyleSheets::vertical_scrollbar ()
@@ -34,13 +32,13 @@ QString CustomStyleSheets::vertical_scrollbar ()
          min-height: 30px; \
          border-radius: %7px; \
     }";
-    stylesheet = stylesheet.arg(sb_colors->handle_outline.red())
-                           .arg(sb_colors->handle_outline.green())
-                           .arg(sb_colors->handle_outline.blue());
+    stylesheet = stylesheet.arg(CustomColors::scrollbar_handle_outline().red())
+                           .arg(CustomColors::scrollbar_handle_outline().green())
+                           .arg(CustomColors::scrollbar_handle_outline().blue());
 
-    stylesheet = stylesheet.arg(sb_colors->handle_bgColor.red())
-                           .arg(sb_colors->handle_bgColor.green())
-                           .arg(sb_colors->handle_bgColor.blue());
+    stylesheet = stylesheet.arg(CustomColors::scrollbar_handle_bgColor().red())
+                           .arg(CustomColors::scrollbar_handle_bgColor().green())
+                           .arg(CustomColors::scrollbar_handle_bgColor().blue());
 
     // round both ends of handle
     stylesheet = stylesheet.arg(sb_metrics.handle_radius);
@@ -93,13 +91,13 @@ QString CustomStyleSheets::horizontal_scrollbar (void)
          min-width: 30px; \
          border-radius: %7px; \
     }";
-    stylesheet = stylesheet.arg(sb_colors->handle_outline.red())
-                           .arg(sb_colors->handle_outline.green())
-                           .arg(sb_colors->handle_outline.blue());
+    stylesheet = stylesheet.arg(CustomColors::scrollbar_handle_outline().red())
+                           .arg(CustomColors::scrollbar_handle_outline().green())
+                           .arg(CustomColors::scrollbar_handle_outline().blue());
 
-    stylesheet = stylesheet.arg(sb_colors->handle_bgColor.red())
-                           .arg(sb_colors->handle_bgColor.green())
-                           .arg(sb_colors->handle_bgColor.blue());
+    stylesheet = stylesheet.arg(CustomColors::scrollbar_handle_bgColor().red())
+                           .arg(CustomColors::scrollbar_handle_bgColor().green())
+                           .arg(CustomColors::scrollbar_handle_bgColor().blue());
 
     // round both ends of handle
     stylesheet = stylesheet.arg(sb_metrics.handle_radius);
@@ -125,6 +123,73 @@ QString CustomStyleSheets::horizontal_scrollbar (void)
          subcontrol-position: right; \
          subcontrol-origin: margin; \
     }";
+
+    return stylesheet;
+}
+
+
+QString CustomStyleSheets::listview_scrollbar (void)
+{
+    /* Vertical ScrollBar */
+    QString stylesheet =
+    "QScrollBar::Vertical { \
+         border-left: 1px solid rgba(%1,%2,%3,%4); \
+         border-right: 1px solid rgba(%5,%6,%7,%8); \
+         border-top: 1px solid rgba(%5,%6,%7,%8); \
+         background: rgb(%9,%10,%11); \
+         padding-top: 10px; \
+         padding-bottom: 10px; \
+    }";
+
+    // line to visually seperate scrollbar area from listview contents
+    stylesheet = stylesheet.arg(CustomColors::inner_contrast_line().red())
+                           .arg(CustomColors::inner_contrast_line().green())
+                           .arg(CustomColors::inner_contrast_line().blue())
+                           .arg(CustomColors::inner_contrast_line().alpha());
+
+    // match outer color of treeview frame
+    stylesheet = stylesheet.arg(CustomColors::outer_frame_border_color().red())
+                           .arg(CustomColors::outer_frame_border_color().green())
+                           .arg(CustomColors::outer_frame_border_color().blue())
+                           .arg(CustomColors::outer_frame_border_color().alpha());
+
+    // match background color of scrollbar to frame
+    stylesheet = stylesheet.arg(CustomColors::frame_color().red())
+                           .arg(CustomColors::frame_color().green())
+                           .arg(CustomColors::frame_color().blue());
+
+
+    /* Horizontal ScrollBar */
+    stylesheet +=
+    "QScrollBar::Horizontal { \
+         border-top: 1px solid rgba(%1,%2,%3,%4); \
+         border-bottom: 1px solid rgba(%5,%6,%7,%8); \
+         border-left: 1px solid rgba(%5,%6,%7,%8); \
+         background: rgb(%9,%10,%11); \
+         padding-left: %12px; \
+         padding-right: %12px; \
+    }";
+
+    // line to visually seperate scrollbar area from listview contents
+    stylesheet = stylesheet.arg(CustomColors::inner_contrast_line().red())
+                           .arg(CustomColors::inner_contrast_line().green())
+                           .arg(CustomColors::inner_contrast_line().blue())
+                           .arg(CustomColors::inner_contrast_line().alpha());
+
+    // match outer color of treeview frame
+    stylesheet = stylesheet.arg(CustomColors::outer_frame_border_color().red())
+                           .arg(CustomColors::outer_frame_border_color().green())
+                           .arg(CustomColors::outer_frame_border_color().blue())
+                           .arg(CustomColors::outer_frame_border_color().alpha());
+
+    // match background color of scrollbar to frame
+    stylesheet = stylesheet.arg(CustomColors::frame_color().red())
+                           .arg(CustomColors::frame_color().green())
+                           .arg(CustomColors::frame_color().blue());
+
+    // add padding on left and right of horizontal scrollbar
+    stylesheet = stylesheet.arg(12);
+
 
     return stylesheet;
 }
@@ -249,7 +314,7 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
 }
 
 
-/* Fix vertical scrollbar not painting bottom border
+/* Fix vertical scrollbar not painting bottom border in Tree and List Views
 **
 ** Painting the border produces a unnecessary line when
 ** the horizontal scrollbar is visible
@@ -257,7 +322,7 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
 ** See MainWindow::eventFilter for implementation
 **
 **/
-QString CustomStyleSheets::treeview_vertical_scrollbar_quirk (void)
+QString CustomStyleSheets::vertical_scrollbar_quirk (void)
 {
     QString stylesheet =
     "QScrollBar::add-line:vertical { \

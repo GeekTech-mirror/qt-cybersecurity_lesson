@@ -9,5 +9,15 @@
         <file>icons/network/24/network-wireless-locked.svg</file>
         <file>icons/network/24/network-wireless.svg</file>
         <file>icons/actions/24/key-enter.svg</file>
+        <file>icons/actions/32/document-save.svg</file>
+        <file>icons/actions/24/edit-copy.svg</file>
+        <file>icons/actions/24/edit-clear.svg</file>
+        <file>icons/actions/24/media-mount.svg</file>
+        <file>icons/actions/24/partition.svg</file>
+        <file>icons/actions/32/rubber_ducky.svg</file>
+        <file>icons/toolbar/32/application-exit.svg</file>
+        <file>icons/actions/32/arrow-left.svg</file>
+        <file>icons/actions/32/arrow-right.svg</file>
+        <file>icons/places/24/folder-pictures.svg</file>
     </qresource>
 </RCC>

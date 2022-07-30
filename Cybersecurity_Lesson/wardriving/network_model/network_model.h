@@ -72,7 +72,7 @@ private:
                              const NetworkManager::WirelessDevice::Ptr &device);
 
     /* Scan Networks */
-    QNetworkScan *m_scanHandler;
+    NetworkScan *m_scanHandler;
     QTimer *m_timer = nullptr;
 
 protected:

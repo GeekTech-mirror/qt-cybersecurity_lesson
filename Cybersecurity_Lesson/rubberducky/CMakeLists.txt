@@ -10,3 +10,4 @@ target_link_libraries(Rubber_Ducky PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Rubber_Ducky PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(Rubber_Ducky PRIVATE NetworkManagerQt)
 
+include_directories(${CMAKE_SOURCE_DIR}/styles)

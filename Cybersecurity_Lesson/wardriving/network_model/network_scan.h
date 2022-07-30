@@ -1,18 +1,18 @@
-#ifndef QNETWORKSCAN_H
-#define QNETWORKSCAN_H
+#ifndef NETWORKSCAN_H
+#define NETWORKSCAN_H
 
 #include <QObject>
 #include <QTimer>
 
 #include <NetworkManagerQt/WirelessDevice>
 
-class QNetworkScan : public QObject
+class NetworkScan : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit QNetworkScan (QObject *parent = nullptr);
-    ~QNetworkScan () override;
+    explicit NetworkScan (QObject *parent = nullptr);
+    ~NetworkScan () override;
 
 public Q_SLOTS:
     void updateConnection (const NetworkManager::Connection::Ptr &connection,
@@ -27,4 +27,4 @@ private:
     void scanRequestFailed (const QString &interface);
 };
 
-#endif // QNETWORKSCAN_H
+#endif // NETWORKSCAN_H

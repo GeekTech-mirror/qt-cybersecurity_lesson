@@ -36,9 +36,6 @@
       <property name="enabled">
        <bool>true</bool>
       </property>
-      <property name="currentIndex">
-       <number>4</number>
-      </property>
       <widget class="QWidget" name="Main_Menu_Widget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <property name="leftMargin">
@@ -135,11 +132,6 @@
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-	color: rgb(209, 213, 218);
-}</string>
-          </property>
           <property name="text">
            <string>Rubber Ducky</string>
           </property>
@@ -171,11 +163,6 @@
             <pointsize>26</pointsize>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-	color: rgb(209, 213, 218);
-}</string>
           </property>
           <property name="text">
            <string>Wi-Fi Jammer</string>
@@ -209,11 +196,6 @@
             <bold>true</bold>
            </font>
           </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-	color: rgb(209, 213, 218);
-}</string>
-          </property>
           <property name="text">
            <string>Man-in-the-Middle</string>
           </property>
@@ -245,11 +227,6 @@
             <pointsize>26</pointsize>
             <bold>true</bold>
            </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-	color: rgb(209, 213, 218);
-}</string>
           </property>
           <property name="text">
            <string>War Driving</string>
@@ -349,6 +326,7 @@ QToolButton
    </attribute>
    <addaction name="action_home"/>
    <addaction name="action_help"/>
+   <addaction name="action_close"/>
   </widget>
   <action name="action_home">
    <property name="icon">
@@ -366,6 +344,15 @@ QToolButton
    </property>
    <property name="text">
     <string>Help_Documentation</string>
+   </property>
+  </action>
+  <action name="action_close">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/toolbar/32/application-exit.svg</normaloff>:/icons/toolbar/32/application-exit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
    </property>
   </action>
  </widget>

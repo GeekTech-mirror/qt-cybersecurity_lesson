@@ -7,14 +7,14 @@
 #define NM_REQUESTSCAN_LIMIT_RATE 1000
 
 
-QNetworkScan::QNetworkScan(QObject *parent)
+NetworkScan::NetworkScan(QObject *parent)
     : QObject{parent}
 {
 }
 
-QNetworkScan::~QNetworkScan() = default;
+NetworkScan::~NetworkScan() = default;
 
-void QNetworkScan::updateConnection (const NetworkManager::Connection::Ptr &connection,
+void NetworkScan::updateConnection (const NetworkManager::Connection::Ptr &connection,
                                      const NMVariantMapMap &map)
 {
     QDBusPendingReply<> reply = connection->update(map);
@@ -24,7 +24,7 @@ void QNetworkScan::updateConnection (const NetworkManager::Connection::Ptr &conn
 }
 
 
-void QNetworkScan::requestScan (const QString &interface)
+void NetworkScan::requestScan (const QString &interface)
 {
     for (const NetworkManager::Device::Ptr &device
          : NetworkManager::networkInterfaces())
@@ -91,7 +91,7 @@ void QNetworkScan::requestScan (const QString &interface)
 }
 
 
-bool QNetworkScan::checkRequestScanRateLimit (const NetworkManager::WirelessDevice::Ptr &wifiDevice)
+bool NetworkScan::checkRequestScanRateLimit (const NetworkManager::WirelessDevice::Ptr &wifiDevice)
 {
     QDateTime now = QDateTime::currentDateTime();
     QDateTime lastScan = wifiDevice->lastScan();
@@ -118,7 +118,7 @@ bool QNetworkScan::checkRequestScanRateLimit (const NetworkManager::WirelessDevi
 }
 
 
-void QNetworkScan::scheduleRequestScan (const QString &interface, int timeout)
+void NetworkScan::scheduleRequestScan (const QString &interface, int timeout)
 {
     QTimer *timer;
     if (!m_wirelessScanRetryTimer.contains(interface))
@@ -149,7 +149,7 @@ void QNetworkScan::scheduleRequestScan (const QString &interface, int timeout)
     timer->start();
 }
 
-void QNetworkScan::scanRequestFailed (const QString &interface)
+void NetworkScan::scanRequestFailed (const QString &interface)
 {
     scheduleRequestScan (interface, 2000);
 }

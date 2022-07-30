@@ -44,6 +44,7 @@ private:
 
     CustomStyleSheets *stylesheets;
     QString listview_stylesheet;
+    QString rubberducky_stylesheet();
 
     void setup_cmd_buttons();
 

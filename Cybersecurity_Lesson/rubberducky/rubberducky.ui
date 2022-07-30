@@ -55,6 +55,9 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -192,7 +195,7 @@
    <item>
     <widget class="QStackedWidget" name="CMD_Widget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -715,8 +718,11 @@
          <property name="horizontalSpacing">
           <number>10</number>
          </property>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="cmd_copy_image">
+         <property name="verticalSpacing">
+          <number>6</number>
+         </property>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="cmd_open_image">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -729,15 +735,12 @@
              <bold>true</bold>
             </font>
            </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
            <property name="text">
-            <string>COPY IMAGE</string>
+            <string>OPEN IMAGE</string>
            </property>
            <property name="icon">
             <iconset resource="../icons.qrc">
-             <normaloff>:/icons/actions/24/edit-copy.svg</normaloff>:/icons/actions/24/edit-copy.svg</iconset>
+             <normaloff>:/icons/places/24/folder-pictures.svg</normaloff>:/icons/places/24/folder-pictures.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -762,7 +765,17 @@
             </font>
            </property>
            <property name="text">
-            <string>OPEN CMD LINE</string>
+            <string>OPEN CLI</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icons.qrc">
+             <normaloff>:/icons/actions/24/cmdline.svg</normaloff>:/icons/actions/24/cmdline.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -798,8 +811,8 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="cmd_open_image">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="cmd_copy_image">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -812,12 +825,15 @@
              <bold>true</bold>
             </font>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
-            <string>OPEN IMAGE</string>
+            <string>COPY IMAGE</string>
            </property>
            <property name="icon">
             <iconset resource="../icons.qrc">
-             <normaloff>:/icons/places/24/folder-pictures.svg</normaloff>:/icons/places/24/folder-pictures.svg</iconset>
+             <normaloff>:/icons/actions/24/edit-copy.svg</normaloff>:/icons/actions/24/edit-copy.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -831,6 +847,9 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>10</number>
+         </property>
          <item>
           <widget class="QPushButton" name="cmd_alt_space">
            <property name="minimumSize">
@@ -903,7 +922,7 @@
       <number>0</number>
      </property>
      <item>
-      <spacer name="horizontalSpacer_2">
+      <spacer name="tooltip_area">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

@@ -1,9 +1,11 @@
 #include <QDir>
+#include <QErrorMessage>
 #include <QFile>
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QStringBuilder>
 #include <QTextStream>
+#include <QToolTip>
 #include <QTimer>
 
 #include "rubberducky.h"
@@ -23,10 +25,11 @@ RubberDucky::RubberDucky(QWidget *parent) :
     ui->script_view->setStyleSheet (listview_stylesheet
                                     % stylesheets->vertical_scrollbar_quirk());
 
+    this->setStyleSheet(rubberducky_stylesheet());
+
     // Set listview font
-    QFont script_font = QFont("DejavuSans", 16, QFont::Normal);
+    QFont script_font = QFont("DejavuSans", 14, QFont::Normal);
     script_font.setWordSpacing(8);
-    script_font.setWeight(QFont::Normal);
     ui->script_view->setFont (script_font);
 
     // install filter to correct horizontal scrollbar quirks
@@ -40,6 +43,8 @@ RubberDucky::RubberDucky(QWidget *parent) :
 
     setup_cmd_buttons();
 
+
+    QToolTip::setFont(script_font);
 
     // Set cmd ui to first page
     ui->CMD_Widget->setCurrentIndex (0);
@@ -152,10 +157,10 @@ void RubberDucky::setup_cmd_buttons()
             this, [&]{ cmd_open_image_clicked(); });
 
     connect(ui->cmd_alt_space, &QPushButton::clicked,
-            this, [&]{ insert_command("ALT SPACE"); insert_newline(); });
+            this, [&]{ insert_command("ALT SPACE"); });
 
     connect(ui->cmd_cd, &QPushButton::clicked,
-            this, [&]{ insert_command("STRING CD %TEMP%"); insert_newline(); });
+            this, [&]{ insert_command("STRING CD %TEMP%"); });
 
 
     // Change page of stacked widget
@@ -283,8 +288,9 @@ void RubberDucky::insert_command(const QString &cmd)
         script_list->replace(row, script_list->at(row) % " " % cmd);
 
     script_model->setStringList(*script_list);
-
     ui->script_view->setCurrentIndex(script_model->index(row));
+
+    ui->script_view->setFocus(Qt::ActiveWindowFocusReason);
 }
 
 
@@ -300,6 +306,8 @@ void RubberDucky::insert_newline()
     script_model->setStringList(*script_list);
 
     ui->script_view->setCurrentIndex(script_model->index(row));
+
+    ui->script_view->setFocus(Qt::ActiveWindowFocusReason);
 }
 
 
@@ -321,9 +329,15 @@ void RubberDucky::remove_current_line()
     script_model->setStringList(*script_list);
 
     if (row+1 > script_model->rowCount())
+    {
         ui->script_view->setCurrentIndex(script_model->index(row-1));
+    }
     else
+    {
         ui->script_view->setCurrentIndex(script_model->index(row));
+    }
+
+        ui->script_view->setFocus(Qt::ActiveWindowFocusReason);
 }
 
 
@@ -348,7 +362,16 @@ void RubberDucky::save_to_file()
     QString path = QDir::homePath() % "/payload.txt";
     QFile file (path);
 
-    file.open (QFileDevice::ReadWrite);
+    if (!file.open (QFileDevice::ReadWrite))
+    {
+        QMessageBox::warning
+        (
+            this,
+            "File not opened",
+             "Error: unable to open file"
+        );
+    }
+
     file.resize (0);
     for (int i=0; i < script_model->rowCount(); ++i)
     {
@@ -356,13 +379,26 @@ void RubberDucky::save_to_file()
         stream << script_list->at(i) << Qt::endl;
     }
 
+    int offset_x = 20;
+    int offset_y = -15;
+    QPoint p = ui->tooltip_area->geometry().topLeft();
+    p.setX (p.x() + offset_x);
+    p.setY (p.y() + offset_y);
 
-    QMessageBox::information
-    (
-        this,
-        "File Saved",
-        "Saved to " % path
-    );
+    QRect rect = ui->tooltip_area->geometry();
+
+    QToolTip::showText (p, "Saved to\n" % path, this, rect, 3000);
+}
+
+
+QString RubberDucky::rubberducky_stylesheet()
+{
+    // Set background color and button font color
+    QString stylesheet =
+    "QListView { color: rgb(233, 235, 244); } \
+     QToolTip { color: rgb(233, 235, 244); }";
+
+    return stylesheet;
 }
 
 

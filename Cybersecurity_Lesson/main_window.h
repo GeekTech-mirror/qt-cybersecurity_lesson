@@ -45,7 +45,7 @@ private slots:
 private:
     Ui::Main_Window *ui;
 
-    QFont title_font = QFont("DejaVuSerif", 45, QFont::Bold);
+    QFont title_font = QFont("DejavuSerif", 45, QFont::Bold);
     QFont button_font = QFont("DejavuSans", 26, QFont::Bold);
 
     CustomStyleSheets *stylesheets;

@@ -28,6 +28,8 @@
 #include <QStyleFactory>
 #include <QTreeView>
 
+#include <qdrawutil.h>
+
 /* local includes */
 #include "custom_style.h"
 #include "custom_style_p.h"
@@ -179,6 +181,11 @@ void CustomStyle::drawPrimitive (PrimitiveElement element,
         painter->drawRoundedRect (option->rect.adjusted(1,1,-2,-2), -2, -2);
 
         painter->restore();
+        break;
+    }
+    case PE_PanelTipLabel: {
+        const QBrush brush(Qt::NoBrush);
+        qDrawPlainRect(painter, option->rect, CustomColors::frame_font_color(), 0, &brush);
         break;
     }
     default:

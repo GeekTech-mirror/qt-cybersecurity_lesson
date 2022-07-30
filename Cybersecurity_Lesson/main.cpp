@@ -1,7 +1,10 @@
+#include <QApplication>
+#include <QPalette>
+
 #include "main_window.h"
+#include "custom_colors.h"
 #include "custom_style.h"
 
-#include <QApplication>
 
 int main (int argc, char *argv[])
 {

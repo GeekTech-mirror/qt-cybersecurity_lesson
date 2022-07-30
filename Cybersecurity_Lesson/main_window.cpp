@@ -83,30 +83,25 @@ void Main_Window::on_man_in_the_middle_button_clicked ()
     ui->Stacked_Widget->setCurrentIndex(1);
 }
 
-
 void Main_Window::on_wifi_jammer_button_clicked ()
 {
     ui->Stacked_Widget->setCurrentIndex(2);
 }
-
 
 void Main_Window::on_rubber_ducky_button_clicked ()
 {
     ui->Stacked_Widget->setCurrentIndex(3);
 }
 
-
 void Main_Window::on_war_driving_button_clicked ()
 {
     ui->Stacked_Widget->setCurrentIndex (4);
 }
 
-
 void Main_Window::on_action_home_triggered ()
 {
     ui->Stacked_Widget->setCurrentIndex (0);
 }
-
 
 void Main_Window::on_action_close_triggered()
 {
@@ -120,7 +115,7 @@ void Main_Window::on_action_close_triggered()
 void Main_Window::setup_fonts (void)
 {
     // Add Dejavu fonts
-    QFontDatabase::addApplicationFont (":/fonts/dejavu/DejauSerif.ttf");
+    QFontDatabase::addApplicationFont (":/fonts/dejavu/DejaVuSerif.ttf");
     QFontDatabase::addApplicationFont (":/fonts/dejavu/DejaVuSans.ttf");
 
     // Add Liberation fonts

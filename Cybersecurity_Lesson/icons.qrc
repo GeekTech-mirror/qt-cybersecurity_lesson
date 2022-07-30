@@ -19,5 +19,6 @@
         <file>icons/actions/32/arrow-left.svg</file>
         <file>icons/actions/32/arrow-right.svg</file>
         <file>icons/places/24/folder-pictures.svg</file>
+        <file>icons/actions/24/cmdline.svg</file>
     </qresource>
 </RCC>

@@ -368,7 +368,7 @@ void RubberDucky::save_to_file()
         (
             this,
             "File not opened",
-             "Error: unable to open file"
+            "Error: unable to open file"
         );
     }
 

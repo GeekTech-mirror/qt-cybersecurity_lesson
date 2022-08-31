@@ -20,5 +20,7 @@
         <file>icons/actions/32/arrow-right.svg</file>
         <file>icons/places/24/folder-pictures.svg</file>
         <file>icons/actions/24/cmdline.svg</file>
+        <file>icons/network/24/network_scan_active.svg</file>
+        <file>icons/network/24/network_scan_inactive.svg</file>
     </qresource>
 </RCC>

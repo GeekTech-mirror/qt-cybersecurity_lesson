@@ -121,6 +121,7 @@ bool NetworkScan::checkRequestScanRateLimit (const NetworkManager::WirelessDevic
 void NetworkScan::scheduleRequestScan (const QString &interface, int timeout)
 {
     QTimer *timer;
+
     if (!m_wirelessScanRetryTimer.contains(interface))
     {
         // create a timer for the interface

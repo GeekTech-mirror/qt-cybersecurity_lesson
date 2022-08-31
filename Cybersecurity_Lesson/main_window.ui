@@ -61,23 +61,11 @@
          </spacer>
         </item>
         <item>
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QLabel" name="title">
           <property name="font">
            <font>
-            <pointsize>45</pointsize>
+            <family>DejaVu Serif</family>
+            <pointsize>40</pointsize>
             <bold>true</bold>
            </font>
           </property>
@@ -85,25 +73,13 @@
            <string notr="true">color: rgb(220, 225, 232);</string>
           </property>
           <property name="text">
-           <string>Cybercraft</string>
+           <string>Cybersecurity
+ Lesson</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
         <item>
          <spacer name="horizontalSpacer_5">
@@ -151,7 +127,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="wifi_jammer_button">
+         <widget class="QPushButton" name="wifi_deauther_button">
           <property name="minimumSize">
            <size>
             <width>419</width>
@@ -165,7 +141,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Wi-Fi Jammer</string>
+           <string>Wi-Fi Deauther</string>
           </property>
          </widget>
         </item>
@@ -260,31 +236,7 @@
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="WiFi_Jammer_Widget">
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="geometry">
-         <rect>
-          <x>80</x>
-          <y>310</y>
-          <width>291</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>28</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
-	background-color: rgb(40, 44, 52);
-}</string>
-        </property>
-        <property name="text">
-         <string>WiFi Jammer</string>
-        </property>
-       </widget>
-      </widget>
+      <widget class="Deauther" name="WiFi_Deauther_Widget"/>
       <widget class="RubberDucky" name="Rubber_Ducky_Widget"/>
       <widget class="WarDriving" name="War_Driving_Widget"/>
      </widget>
@@ -367,6 +319,12 @@ QToolButton
    <class>WarDriving</class>
    <extends>QWidget</extends>
    <header>wardriving.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Deauther</class>
+   <extends>QWidget</extends>
+   <header>deauther.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -14,6 +14,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
+#find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Test)
+
 
 set(CYBERSECURITY_SRCS
         main.cpp
@@ -49,11 +51,14 @@ endif()
 
 target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+#target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Test)
 target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
-target_link_libraries(Cybersecurity_Lesson PRIVATE Styles)
 
 target_link_libraries(Cybersecurity_Lesson PRIVATE Rubber_Ducky)
-target_link_libraries(Cybersecurity_Lesson PRIVATE War_Driving)
+target_link_libraries(Cybersecurity_Lesson PRIVATE WarDriving)
+target_link_libraries(Cybersecurity_Lesson PRIVATE WiFi_Deauther)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Styles)
+
 
 set_target_properties(Cybersecurity_Lesson PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -75,13 +80,18 @@ install(TARGETS Cybersecurity_Lesson
     LIBRARY DESTINATION "${INSTALL_DESTDIR}"
 )
 
-
+add_subdirectory(networkmanager-qt)
+add_subdirectory(network_model)
 add_subdirectory(rubberducky)
 add_subdirectory(wardriving)
-add_subdirectory(networkmanager-qt)
+add_subdirectory(deauther)
 add_subdirectory(styles)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rubberducky)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wardriving)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deauther)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/styles)
 
+#add_subdirectory(network_model)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)

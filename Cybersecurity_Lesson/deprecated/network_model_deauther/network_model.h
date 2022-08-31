@@ -9,6 +9,7 @@
 #include "network_enums.h"
 #include "network_item.h"
 #include "network_scan.h"
+#include "network_sort.h"
 
 
 class NetworkModelPrivate;
@@ -48,15 +49,28 @@ public:
 
     Qt::ItemFlags flags (const QModelIndex &index) const override;
 
-    void sort (int column, Qt::SortOrder order) override;
-
 
     /* Network Model */
     QHash<int, QByteArray> roleNames (void) const override;
 
 
+    QIcon getScanIcon();
+
+    void toggle_scan();
+
+    void start_scan();
+    void stop_scan();
+
+    void export_data();
+
+
+    // Network Properties
+
+
 private Q_SLOTS:
     void wirelessNetworkAppeared (const QString &ssid);
+
+    void wirelessNetworkDisappeared(const QString &ssid);
 
 private:
     /* Tree Model */
@@ -71,9 +85,18 @@ private:
     void addWirelessNetwork (const NetworkManager::WirelessNetwork::Ptr &network,
                              const NetworkManager::WirelessDevice::Ptr &device);
 
+    void remove_network(NetworkItem *item);
+
+    void update_networks (const NetworkManager::WirelessNetwork::Ptr &network,
+                          NetworkManager::WirelessDevice::Ptr &wifiDev);
+
     /* Scan Networks */
+    bool first_scan = true;
+
     NetworkScan *m_scanHandler;
     QTimer *m_timer = nullptr;
+
+    QString m_scanIcon;
 
 protected:
     NetworkModel (NetworkModelPrivate &dd);

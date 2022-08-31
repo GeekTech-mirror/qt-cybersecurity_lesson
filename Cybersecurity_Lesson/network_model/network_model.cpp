@@ -8,8 +8,13 @@
 
 /* Qt include files */
 #include <QDBusInterface>
+#include <QDir>
+#include <QErrorMessage>
+#include <QFile>
 #include <QIcon>
+#include <QMessageBox>
 #include <QStringBuilder>
+#include <QTextStream>
 #include <QTimer>
 
 /* NetworkManager Include files */
@@ -24,13 +29,14 @@
 
 #include "custom_colors.h"
 
+
 /* Constructor */
 NetworkModel::NetworkModel (const QVector<ItemRole> &roles, QObject *parent)
     : QAbstractItemModel (parent),
       m_scanHandler (new NetworkScan (this))
 {
     // Create header titles based on column roles
-    QVector<QVariant> rootData;
+    QVector<QString> rootData;
     for (int i = 0; i < roles.count(); ++i)
     {
         switch (roles.at(i)) {
@@ -82,18 +88,6 @@ NetworkModel::NetworkModel (const QVector<ItemRole> &roles, QObject *parent)
     m_timer->setInterval (2000);
     connect (m_timer, &QTimer::timeout, this,
              [&](){m_scanHandler->requestScan();});
-    m_timer->start();
-
-
-    // Initialize existing connections
-    for (const NetworkManager::Device::Ptr &dev :
-         NetworkManager::networkInterfaces())
-    {
-        if (!dev->managed())
-            continue;
-
-        addDevice (dev, rootItem);
-    }
 }
 
 /* Constructor for private functions */
@@ -103,10 +97,11 @@ NetworkModel::NetworkModel (NetworkModelPrivate &dd)
 }
 
 /* Destructor */
-NetworkModel::~NetworkModel ()
-{
+NetworkModel::~NetworkModel ()  = default;
+/*{
     delete rootItem;
-}
+    delete m_scanHandler;
+}*/
 
 
 /* Tree Model
@@ -210,7 +205,7 @@ bool NetworkModel::setHeaderData (int section,
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
         return false;
 
-    const bool result = rootItem->setHeaderData (section, value);
+    const bool result = rootItem->setHeaderData (section, value.toString());
 
     if (result)
         emit headerDataChanged (orientation, section, section);
@@ -318,13 +313,6 @@ Qt::ItemFlags NetworkModel::flags (const QModelIndex &index) const
 }
 
 
-void NetworkModel::sort (int column, Qt::SortOrder order)
-{
-
-}
-
-
-
 /* Network Model
 ** --------
 ** Implement functions to add wireless networks to the model
@@ -406,8 +394,7 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
 
     // Look for security info
     NetworkManager::AccessPoint::Ptr ap = network->referenceAccessPoint();
-    if (ap && (ap->capabilities().testFlag(NetworkManager::AccessPoint::Privacy)
-        || ap->wpaFlags() || ap->rsnFlags()))
+    if (ap)
     {
         securityType =
                 NetworkManager::findBestWirelessSecurity
@@ -420,9 +407,10 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
 
     // Insert new row at end of table
     const int index = rootItem->childCount();
-    beginInsertRows (QModelIndex(), index, index);
+    beginInsertRows (QModelIndex(), index, index);  // BEGIN ADDING NETWORK
+
     rootItem->insertChildren (rootItem->childCount(), 1, rootItem->columnCount());
-    endInsertRows ();
+
 
     // Fill Network Item with wifi info
     NetworkItem *item = rootItem->child (rootItem->childCount()-1);
@@ -439,13 +427,26 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
     item->setSpecificPath (network->referenceAccessPoint()->uni());
     item->setType (NetworkManager::ConnectionSettings::Wireless);
     item->setSecurityType (securityType);
+    item->refreshIcon();
 
+    //qDebug() << network->ssid() << " " << network->referenceAccessPoint()->hardwareAddress();
 
     // Set column role
     int row = rootItem->childCount()-1;
     for (int i=0; i < columnRoles.count(); ++i)
     {
         setData (this->index(row,i), columnRoles.at(i));
+    }
+
+    endInsertRows ();   // END ADDING NETWORK
+}
+
+void NetworkModel::removeWirelessNetwork(int row)
+{
+    if (row >= 0) {
+        beginRemoveRows(QModelIndex(), row, row);
+        rootItem->removeChildren(row, 1);
+        endRemoveRows();
     }
 }
 
@@ -456,6 +457,8 @@ void NetworkModel::addWirelessNetwork (const NetworkManager::WirelessNetwork::Pt
 */
 void NetworkModel::wirelessNetworkAppeared (const QString &ssid)
 {
+    //qDebug() << "appeared" << ssid;
+
     // Find the physical network device
     NetworkManager::Device::Ptr device =
             NetworkManager::findNetworkInterface
@@ -483,5 +486,295 @@ void NetworkModel::wirelessNetworkAppeared (const QString &ssid)
 
         // Add new network
         addWirelessNetwork (network, wirelessDevice);
+    }
+}
+
+
+void NetworkModel::wirelessNetworkDisappeared(const QString &ssid)
+{
+    //qDebug() << "disappeared" << ssid;
+
+    // Find the physical network device
+    NetworkManager::Device::Ptr device = NetworkManager::findNetworkInterface
+                                         ( qobject_cast<NetworkManager::Device *>
+                                           (sender())->uni() );
+
+    if (!device) {
+        qDebug() << "Warning: Attempting to open device failed";
+        return;
+    }
+
+    // Ensure the device is a wifi adapter
+    if (device && device->type() == NetworkManager::Device::Wifi)
+    {
+        // Find the specific wirless device
+        NetworkManager::WirelessDevice::Ptr wirelessDevice =
+                device.objectCast<NetworkManager::WirelessDevice>();
+
+        for (int i = 0; i < rowCount(); ++i)
+        {
+            if (rootItem->child(i)->ssid() == ssid )
+            {
+                removeWirelessNetwork(i);
+
+                return;
+            }
+        }
+    }
+}
+
+
+
+QIcon NetworkModel::getScanIcon()
+{
+    return QIcon(m_scanIcon);
+}
+
+
+void NetworkModel::update_network_list (const NetworkManager::WirelessNetwork::Ptr &network,
+                                    NetworkManager::WirelessDevice::Ptr &wifiDev)
+{
+    // Look for duplicates
+    QString ssid = network->ssid();
+    for (int i = 0; i < rootItem->childCount(); ++i)
+    {
+        if (rootItem->child(i)->ssid() == ssid )
+            return;
+    }
+
+    // Add new network
+    addWirelessNetwork (network, wifiDev);
+}
+
+
+void NetworkModel::toggle_scan()
+{
+    /* Stop scanning networks*/
+    if(m_timer->isActive())
+    {
+        m_scanIcon = ":/icons/network/24/network_scan_inactive.svg";
+        m_timer->stop();
+
+        // Block network appear signals
+        for (const NetworkManager::Device::Ptr &dev :
+             NetworkManager::networkInterfaces())
+        {
+            if (!dev->managed())
+                continue;
+
+            dev->blockSignals(true);
+        }
+
+        return;
+    }
+
+
+    /* Start scanning networks */
+    m_scanIcon = ":/icons/network/24/network_scan_active.svg";
+    m_timer->start();
+
+    // Initialize network devices for scanning
+    if (first_scan)
+    {
+        for (const NetworkManager::Device::Ptr &dev :
+             NetworkManager::networkInterfaces())
+        {
+            if (!dev->managed())
+                continue;
+
+            addDevice (dev, rootItem);
+        }
+
+        first_scan = false;
+
+        return;
+    }
+
+    // Unblock network appear signals
+    for (const NetworkManager::Device::Ptr &dev :
+         NetworkManager::networkInterfaces())
+    {
+        if (!dev->managed())
+            continue;
+
+        dev->blockSignals(false);
+
+        // Update network list since last scan
+        if (dev->type() == NetworkManager::Device::Wifi)
+        {
+            NetworkManager::WirelessDevice::Ptr wifiDev =
+                    dev.objectCast<NetworkManager::WirelessDevice>();
+
+            for (const NetworkManager::WirelessNetwork::Ptr &network :
+                 wifiDev->networks())
+            {
+                update_network_list (network, wifiDev);
+            }
+        }
+    }
+}
+
+
+void NetworkModel::start_scan()
+{
+    /* Start scanning networks */
+    m_scanIcon = ":/icons/network/24/network_scan_active.svg";
+    m_timer->start();
+
+    // Initialize network devices for scanning
+    if (first_scan)
+    {
+        for (const NetworkManager::Device::Ptr &dev :
+             NetworkManager::networkInterfaces())
+        {
+            if (!dev->managed())
+                continue;
+
+            addDevice (dev, rootItem);
+        }
+
+        first_scan = false;
+
+        return;
+    }
+
+    // Unblock network appear signals
+    for (const NetworkManager::Device::Ptr &dev :
+         NetworkManager::networkInterfaces())
+    {
+        if (!dev->managed())
+            continue;
+
+        dev->blockSignals(false);
+
+        // Update network list since last scan
+        if (dev->type() == NetworkManager::Device::Wifi)
+        {
+            NetworkManager::WirelessDevice::Ptr wifiDev =
+                    dev.objectCast<NetworkManager::WirelessDevice>();
+
+            for (const NetworkManager::WirelessNetwork::Ptr &network :
+                 wifiDev->networks())
+            {
+                update_network_list (network, wifiDev);
+            }
+        }
+    }
+}
+
+
+void NetworkModel::stop_scan()
+{
+    if (first_scan)
+    {
+        qDebug() << "Warning: No scan handles running";
+        return;
+    }
+
+    /* Stop scanning networks*/
+    if(m_timer->isActive())
+    {
+        m_scanIcon = ":/icons/network/24/network_scan_inactive.svg";
+        m_timer->stop();
+
+        // Block network appear signals
+        for (const NetworkManager::Device::Ptr &dev :
+             NetworkManager::networkInterfaces())
+        {
+            if (!dev->managed())
+                continue;
+
+            dev->blockSignals(true);
+        }
+
+        return;
+    }
+}
+
+
+void NetworkModel::export_data()
+{
+    QString path = QDir::homePath() % "/wardriving.csv";
+    QFile file (path);
+
+    if (!file.open (QFileDevice::ReadWrite))
+    {
+        /*
+        QMessageBox::warning
+        (
+            this,
+            "File not opened",
+            "Error: unable to open file"
+        );
+        */
+    }
+
+    file.resize (0);
+
+    this->stop_scan();
+    QTextStream stream (&file);
+    for (int i = 0; i < rowCount(); ++i)
+    {
+        for (int j = 0; j < columnCount(); ++j)
+        {
+
+            stream << rootItem->child(i)->data(j).toString() << ";";
+        }
+        stream << Qt::endl;
+    }
+
+    while (rowCount())
+    {
+        removeWirelessNetwork(0);
+    }
+
+    /*
+    for (int i=0; i < script_model->rowCount(); ++i)
+    {
+        QTextStream stream (&file);
+        stream << script_list->at(i) << Qt::endl;
+    }
+    */
+
+
+}
+
+
+void NetworkModel::setRemoveUnavailableNetworks (const bool isEnabled)
+{
+    for (const NetworkManager::Device::Ptr &dev :
+         NetworkManager::networkInterfaces())
+    {
+        if (!dev->managed())
+            continue;
+
+        if (dev->type () == NetworkManager::Device::Wifi)
+        {
+            NetworkManager::WirelessDevice::Ptr wifiDev =
+                dev.objectCast<NetworkManager::WirelessDevice>();
+
+            if (isEnabled)
+            {
+                connect (wifiDev.data(), &NetworkManager::WirelessDevice::networkDisappeared,
+                         this, &NetworkModel::wirelessNetworkDisappeared, Qt::UniqueConnection);
+            }
+            else
+            {
+                disconnect (wifiDev.data(), &NetworkManager::WirelessDevice::networkDisappeared,
+                            this, &NetworkModel::wirelessNetworkDisappeared);
+            }
+        }
+    }
+}
+
+
+void NetworkModel::setWirelessProperties (const WirelessProperties &wifi_prop, const bool isEnabled)
+{
+    switch (wifi_prop) {
+    case WirelessProperties::RemoveUnavailableNetworks:
+        setRemoveUnavailableNetworks (isEnabled);
+        break;
+    case WirelessProperties::DisplayNetworkIcons:
+        break;
     }
 }

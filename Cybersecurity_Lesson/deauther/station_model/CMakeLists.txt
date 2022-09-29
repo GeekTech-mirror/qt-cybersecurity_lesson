@@ -5,6 +5,8 @@ set(STATION_MODEL_SRCS
     station_model_p.h
     station_item.cpp
     station_item.h
+    ap_item.cpp
+    ap_item.h
 )
 
 add_library(Station_Model STATIC ${STATION_MODEL_SRCS})

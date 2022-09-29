@@ -99,7 +99,7 @@ private:
     QString m_scanIcon;
 
     /* Network Properties */
-    void setRemoveUnavailableNetworks (const bool isEnabled);
+    void setRemoveNetworks (const bool isEnabled);
 
 protected:
     NetworkModel (NetworkModelPrivate &dd);

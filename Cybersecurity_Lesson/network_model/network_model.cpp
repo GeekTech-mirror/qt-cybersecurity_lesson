@@ -740,7 +740,7 @@ void NetworkModel::export_data()
 }
 
 
-void NetworkModel::setRemoveUnavailableNetworks (const bool isEnabled)
+void NetworkModel::setRemoveNetworks (const bool isEnabled)
 {
     for (const NetworkManager::Device::Ptr &dev :
          NetworkManager::networkInterfaces())
@@ -772,7 +772,7 @@ void NetworkModel::setWirelessProperties (const WirelessProperties &wifi_prop, c
 {
     switch (wifi_prop) {
     case WirelessProperties::RemoveUnavailableNetworks:
-        setRemoveUnavailableNetworks (isEnabled);
+        setRemoveNetworks (isEnabled);
         break;
     case WirelessProperties::DisplayNetworkIcons:
         break;

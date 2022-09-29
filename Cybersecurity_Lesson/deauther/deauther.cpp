@@ -7,6 +7,7 @@
 #include "ui_deauther.h"
 
 #include "network_model.h"
+#include "airodump.h"
 #include "iw.h"
 
 
@@ -32,30 +33,7 @@ Deauther::Deauther(QWidget *parent) :
 
     // Testing TP-Link_0424 BSSID
     QString network = "00:31:92:19:04:23";
-    std::string device = "wlp5s0";
-
-    // Create monitor mode socket
-    /*
-    int sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-
-    if (sockfd == -1) {
-          qDebug() <<  "socket() creation failed - do you have permissions?";
-          return;
-    }
-
-    struct ifreq ifr;
-    QString device_name;
-    assert(sizeof(ifr.ifr_name) == IFNAMSIZ);
-
-    memset (&ifr, 0, sizeof(ifr));
-    device_name = QByteArray::fromRawData(ifr.ifr_name, sizeof(ifr.ifr_name));
-    //memcpy(ifr.ifr_name, device, sizeof(ifr.ifr_name));
-
-    if (ioctl(sockfd, SIOCGIFINDEX, &ifr) < 0) {
-          qDebug() << "ioctl() failed - is device name correct and in monitor mode?";
-          return;
-    }
-    */
+    QString device = "wlp5s0";
 
     for (const NetworkManager::Device::Ptr &device
          : NetworkManager::networkInterfaces())
@@ -69,16 +47,19 @@ Deauther::Deauther(QWidget *parent) :
         }
     }
 
-    //int sockfd = iw_sockets_open();
+    // Create monitor mode socket
+    int sockfd = iw_sockets_open();
 
-    //if (sockfd == -1) {
-    //      qDebug() <<  "socket() creation failed - do you have permissions?";
-    //      return;
-    //}
+    if (sockfd == -1) {
+          qDebug() <<  "socket() creation failed - do you have permissions?";
+          return;
+    }
 
 
-    //QString mode = "monitor";
-    //set_mode_info(sockfd, "wlp5s0", mode.toLocal8Bit().data(), 3);
+    // search for nearby devices
+    QString mode = "monitor";
+    set_mode_info(sockfd, device.toLocal8Bit().data(), mode.toLocal8Bit().data(), 3);
+
 
     /* Pseudo Code for Deathor */
 
@@ -95,10 +76,19 @@ Deauther::Deauther(QWidget *parent) :
         // sudo airodump-ng wlp5s0mon --band a (5G search)
 
     // Find the device we want to kick
-        // sudo airodump-ng <network device name> --bbsid <router id> --channel <router channel>
+        // sudo airodump-ng <network device name> --bssid <router id> --channel <router channel>
+        // --manufacturer
 
+        // apply patch at https://github.com/aircrack-ng/aircrack-ng/pull/2167/files
+        // to see manufacturer based on mac address
+
+        // will not work if devices mac address is randomized
     // Deauthenticate device
         // aireplay-ng --deauth 0 -c <device mac address> -a <router mac address> <network device name>
+
+    // For man-in-the-middle
+        // look at airbase-ng
+        // https://aircrack-ng.net/doku.php?id=airbase-ng
 }
 
 Deauther::~Deauther()

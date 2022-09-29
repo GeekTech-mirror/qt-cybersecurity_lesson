@@ -3,10 +3,6 @@
 
 #include <QObject>
 
-QT_BEGIN_NAMESPACE
-
-using namespace Qt;
-
 enum HandlerAction {
     ActivateConnection,
     AddAndActivateConnection,
@@ -16,7 +12,6 @@ enum HandlerAction {
     RequestScan,
     UpdateConnection,
 };
-Q_ENUM_NS(HandlerAction)
 
 enum ItemRole {
     ConnectionDetailsRole = Qt::UserRole + 1,
@@ -46,13 +41,10 @@ enum ItemRole {
     UniRole,
     UuidRole,
 };
-Q_ENUM_NS(ItemRole)
 
 enum WirelessProperties {
     RemoveUnavailableNetworks,
     DisplayNetworkIcons,
 };
-Q_ENUM_NS(WirelessProperties)
-QT_END_NAMESPACE
 
 #endif // NETWORK_ENUMS_H

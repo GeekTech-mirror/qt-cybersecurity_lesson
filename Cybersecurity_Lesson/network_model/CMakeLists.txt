@@ -1,6 +1,4 @@
 set(NETWORK_MODEL_SRCS
-        network_delegate.cpp
-        network_delegate.h
         network_enums.h
         network_item.cpp
         network_item.h

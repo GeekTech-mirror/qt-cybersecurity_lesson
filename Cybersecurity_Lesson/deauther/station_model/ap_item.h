@@ -33,7 +33,7 @@ public:
     {
         return m_roles.at(index);
     }
-    void insertRole (const ItemRole roles)
+    void insertRole (const StationItemRole roles)
     {
             m_roles << roles;
     }
@@ -54,6 +54,25 @@ private:
     QVector<AccessPointItem*> m_childItems;
     QVector<QString> m_headerData;
     QString indent;
+
+    /* Access Point Items */
+    int m_channel;
+    enum channel_width_enum m_channel_width;
+
+    /* Channel Protocol */
+    QString m_standard;                                     /* 802.11 standard: n or ac  */
+    struct n_channel_info n_channel;                        /* 802.11n channel info      */
+    struct ac_channel_info ac_channel;                      /* 802.11ac channel info     */
+    unsigned int m_security;                                /* ENC_*, AUTH_*, STD_*      */
+
+    /* packet details */
+    struct pkt_buf * m_packets;                             /* list of captured packets (last few seconds) */
+    unsigned long m_nb_bcn;                                 /* total number of beacons   */
+    unsigned long m_nb_pkt;                                 /* total number of packets   */
+    unsigned long m_nb_data;                                /* number of  data packets   */
+    unsigned long m_nb_data_old;                            /* number of data packets/sec*/
+    int m_nb_dataps;                                        /* number of data packets/sec*/
+
 
     QVector<int> m_roles;
     QVector<int> m_changedRoles;

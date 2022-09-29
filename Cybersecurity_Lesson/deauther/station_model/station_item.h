@@ -33,7 +33,7 @@ public:
     {
         return m_roles.at(index);
     }
-    void insertRole (const ItemRole roles)
+    void insertRole (const StationItemRole roles)
     {
             m_roles << roles;
     }
@@ -55,9 +55,22 @@ private:
     QVector<QString> m_headerData;
     QString indent;
 
-    QString m_ap;
-    QString m_na;
-    QString m_station;
+    /* Station Items */
+    uint8_t m_stmac;                                        /* the client's MAC address  */
+    QString m_manuf;                                        /* the client's manufacturer */
+    int m_channel;
+
+    /* Network Probes */
+    int m_probe_index;                                      /* probed ESSIDs ring index  */
+    QVector<QString> m_probes[NB_PRB][MAX_IE_ELEMENT_SIZE];
+    unsigned long nb_pkt;                                   /* total number of packets   */
+    int m_missed;
+
+    /* Security Properties */
+    int m_wpatype;                                          /* 1=wpa1 2=wpa2             */
+    int m_wpahash;                                          /* 1=md5(tkip) 2=sha1(ccmp)  */
+    int m_wep;
+
     QVector<int> m_roles;
     QVector<int> m_changedRoles;
 };

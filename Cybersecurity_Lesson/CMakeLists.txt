@@ -81,17 +81,17 @@ install(TARGETS Cybersecurity_Lesson
 )
 
 add_subdirectory(networkmanager-qt)
-add_subdirectory(network_model)
 add_subdirectory(rubberducky)
 add_subdirectory(wardriving)
 add_subdirectory(deauther)
 add_subdirectory(styles)
+add_subdirectory(models)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rubberducky)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wardriving)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deauther)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/styles)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/models)
 
 #add_subdirectory(network_model)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)

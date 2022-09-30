@@ -2,8 +2,11 @@
 #define STATION_MODEL_H
 
 #include <QAbstractItemModel>
+#include <QObject>
 
+#include "station_enums.h"
 #include "station_item.h"
+//#include "ap_item.h"
 
 class StationModelPrivate;
 class StationModel : public QAbstractItemModel
@@ -11,7 +14,10 @@ class StationModel : public QAbstractItemModel
     Q_OBJECT
     Q_DECLARE_PRIVATE (StationModel)
 public:
+    /* Constructor */
     explicit StationModel(QObject *parent = nullptr);
+
+    ~StationModel ();
 
     /* Tree Model */
     QVariant data (const QModelIndex &index, int role) const override;
@@ -46,11 +52,9 @@ public:
 
     void capturePacket ();
 
-signals:
-
 private:
     StationItem *rootItem;
-    QVector<ItemRole> columnRoles;
+    QVector<StationItemRole> columnRoles;
 
 protected:
     StationModel (StationModelPrivate &dd);

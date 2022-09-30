@@ -7,7 +7,7 @@
 #include "custom_stylesheets.h"
 #include "custom_colors.h"
 
-#include "network_model.h"
+#include "network_model/network_model.h"
 
 
 WarDriving::WarDriving(QWidget *parent) :

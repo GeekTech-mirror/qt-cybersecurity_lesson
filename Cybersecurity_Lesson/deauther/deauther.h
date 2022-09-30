@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "network_model.h"
+#include "network_model/network_model.h"
 
 namespace Ui {
 class Deauther;

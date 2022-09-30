@@ -1,7 +1,8 @@
 #ifndef STATION_MODEL_P_H
 #define STATION_MODEL_P_H
 
-#include <station_model.h>
+#include "station_model.h"
+#include "station_item.h"
 
 class StationModelPrivate
 {
@@ -25,11 +26,11 @@ public:
         StationItem *item = getItem (index, dd);
 
         switch (dd->rootItem->getRole(index.column())) {
-        case ItemRole::StationRole:
+        case StationItemRole::StationRole:
             return QVariant ();
             break;
 
-        case ItemRole::AccessPointRole:
+        case StationItemRole::AccessPointRole:
             return QVariant ();
             break;
 
@@ -45,12 +46,12 @@ public:
         StationItem *item = getItem (index, dd);
 
         switch (role.toInt()) {
-        case ItemRole::StationRole:
-            item->insertRole (ItemRole::StationRole);
+        case StationItemRole::StationRole:
+            item->insertRole (StationItemRole::StationRole);
             break;
 
-        case ItemRole::AccessPointRole:
-            item->insertRole (ItemRole::AccessPointRole);
+        case StationItemRole::AccessPointRole:
+            item->insertRole (StationItemRole::AccessPointRole);
             break;
         default:
             return false;

@@ -1,15 +1,13 @@
 #ifndef STATIONITEM_H
 #define STATIONITEM_H
 
-#include <QObject>
-
 #include "station_enums.h"
 
 class StationItem : public QObject
 {
     Q_OBJECT
 public:
-    explicit StationItem(QObject *parent = nullptr);
+    explicit StationItem (StationItem *parent = nullptr);
 
     ~StationItem();
 

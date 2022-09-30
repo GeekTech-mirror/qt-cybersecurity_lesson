@@ -12,5 +12,5 @@ target_link_libraries(WarDriving PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(WarDriving PRIVATE NetworkManagerQt)
 target_link_libraries(WarDriving PRIVATE Network_Model)
 
-include_directories(${CMAKE_SOURCE_DIR}/network_model)
+include_directories(${CMAKE_SOURCE_DIR}/models)
 include_directories(${CMAKE_SOURCE_DIR}/styles)

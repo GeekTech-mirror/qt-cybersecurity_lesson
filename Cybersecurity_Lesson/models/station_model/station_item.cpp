@@ -1,9 +1,9 @@
 #include "station_item.h"
+#include "station_enums.h"
 
-StationItem::StationItem(QObject *parent)
-    : QObject{parent}
+StationItem::StationItem(StationItem *parent)
+    : m_parentItem(parent)
 {
-
 }
 
 StationItem::~StationItem() = default;

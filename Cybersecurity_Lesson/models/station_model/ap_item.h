@@ -1,5 +1,5 @@
-#ifndef STATIONITEM_H
-#define STATIONITEM_H
+#ifndef ACCESSPOINTITEM_H
+#define ACCESSPOINTITEM_H
 
 #include <QObject>
 
@@ -78,4 +78,4 @@ private:
     QVector<int> m_changedRoles;
 };
 
-#endif // STATIONITEM_H
+#endif // ACCESSPOINTITEM_H

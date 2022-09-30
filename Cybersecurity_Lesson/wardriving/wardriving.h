@@ -6,8 +6,8 @@
 
 /* local include files */
 #include "custom_stylesheets.h"
-#include "network_model.h"
-#include "network_sort.h"
+#include "network_model/network_model.h"
+#include "network_model/network_sort.h"
 
 namespace Ui {
 class WarDriving;

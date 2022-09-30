@@ -1,13 +1,23 @@
 #include "station_model.h"
 #include "station_model_p.h"
+#include "station_item.h"
 
 #include "custom_colors.h"
 
-StationModel::StationModel(QObject *parent)
-    : QAbstractItemModel{parent}
+StationModel::StationModel (QObject *parent)
+    : QAbstractItemModel (parent)
 {
-
+        //rootItem = new StationItem ();
 }
+
+/* Constructor for private functions */
+StationModel::StationModel (StationModelPrivate &dd)
+    : d_ptr (&dd)
+{
+}
+
+/* Destructor */
+StationModel::~StationModel ()  = default;
 
 /* Tree Model
 ** --------
@@ -94,7 +104,7 @@ QVariant StationModel::headerData (int section,
     case Qt::ForegroundRole:
         return CustomColors::frame_font_color();
     case Qt::DisplayRole:
-        return rootItem->data (section);
+//        return rootItem->data (section);
         break;
     }
     return QVariant();
@@ -108,12 +118,12 @@ bool StationModel::setHeaderData (int section,
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
         return false;
 
-    const bool result = rootItem->setHeaderData (section, value.toString());
+//    const bool result = rootItem->setHeaderData (section, value.toString());
 
-    if (result)
-        emit headerDataChanged (orientation, section, section);
+//    if (result)
+//        emit headerDataChanged (orientation, section, section);
 
-    return result;
+//    return result;
 }
 
 
@@ -146,8 +156,8 @@ QModelIndex StationModel::parent (const QModelIndex &index) const
     StationItem *childItem = static_cast<StationItem*>(index.internalPointer());
     StationItem *parentItem = childItem->parent();
 
-    if (parentItem == rootItem)
-        return QModelIndex();
+//    if (parentItem == rootItem)
+//        return QModelIndex();
 
     return createIndex(parentItem->childNumber(), 0, parentItem);
 }

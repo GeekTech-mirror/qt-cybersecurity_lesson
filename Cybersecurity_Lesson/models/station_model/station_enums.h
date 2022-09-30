@@ -3,15 +3,10 @@
 
 #include <QObject>
 
-QT_BEGIN_NAMESPACE
-
-using namespace Qt;
-
 enum StationItemRole {
     StationRole = Qt::UserRole + 1,
     AccessPointRole,
 };
-Q_ENUM_NS(StationItemRole);
 
 /* size of probed ESSID ring buffer */
 #define NB_PRB 10
@@ -40,7 +35,6 @@ enum channel_width_enum
     CHANNEL_80_80MHZ,
     CHANNEL_160MHZ
 };
-Q_ENUM_NS(channel_width_enum);
 
 /* 802.11ac channel information */
 struct ac_channel_info
@@ -85,7 +79,5 @@ struct oui
                    */
     QString manuf[128]; /* TODO: Switch to a char * later to improve memory usage */
 };
-
-QT_END_NAMESPACE
 
 #endif // STATION_ENUMS_H

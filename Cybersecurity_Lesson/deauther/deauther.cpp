@@ -6,7 +6,7 @@
 #include "deauther.h"
 #include "ui_deauther.h"
 
-#include "network_model.h"
+#include "network_model/network_model.h"
 #include "airodump.h"
 #include "iw.h"
 

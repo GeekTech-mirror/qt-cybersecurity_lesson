@@ -1,3 +1,5 @@
+#include <QTimer>
+
 /* NetworkManager Include files */
 #include <NetworkManagerQt/ConnectionSettings>
 #include <NetworkManagerQt/Manager>
@@ -6,11 +8,9 @@
 #include "deauther.h"
 #include "ui_deauther.h"
 
+#include "station_model/station_model.h"
 #include "network_model/network_model.h"
 #include "airodump.h"
-#include "iw.h"
-
-
 
 
 Deauther::Deauther(QWidget *parent) :
@@ -21,19 +21,11 @@ Deauther::Deauther(QWidget *parent) :
 
     setup_network_list();
 
-    for (const NetworkManager::Device::Ptr &dev :
-         NetworkManager::networkInterfaces())
-    {
-        if (!dev->managed())
-            continue;
+    station_model = new StationModel();
+    iface_model = new IfaceModel();
 
-        ui->device_list->addItem (dev->interfaceName());
-        //qDebug() << dev->interfaceName();
-    }
-
-    // Testing TP-Link_0424 BSSID
-    QString network = "00:31:92:19:04:23";
-    QString device = "wlp5s0";
+    // create list of network interfaces
+    ui->device_list->setModel(iface_model);
 
     for (const NetworkManager::Device::Ptr &device
          : NetworkManager::networkInterfaces())
@@ -46,19 +38,6 @@ Deauther::Deauther(QWidget *parent) :
             qDebug() << wifiDevice->interfaceName() << wifiDevice->mode();
         }
     }
-
-    // Create monitor mode socket
-    int sockfd = iw_sockets_open();
-
-    if (sockfd == -1) {
-          qDebug() <<  "socket() creation failed - do you have permissions?";
-          return;
-    }
-
-
-    // search for nearby devices
-    QString mode = "monitor";
-    set_mode_info(sockfd, device.toLocal8Bit().data(), mode.toLocal8Bit().data(), 3);
 
 
     /* Pseudo Code for Deathor */

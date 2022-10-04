@@ -29,6 +29,13 @@ void NetworkScan::requestScan (const QString &interface)
     for (const NetworkManager::Device::Ptr &device
          : NetworkManager::networkInterfaces())
     {
+        if (!device->isAvailable())
+        {
+            qDebug() << device->interfaceName() << "  Unavailable";
+            qDebug() << "State: " << device->state();
+            continue;
+        }
+
         if (device->type() == NetworkManager::Device::Wifi)
         {
             NetworkManager::WirelessDevice::Ptr wifiDevice =

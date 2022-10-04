@@ -1,2 +1,3 @@
 add_subdirectory(network_model)
 add_subdirectory(station_model)
+add_subdirectory(iface_model)

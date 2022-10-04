@@ -1,13 +1,25 @@
+/* NetworkManager Include files */
+#include <NetworkManagerQt/ConnectionSettings>
+
 #include "station_model.h"
 #include "station_model_p.h"
 #include "station_item.h"
 
+#include "iwconfig.h"
 #include "custom_colors.h"
 
 StationModel::StationModel (QObject *parent)
     : QAbstractItemModel (parent)
 {
-        //rootItem = new StationItem ();
+    rootItem = new StationItem ();
+
+    // populate list of network interfaces
+    initIface();
+
+    m_ifaceUpdateInterval = new QTimer (this);
+    m_ifaceUpdateInterval->setInterval (5000);
+
+    connect (m_ifaceUpdateInterval, &QTimer::timeout, this, &StationModel::updateIface);
 }
 
 /* Constructor for private functions */
@@ -40,13 +52,13 @@ QVariant StationModel::data (const QModelIndex &index, int role) const
     //qDebug() << role;
 
     switch (role) {
-//    case Qt::BackgroundRole:
-//        if (0 == index.row() % 2)
-//            return CustomColors::frame_color();
-//        else
-//            return CustomColors::frame_color().lighter(145);
+    case Qt::BackgroundRole:
+        if (0 == index.row() % 2)
+            return CustomColors::frame_color();
+        else
+            return CustomColors::frame_color().lighter(145);
 
-//        break;
+        break;
     case Qt::ForegroundRole:
         return CustomColors::frame_font_color();
         break;
@@ -104,7 +116,7 @@ QVariant StationModel::headerData (int section,
     case Qt::ForegroundRole:
         return CustomColors::frame_font_color();
     case Qt::DisplayRole:
-//        return rootItem->data (section);
+        return rootItem->data (section);
         break;
     }
     return QVariant();
@@ -118,12 +130,12 @@ bool StationModel::setHeaderData (int section,
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
         return false;
 
-//    const bool result = rootItem->setHeaderData (section, value.toString());
+    const bool result = rootItem->setHeaderData (section, value.toString());
 
-//    if (result)
-//        emit headerDataChanged (orientation, section, section);
+    if (result)
+        emit headerDataChanged (orientation, section, section);
 
-//    return result;
+    return result;
 }
 
 
@@ -231,6 +243,110 @@ Qt::ItemFlags StationModel::flags (const QModelIndex &index) const
 ** Implement functions to add stations to the model
 ** --------
 **/
+
+
+/* Add station roles to the model */
+QHash<int, QByteArray> StationModel::roleNames (void) const
+{
+    QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
+    roles[StationItemRole::AccessPointRole] = "AccessPoint";
+    roles[StationItemRole::InterfaceRole] = "Interface";
+    roles[StationItemRole::StationRole] = "Station";
+
+    return roles;
+}
+
+QVector<QString> StationModel::getIface()
+{
+    QVector<QString> *ifaceList = new QVector<QString> ();
+    ifaceList->reserve(m_iface.count());
+
+    for (int i = 0; i < m_iface.count(); ++i)
+    {
+        ifaceList->append(m_iface.at(i)->interfaceName());
+    }
+
+    return *ifaceList;
+}
+
+/* Add physical network devices
+** Parameters:
+**     device: name of the physical wifi adapter
+*/
+void StationModel::updateIface ()
+{
+    for (const NetworkManager::Device::Ptr &dev :
+         NetworkManager::networkInterfaces())
+    {
+        // Look for duplicates
+        QString iface_name = dev->interfaceName();
+        for (int i = 0; i < m_iface.count(); ++i)
+        {
+            if (m_iface.at(i)->interfaceName() == iface_name)
+                return;
+        }
+
+        connect (dev.data(), &NetworkManager::Device::stateChanged,
+                 this, &StationModel::ifaceStateChanged, Qt::UniqueConnection);
+
+        if (dev->type() == NetworkManager::Device::Wifi)
+        {
+            NetworkManager::WirelessDevice::Ptr wifiDevice =
+                    dev.objectCast<NetworkManager::WirelessDevice>();
+
+            m_iface.append(wifiDevice);
+        }
+        else
+        {
+            m_iface.append(dev);
+        }
+    }
+}
+
+void StationModel::initIface ()
+{
+    m_iface.empty();
+
+    for (const NetworkManager::Device::Ptr &dev :
+         NetworkManager::networkInterfaces())
+    {
+        connect (dev.data(), &NetworkManager::Device::stateChanged,
+                 this, &StationModel::ifaceStateChanged, Qt::UniqueConnection);
+
+        if (dev->type() == NetworkManager::Device::Wifi)
+        {
+            NetworkManager::WirelessDevice::Ptr wifiDevice =
+                    dev.objectCast<NetworkManager::WirelessDevice>();
+
+            m_iface.append(wifiDevice);
+        }
+        else
+        {
+            m_iface.append(dev);
+        }
+    }
+
+}
+
+void StationModel::ifaceStateChanged (NetworkManager::Device::State state,
+                                       NetworkManager::Device::State oldState,
+                                       NetworkManager::Device::StateChangeReason reason)
+{
+    Q_UNUSED(oldState);
+    Q_UNUSED(reason);
+
+    NetworkManager::Device::Ptr device = NetworkManager::findNetworkInterface(qobject_cast<NetworkManager::Device *>(sender())->uni());
+
+    if (!device) {
+        return;
+    }
+
+    if (state == NetworkManager::Device::State::Disconnected)
+    {
+        qDebug() << m_iface.removeOne(device);
+    }
+}
+
 void StationModel::addStation ()
 {
 
@@ -239,4 +355,21 @@ void StationModel::addStation ()
 void StationModel::capturePacket ()
 {
 
+}
+
+void StationModel::start_monitoring (NetworkManager::Device::Ptr &device)
+{
+    // Create monitor mode socket
+    int sockfd = iw_sockets_open();
+
+    if (sockfd == -1) {
+          qDebug() <<  "socket() creation failed - do you have permissions?";
+          return;
+    }
+
+
+    // search for nearby devices
+    QString mode = "monitor";
+    QString tmp = "wlp5s0";
+    set_mode_info(sockfd, tmp.toLocal8Bit().data(), mode.toLocal8Bit().data(), 3);
 }

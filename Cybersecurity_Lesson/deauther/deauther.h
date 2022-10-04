@@ -3,7 +3,9 @@
 
 #include <QWidget>
 
+#include "station_model/station_model.h"
 #include "network_model/network_model.h"
+#include "iface_model/iface_model.h"
 
 namespace Ui {
 class Deauther;
@@ -19,6 +21,9 @@ public:
 
 private:
     Ui::Deauther *ui;
+
+    StationModel *station_model;
+    IfaceModel *iface_model;
 
     NetworkModel *network_model;
     NetworkSort *network_sort;

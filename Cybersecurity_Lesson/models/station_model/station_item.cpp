@@ -1,3 +1,5 @@
+#include <NetworkManagerQt/WirelessDevice>
+
 #include "station_item.h"
 #include "station_enums.h"
 
@@ -72,6 +74,53 @@ bool StationItem::removeChildren (int position, int count)
     return true;
 }
 
+
+/* retrieve data from itemData list at specified column */
+QVariant StationItem::data (int column) const
+{
+    if (column < 0 || column >= m_roles.size())
+        return QVariant();
+
+    switch (m_roles.at(column)) {
+        case StationItemRole::AccessPointRole:
+            return QVariant();
+    case StationItemRole::InterfaceRole:
+        return QVariant();
+    case StationItemRole::StationRole:
+        return QVariant();
+    default:
+        break;
+    }
+
+    return QVariant();
+}
+
+
+/* retrieve data from headerData list at specified column */
+QString StationItem::headerData(int column) const
+{
+    if (column < 0 || column >= m_headerData.size())
+        return QString();
+
+    return m_headerData[column];
+}
+
+
+
+bool StationItem::setHeaderData (int column, const QString &value)
+{
+
+    if (column < 0 || column >= m_headerData.size())
+        return false;
+
+    if (m_headerData[column] != value) {
+        m_headerData[column] = value;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 /*
  *  Station Items

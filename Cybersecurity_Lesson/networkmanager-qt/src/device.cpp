@@ -506,6 +506,15 @@ bool NetworkManager::Device::isActive() const
     /* clang-format on */
 }
 
+bool NetworkManager::Device::isAvailable() const
+{
+    Q_D(const Device);
+    /* clang-format off */
+    return !(d->connectionState == NetworkManager::Device::Unavailable
+             || d->connectionState == NetworkManager::Device::Failed);
+    /* clang-format on */
+}
+
 bool NetworkManager::Device::isValid() const
 {
     Q_D(const Device);

@@ -2,7 +2,10 @@
 #define STATION_MODEL_H
 
 #include <QAbstractItemModel>
-#include <QObject>
+#include <QTimer>
+
+#include <NetworkManagerQt/Manager>
+#include <NetworkManagerQt/WirelessDevice>
 
 #include "station_enums.h"
 #include "station_item.h"
@@ -52,9 +55,26 @@ public:
 
     void capturePacket ();
 
+    QVector<QString> getIface ();
+
+private Q_SLOTS:
+    void ifaceStateChanged (NetworkManager::Device::State state,
+                             NetworkManager::Device::State oldState,
+                             NetworkManager::Device::StateChangeReason reason);
+
 private:
     StationItem *rootItem;
     QVector<StationItemRole> columnRoles;
+
+    QVector<NetworkManager::Device::Ptr> m_iface;
+
+    QTimer *m_ifaceUpdateInterval;
+
+    void updateIface ();
+
+    void initIface ();
+
+    void start_monitoring (NetworkManager::Device::Ptr &device);
 
 protected:
     StationModel (StationModelPrivate &dd);

@@ -29,7 +29,9 @@ public:
         case StationItemRole::StationRole:
             return QVariant ();
             break;
-
+        case StationItemRole::InterfaceRole:
+            return QVariant ();
+            break;
         case StationItemRole::AccessPointRole:
             return QVariant ();
             break;
@@ -49,7 +51,9 @@ public:
         case StationItemRole::StationRole:
             item->insertRole (StationItemRole::StationRole);
             break;
-
+        case StationItemRole::InterfaceRole:
+            item->insertRole (StationItemRole::InterfaceRole);
+            break;
         case StationItemRole::AccessPointRole:
             item->insertRole (StationItemRole::AccessPointRole);
             break;

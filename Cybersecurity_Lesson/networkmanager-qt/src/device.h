@@ -329,6 +329,13 @@ public:
     bool isActive() const;
 
     /**
+     * Retrieves the availability status of this network interface. (added for capstone)
+     *
+     * @return true if this network interface is available, false otherwise
+     */
+    bool isAvailable() const;
+
+    /**
      * Retrieves the device is valid.
      *
      * @return true if this device interface is valid, false otherwise

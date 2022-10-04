@@ -7,6 +7,7 @@ set(STATION_MODEL_SRCS
     station_item.h
     ap_item.cpp
     ap_item.h
+    iwconfig.h
 )
 
 add_library(Station_Model STATIC ${STATION_MODEL_SRCS})

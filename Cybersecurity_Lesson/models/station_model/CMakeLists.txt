@@ -15,5 +15,7 @@ add_library(Station_Model STATIC ${STATION_MODEL_SRCS})
 target_link_libraries(Station_Model PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Station_Model PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(Station_Model PRIVATE NetworkManagerQt)
+target_link_libraries(Station_Model PRIVATE Iface_Model)
 
+include_directories(${CMAKE_SOURCE_DIR}/models)
 include_directories(${CMAKE_SOURCE_DIR}/styles)

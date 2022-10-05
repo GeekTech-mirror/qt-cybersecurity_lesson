@@ -7,9 +7,10 @@
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/WirelessDevice>
 
+#include "iface_model/iface_model.h"
+
 #include "station_enums.h"
 #include "station_item.h"
-//#include "ap_item.h"
 
 class StationModelPrivate;
 class StationModel : public QAbstractItemModel
@@ -55,24 +56,14 @@ public:
 
     void capturePacket ();
 
-    QVector<QString> getIface ();
-
 private Q_SLOTS:
-    void ifaceStateChanged (NetworkManager::Device::State state,
-                             NetworkManager::Device::State oldState,
-                             NetworkManager::Device::StateChangeReason reason);
+
 
 private:
     StationItem *rootItem;
     QVector<StationItemRole> columnRoles;
 
-    QVector<NetworkManager::Device::Ptr> m_iface;
-
-    QTimer *m_ifaceUpdateInterval;
-
-    void updateIface ();
-
-    void initIface ();
+    IfaceModel *m_iface;
 
     void start_monitoring (NetworkManager::Device::Ptr &device);
 

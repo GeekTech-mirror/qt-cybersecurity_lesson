@@ -21,8 +21,15 @@ IfaceModel::IfaceModel (QObject *parent)
 
     m_ifaceUpdateInterval->start();
 
+    // Testing with the following commands
+    // nmcli con add type bridge con-name br0 ifname br
+    // nmcli con delete br0
+
     connect (NetworkManager::notifier(), &NetworkManager::Notifier::deviceAdded,
              this, &IfaceModel::ifaceAdded, Qt::UniqueConnection);
+
+    //connect (NetworkManager::notifier(), &NetworkManager::Notifier::serviceAppeared,
+    //         this, &IfaceModel::ifaceAdded, Qt::UniqueConnection);
 
     //connect(NetworkManager::settingsNotifier(),
     //        &NetworkManager::SettingsNotifier::connectionAdded,
@@ -232,6 +239,11 @@ void IfaceModel::initIface ()
             continue;
         }
 
+        if (device->interfaceName() == "br0")
+        {
+            qDebug() << device->udi();
+        }
+
         // Add new network interfaces to model
         connect (device.data(), &NetworkManager::Device::stateChanged,
                  this, &IfaceModel::ifaceRemoved, Qt::UniqueConnection);
@@ -275,10 +287,19 @@ void IfaceModel::ifaceRemoved (NetworkManager::Device::State newState,
 
 }
 
-void IfaceModel::ifaceAdded (const QString &path)
+
+// Not working properly
+void IfaceModel::ifaceAdded ()
 {
     // finds interface from signal sender
+    //NetworkManager::Connection::Ptr connection = NetworkManager::findConnection(path);
+    //NetworkManager::Device device() =
+
 
     qDebug() << "added device";
-    qDebug() << path;
+    //qDebug() << path;
+    //qDebug() << connection->name();
+    //qDebug() << connection->uuid();
+    //NetworkManager::Device::Ptr device;
+    //qDebug() << device->interfaceName();
 }

@@ -39,7 +39,7 @@ private Q_SLOTS:
                                    NetworkManager::Device::State oldState,
                                    NetworkManager::Device::StateChangeReason reason);
 
-    void ifaceAdded (const QString &path);
+    void ifaceAdded ();
 
 private:
     QList<NetworkManager::Device::Ptr> m_interfaces;

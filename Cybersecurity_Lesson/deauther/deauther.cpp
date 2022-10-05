@@ -25,7 +25,7 @@ Deauther::Deauther(QWidget *parent) :
     iface_model = new IfaceModel();
 
     // create list of network interfaces
-    ui->device_list->setModel(iface_model);
+    ui->iface_list->setModel(iface_model);
 
     for (const NetworkManager::Device::Ptr &device
          : NetworkManager::networkInterfaces())

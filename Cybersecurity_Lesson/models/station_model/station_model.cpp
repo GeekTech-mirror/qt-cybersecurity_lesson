@@ -13,13 +13,6 @@ StationModel::StationModel (QObject *parent)
 {
     rootItem = new StationItem ();
 
-    // populate list of network interfaces
-    initIface();
-
-    m_ifaceUpdateInterval = new QTimer (this);
-    m_ifaceUpdateInterval->setInterval (5000);
-
-    connect (m_ifaceUpdateInterval, &QTimer::timeout, this, &StationModel::updateIface);
 }
 
 /* Constructor for private functions */
@@ -254,97 +247,6 @@ QHash<int, QByteArray> StationModel::roleNames (void) const
     roles[StationItemRole::StationRole] = "Station";
 
     return roles;
-}
-
-QVector<QString> StationModel::getIface()
-{
-    QVector<QString> *ifaceList = new QVector<QString> ();
-    ifaceList->reserve(m_iface.count());
-
-    for (int i = 0; i < m_iface.count(); ++i)
-    {
-        ifaceList->append(m_iface.at(i)->interfaceName());
-    }
-
-    return *ifaceList;
-}
-
-/* Add physical network devices
-** Parameters:
-**     device: name of the physical wifi adapter
-*/
-void StationModel::updateIface ()
-{
-    for (const NetworkManager::Device::Ptr &dev :
-         NetworkManager::networkInterfaces())
-    {
-        // Look for duplicates
-        QString iface_name = dev->interfaceName();
-        for (int i = 0; i < m_iface.count(); ++i)
-        {
-            if (m_iface.at(i)->interfaceName() == iface_name)
-                return;
-        }
-
-        connect (dev.data(), &NetworkManager::Device::stateChanged,
-                 this, &StationModel::ifaceStateChanged, Qt::UniqueConnection);
-
-        if (dev->type() == NetworkManager::Device::Wifi)
-        {
-            NetworkManager::WirelessDevice::Ptr wifiDevice =
-                    dev.objectCast<NetworkManager::WirelessDevice>();
-
-            m_iface.append(wifiDevice);
-        }
-        else
-        {
-            m_iface.append(dev);
-        }
-    }
-}
-
-void StationModel::initIface ()
-{
-    m_iface.empty();
-
-    for (const NetworkManager::Device::Ptr &dev :
-         NetworkManager::networkInterfaces())
-    {
-        connect (dev.data(), &NetworkManager::Device::stateChanged,
-                 this, &StationModel::ifaceStateChanged, Qt::UniqueConnection);
-
-        if (dev->type() == NetworkManager::Device::Wifi)
-        {
-            NetworkManager::WirelessDevice::Ptr wifiDevice =
-                    dev.objectCast<NetworkManager::WirelessDevice>();
-
-            m_iface.append(wifiDevice);
-        }
-        else
-        {
-            m_iface.append(dev);
-        }
-    }
-
-}
-
-void StationModel::ifaceStateChanged (NetworkManager::Device::State state,
-                                       NetworkManager::Device::State oldState,
-                                       NetworkManager::Device::StateChangeReason reason)
-{
-    Q_UNUSED(oldState);
-    Q_UNUSED(reason);
-
-    NetworkManager::Device::Ptr device = NetworkManager::findNetworkInterface(qobject_cast<NetworkManager::Device *>(sender())->uni());
-
-    if (!device) {
-        return;
-    }
-
-    if (state == NetworkManager::Device::State::Disconnected)
-    {
-        qDebug() << m_iface.removeOne(device);
-    }
 }
 
 void StationModel::addStation ()

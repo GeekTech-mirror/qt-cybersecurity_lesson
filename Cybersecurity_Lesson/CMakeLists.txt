@@ -15,6 +15,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
+#find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS StateMachine)
 #find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Test)
 
 
@@ -50,8 +51,9 @@ else()
     endif()
 endif()
 
-target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+#target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::StateMachine)
 #target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Test)
 
 target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)

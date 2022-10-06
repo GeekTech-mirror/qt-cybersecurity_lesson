@@ -1,6 +1,8 @@
 #ifndef DEAUTHER_H
 #define DEAUTHER_H
 
+#include <QPropertyAnimation>
+#include <QTimer>
 #include <QWidget>
 
 #include "station_model.h"
@@ -27,6 +29,9 @@ private:
 
     NetworkModel *network_model;
     NetworkSort *network_sort;
+
+    QPropertyAnimation *search_animation;
+    QTimer *search_timer;
 
     void setup_network_list (void);
 };

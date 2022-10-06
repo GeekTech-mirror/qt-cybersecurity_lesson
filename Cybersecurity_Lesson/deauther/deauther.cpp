@@ -1,3 +1,5 @@
+#include <QPropertyAnimation>
+//#include <QStateMachine>
 #include <QTimer>
 
 /* NetworkManager Include files */
@@ -8,6 +10,7 @@
 #include "deauther.h"
 #include "ui_deauther.h"
 
+#include "pcap.h"
 #include "network_model.h"
 
 Deauther::Deauther(QWidget *parent) :
@@ -36,6 +39,12 @@ Deauther::Deauther(QWidget *parent) :
         }
     }
 
+    search_timer = new QTimer (this);
+    search_timer->setInterval (2000);
+
+    search_animation = new QPropertyAnimation(ui->monitor_status, "search_state");
+
+    //QState=
 
     /* Pseudo Code for Deathor */
 

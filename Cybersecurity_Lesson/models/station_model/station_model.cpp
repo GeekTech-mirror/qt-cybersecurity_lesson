@@ -5,6 +5,7 @@
 #include "station_model_p.h"
 #include "station_item.h"
 
+#include "pcap.h"
 #include "iwconfig.h"
 #include "custom_colors.h"
 

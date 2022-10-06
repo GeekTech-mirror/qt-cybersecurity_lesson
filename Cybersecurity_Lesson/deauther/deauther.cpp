@@ -8,10 +8,7 @@
 #include "deauther.h"
 #include "ui_deauther.h"
 
-#include "station_model/station_model.h"
-#include "network_model/network_model.h"
-#include "airodump.h"
-
+#include "network_model.h"
 
 Deauther::Deauther(QWidget *parent) :
     QWidget(parent),

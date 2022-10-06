@@ -3,9 +3,9 @@
 
 #include <QWidget>
 
-#include "station_model/station_model.h"
-#include "network_model/network_model.h"
-#include "iface_model/iface_model.h"
+#include "station_model.h"
+#include "network_model.h"
+#include "iface_model.h"
 
 namespace Ui {
 class Deauther;

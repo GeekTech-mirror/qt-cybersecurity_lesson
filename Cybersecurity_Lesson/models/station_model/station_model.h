@@ -7,7 +7,7 @@
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/WirelessDevice>
 
-#include "iface_model/iface_model.h"
+#include "iface_model.h"
 
 #include "station_enums.h"
 #include "station_item.h"

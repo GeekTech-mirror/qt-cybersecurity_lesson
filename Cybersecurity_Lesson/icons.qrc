@@ -28,5 +28,6 @@
         <file>icons/actions/24/edit-find-replace_state1.svg</file>
         <file>icons/actions/24/edit-find-replace_state2.svg</file>
         <file>icons/actions/24/edit-find-replace_state3.svg</file>
+        <file>icons/actions/24/edit-find-replace_state0.svg</file>
     </qresource>
 </RCC>

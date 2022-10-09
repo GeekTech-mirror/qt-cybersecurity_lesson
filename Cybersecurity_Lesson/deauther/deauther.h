@@ -2,6 +2,7 @@
 #define DEAUTHER_H
 
 #include <QPropertyAnimation>
+#include <QPushButton>
 #include <QTimer>
 #include <QWidget>
 
@@ -30,10 +31,14 @@ private:
     NetworkModel *network_model;
     NetworkSort *network_sort;
 
-    QPropertyAnimation *search_animation;
     QTimer *search_timer;
+    uint8_t search_animation_state = 1;
 
     void setup_network_list (void);
+
+    void toggle_monitoring ();
+
+    void search_animation (QPushButton *button);
 };
 
 #endif // DEAUTHER_H

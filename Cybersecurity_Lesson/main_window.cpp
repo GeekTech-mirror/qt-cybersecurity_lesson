@@ -19,6 +19,7 @@
 #include "custom_stylesheets.h"
 #include "custom_colors.h"
 
+#include "pcap.h"
 
 Main_Window::Main_Window (QWidget *parent)
     : QMainWindow (parent),

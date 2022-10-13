@@ -1,9 +1,4 @@
-#include <QAbstractTransition>
-#include <QPropertyAnimation>
-#include <QSequentialAnimationGroup>
 #include <QTimer>
-
-#include <QStateMachine>
 
 /* NetworkManager Include files */
 #include <NetworkManagerQt/ConnectionSettings>
@@ -18,7 +13,7 @@
 
 Deauther::Deauther(QWidget *parent) :
     QWidget(parent),
-    search_timer (new QTimer (this)),
+    search_animation_timer (new QTimer (this)),
     ui(new Ui::Deauther)
 {
     ui->setupUi(this);
@@ -28,30 +23,20 @@ Deauther::Deauther(QWidget *parent) :
     station_model = new StationModel();
     iface_model = new IfaceModel();
 
-    // create list of network interfaces
+    // create drop down list for network interfaces
     ui->iface_list->setModel(iface_model);
 
-    for (const NetworkManager::Device::Ptr &device
-         : NetworkManager::networkInterfaces())
-    {
-        if (device->type() == NetworkManager::Device::Wifi)
-        {
-            NetworkManager::WirelessDevice::Ptr wifiDevice =
-                    device.objectCast<NetworkManager::WirelessDevice>();
-
-            qDebug() << wifiDevice->interfaceName() << wifiDevice->mode();
-        }
-    }
-
+    // set up toggle for monitor mode (creates a pcap handle)
     ui->monitor_status->
         setIcon(QIcon(":/icons/actions/24/edit-find-replace_inactive.svg"));
     ui->monitor_status->setIconSize(QSize(50, 50));
 
-    connect(ui->toggle_monitoring, &QPushButton::clicked, this, &Deauther::toggle_monitoring);
+    connect(ui->toggle_monitoring, &QPushButton::clicked,
+            this, &Deauther::toggle_monitoring);
 
-
-    search_timer->setInterval (1000);
-    connect (search_timer, &QTimer::timeout,
+    // set up packet search icon
+    search_animation_timer->setInterval (1000);
+    connect (search_animation_timer, &QTimer::timeout,
              this, [&]() {search_animation(ui->monitor_status);});
 
 
@@ -110,9 +95,8 @@ void Deauther::setup_network_list (void)
 void Deauther::toggle_monitoring ()
 {
     static bool monitoring = true;
-    static pcap_t *handle;
 
-    const QIcon search_inactive = QIcon(":/icons/actions/24/edit-find-replace_inactive.svg");
+    const QIcon search_inactive = QIcon (":/icons/actions/24/edit-find-replace_inactive.svg");
     const QIcon search_active = QIcon (":/icons/actions/24/edit-find-replace_state0.svg");
 
     // create a pcap handle using the selected network interface
@@ -121,50 +105,53 @@ void Deauther::toggle_monitoring ()
 
     if (monitoring)
     {
-        handle = pcap_create(iface.data(), error_buffer->data());
+        iface_handle = pcap_create(iface.data(), error_buffer->data());
 
-        if (handle == NULL)
+        if (iface_handle == NULL)
         {
             qDebug() << "pcap_create failed:" << error_buffer->data();
             return;
         }
 
         // check if iface supports monitoring
-        if (!pcap_can_set_rfmon(handle))
+        if (!pcap_can_set_rfmon (iface_handle))
         {
-            qDebug() << "Monitor mode can not be set for" << iface.data();
+            qDebug() << "Monitor mode is not supported for" << iface.data();
+            pcap_close (iface_handle);
             return;
         }
 
         // set handle to monitor mode
-        if (pcap_set_rfmon(handle, 1))
+        if (pcap_set_rfmon (iface_handle, 1))
         {
             qDebug() << "Setting" << iface.data() << "to monitor mode failed";
-            qDebug() << "Do you have permissions?";
+            pcap_close (iface_handle);
             return;
         }
 
         // activate new monitor iface
-        if (pcap_activate(handle))
+        if (pcap_activate (iface_handle))
         {
-            qDebug() << "activate failed";
+            qDebug() << "Creating monitoring interface for" << iface.data() << "failed";
+            qDebug() << "Do you have permissions?";
+            pcap_close (iface_handle);
+            return;
         }
 
+        station_model->setIfaceHandle(iface_handle);
+
         // start packet search icon
-        search_timer->start();
+        search_animation_timer->start();
         ui->monitor_status->setIcon (search_active);
         search_animation_state = 1;
     }
     else
     {
-        pcap_close(handle);
-
-        // disable monitoring mode on iface
-        //pcap_set_rfmon(handle, 0);
+        pcap_close (iface_handle);
 
         // stop packet search icon
-        search_timer->stop();
-        ui->monitor_status->setIcon(search_inactive);
+        search_animation_timer->stop();
+        ui->monitor_status->setIcon (search_inactive);
     }
 
     // toggle monitoring mode
@@ -190,6 +177,7 @@ void Deauther::search_animation (QPushButton *button)
         break;
     }
     ++search_animation_state;
+
 
     if (search_animation_state > 3)
     {

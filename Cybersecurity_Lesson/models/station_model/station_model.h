@@ -7,6 +7,8 @@
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/WirelessDevice>
 
+#include "pcap.h"
+
 #include "iface_model.h"
 
 #include "station_enums.h"
@@ -19,7 +21,7 @@ class StationModel : public QAbstractItemModel
     Q_DECLARE_PRIVATE (StationModel)
 public:
     /* Constructor */
-    explicit StationModel(QObject *parent = nullptr);
+    explicit StationModel (QObject *parent = nullptr);
 
     ~StationModel ();
 
@@ -52,9 +54,14 @@ public:
     /* Station Model */
     QHash<int, QByteArray> roleNames (void) const override;
 
+    void setIfaceHandle (pcap_t *handle);
+
     void addStation ();
 
     void capturePacket ();
+
+private Q_SIGNAL:
+    int pcap_loop(pcap_t *handle);
 
 private Q_SLOTS:
 
@@ -64,8 +71,7 @@ private:
     QVector<StationItemRole> columnRoles;
 
     IfaceModel *m_iface;
-
-    void start_monitoring (NetworkManager::Device::Ptr &device);
+    pcap_t *m_ifaceHandle;
 
 protected:
     StationModel (StationModelPrivate &dd);

@@ -1,3 +1,5 @@
+#include <QThread>
+
 /* NetworkManager Include files */
 #include <NetworkManagerQt/ConnectionSettings>
 
@@ -8,6 +10,9 @@
 #include "pcap.h"
 #include "iwconfig.h"
 #include "custom_colors.h"
+
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 StationModel::StationModel (QObject *parent)
     : QAbstractItemModel (parent)
@@ -250,29 +255,75 @@ QHash<int, QByteArray> StationModel::roleNames (void) const
     return roles;
 }
 
+void StationModel::setIfaceHandle (pcap_t *handle)
+{
+    if (m_ifaceHandle == NULL)
+    {
+        qDebug() << "setIfaceHandle failed: handle does not exist";
+        return;
+    }
+
+    if (m_ifaceHandle != handle)
+    {
+        m_ifaceHandle = handle;
+    }
+
+    struct pcap_pkthdr *packet_header;
+    const u_char *packet;
+
+    this->pcap_loop (m_ifaceHandle);
+}
+
 void StationModel::addStation ()
 {
 
 }
+
+
+int StationModel::pcap_loop(pcap_t *handle)
+{
+    int n;
+    int status;
+
+    QThread *thread = QThread::create([handle]
+    {
+        struct pcap_pkthdr *packet_header;
+
+        const u_char *packet;
+
+        while (true)
+        {
+            if (handle == NULL)
+            {
+                continue;
+            }
+
+            switch (pcap_next_ex (handle, &packet_header, &packet))
+            {
+            case PCAP_ERROR:
+                qDebug() << "Error: Failed while reading packet";
+                qDebug() << pcap_geterr (handle);
+                break;
+            case PCAP_ERROR_BREAK:
+                qDebug() << "Warning: No more packets to read";
+                break;
+            default:
+                qDebug() << "packet captured";
+                qDebug() << "capture lenght" << packet_header->caplen;
+                qDebug() << "length" << packet_header->len;
+                break;
+            }
+
+        }
+    });
+    thread->start();
+
+    return 0;
+}
+
 
 void StationModel::capturePacket ()
 {
 
 }
 
-void StationModel::start_monitoring (NetworkManager::Device::Ptr &device)
-{
-    // Create monitor mode socket
-    int sockfd = iw_sockets_open();
-
-    if (sockfd == -1) {
-          qDebug() <<  "socket() creation failed - do you have permissions?";
-          return;
-    }
-
-
-    // search for nearby devices
-    QString mode = "monitor";
-    QString tmp = "wlp5s0";
-    set_mode_info(sockfd, tmp.toLocal8Bit().data(), mode.toLocal8Bit().data(), 3);
-}

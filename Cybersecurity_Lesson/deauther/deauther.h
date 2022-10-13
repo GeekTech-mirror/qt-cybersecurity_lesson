@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <QWidget>
 
+#include "pcap.h"
+
 #include "station_model.h"
 #include "network_model.h"
 #include "iface_model.h"
@@ -22,6 +24,8 @@ public:
     explicit Deauther(QWidget *parent = nullptr);
     ~Deauther();
 
+    pcap_t *iface_handle;
+
 private:
     Ui::Deauther *ui;
 
@@ -31,7 +35,7 @@ private:
     NetworkModel *network_model;
     NetworkSort *network_sort;
 
-    QTimer *search_timer;
+    QTimer *search_animation_timer;
     uint8_t search_animation_state = 1;
 
     void setup_network_list (void);

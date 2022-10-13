@@ -98,7 +98,6 @@ add_subdirectory(wardriving)
 add_subdirectory(deauther)
 
 
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rubberducky)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wardriving)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deauther)

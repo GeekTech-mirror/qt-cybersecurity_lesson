@@ -2,6 +2,7 @@
 #define STATION_ENUMS_H
 
 #include <QObject>
+#include <QByteArray>
 
 enum StationItemRole {
     StationRole = Qt::UserRole + 1,
@@ -9,68 +10,50 @@ enum StationItemRole {
     AccessPointRole,
 };
 
-/* size of probed ESSID ring buffer */
-#define NB_PRB 10
+/* IEEE 802.11 wireless LAN protocol filters */
+#define IEEE80211_FRAME_LEN 24
 
-/* size of signal power ring buffer */
-#define NB_PWR 5
+/* Traffic direction */
+#define	IEEE80211_FC1_DIR_MASK			0x03
+#define	IEEE80211_FC1_DIR_NODS			0x00	/* STA->STA */
+#define	IEEE80211_FC1_DIR_TODS			0x01	/* STA->AP  */
+#define	IEEE80211_FC1_DIR_FROMDS		0x02	/* AP ->STA */
+#define	IEEE80211_FC1_DIR_DSTODS		0x03	/* AP ->AP  */
 
-/* maximum length of an Information Element */
-#define MAX_IE_ELEMENT_SIZE 256
+/* Probe types */
+#define	IEEE80211_FC0_TYPE_MASK			0x0c
+#define	IEEE80211_FC0_TYPE_SHIFT		2
+#define	IEEE80211_FC0_TYPE_MGT			0x00
+#define	IEEE80211_FC0_TYPE_CTL			0x04
+#define	IEEE80211_FC0_TYPE_DATA			0x08
 
-/* maximum value for modulation and coding set index */
-#define MAX_AC_MCS_INDEX 8
+/* Probe subtypes */
+#define	IEEE80211_FC0_SUBTYPE_ASSOC_REQ		0x00
+#define	IEEE80211_FC0_SUBTYPE_ASSOC_RESP	0x10
+#define	IEEE80211_FC0_SUBTYPE_REASSOC_REQ	0x20
+#define	IEEE80211_FC0_SUBTYPE_REASSOC_RESP	0x30
+#define	IEEE80211_FC0_SUBTYPE_PROBE_REQ		0x40
+#define	IEEE80211_FC0_SUBTYPE_PROBE_RESP	0x50
+#define	IEEE80211_FC0_SUBTYPE_BEACON		0x80
+#define	IEEE80211_FC0_SUBTYPE_ATIM          0x90
+#define	IEEE80211_FC0_SUBTYPE_DISASSOC		0xa0
+#define	IEEE80211_FC0_SUBTYPE_AUTH          0xb0
+#define	IEEE80211_FC0_SUBTYPE_DEAUTH		0xc0
 
-enum channel_width_enum
-{
-    CHANNEL_UNKNOWN_WIDTH,
-    CHANNEL_3MHZ,
-    CHANNEL_5MHZ,
-    CHANNEL_10MHZ,
-    CHANNEL_20MHZ,
-    CHANNEL_22MHZ,
-    CHANNEL_30MHZ,
-    CHANNEL_20_OR_40MHZ,
-    CHANNEL_40MHZ,
-    CHANNEL_80MHZ,
-    CHANNEL_80_80MHZ,
-    CHANNEL_160MHZ
-};
+/* Frame locations */
+// location of radiotap header length
+#define RADIOTAP_HDR_LEN        0x02
 
-/* 802.11ac channel information */
-struct ac_channel_info
-{
-    QString center_sgmt[2];
-    /* 802.11ac Center segment 0*/
-    QChar mu_mimo; /* MU-MIMO support          */
-    QChar short_gi_80; /* Short GI for 80MHz       */
-    QChar short_gi_160; /* Short GI for 160MHz      */
-    QChar split_chan; /* 80+80MHz Channel support */
-    QChar mhz_160_chan; /* 160 MHz channel support  */
-    QChar wave_2; /* Wave 2                   */
-    QString mcs_index[MAX_AC_MCS_INDEX];
-    /* Maximum TX rate          */
-};
+/* Tag properties */
+#define TAG_PARAM_SSID          0x00
 
-/* 802.11n channel information */
-struct n_channel_info
-{
-    char mcs_index; /* Maximum MCS TX index     */
-    char sec_channel; /* 802.11n secondary channel*/
-    unsigned char short_gi_20; /* Short GI for 20MHz       */
-    unsigned char short_gi_40; /* Short GI for 40MHz       */
-    unsigned char any_chan_width; /* Support for 20 or 40MHz
-                                    as opposed to only 20 or
-                                    only 40MHz               */
-};
+/* Data properties */
+#define ESSID_LENGTH 32 /* The spec. says 32 maximum. */
 
-/* linked list of received packets for the last few seconds */
-struct pkt_buf
-{
-    unsigned char * packet; /* packet */
-    unsigned short length; /* packet length */
-    struct timeval ctime; /* capture time */
-};
+// returns the raw uchar* from a QByteArray at the position pos
+#define BYTE_TO_INT(arr,pos) \
+    *reinterpret_cast<const uchar*>(arr.mid(pos,1).constData())
+
 
 /* oui struct for list management */
 struct oui

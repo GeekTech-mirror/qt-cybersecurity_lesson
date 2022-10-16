@@ -58,20 +58,30 @@ public:
 
     void addStation ();
 
-    void capturePacket ();
+    void create_pcapThread (pcap_t *handle);
 
-private Q_SIGNAL:
-    int pcap_loop(pcap_t *handle);
+signals:
+    void packetCaptured (const uchar *pk_data, const QByteArray &packet);
 
-private Q_SLOTS:
-
+private Q_SLOT:
+    void filterPacket (const uchar *pk_data, const QByteArray &packet);
 
 private:
     StationItem *rootItem;
     QVector<StationItemRole> columnRoles;
+    QVector<QByteArray> m_accessPoint;
+
+    QThread *m_pcapThread;
 
     IfaceModel *m_iface;
     pcap_t *m_ifaceHandle;
+
+
+    /* static variables for packet filtering */
+    // LLC null packet
+    const QByteArray llcnull = QByteArray(4, 0);
+
+    bool probe_request(const QByteArray &packet, const QByteArray &stmac);
 
 protected:
     StationModel (StationModelPrivate &dd);

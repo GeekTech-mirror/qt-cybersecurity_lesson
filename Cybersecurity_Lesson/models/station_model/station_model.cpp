@@ -8,17 +8,18 @@
 #include "station_item.h"
 
 #include "pcap.h"
-#include "iwconfig.h"
 #include "custom_colors.h"
 
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <net/ethernet.h>
 
 StationModel::StationModel (QObject *parent)
     : QAbstractItemModel (parent)
 {
     rootItem = new StationItem ();
 
+    connect (this, &StationModel::packetCaptured,
+             this, &StationModel::filterPacket);
 }
 
 /* Constructor for private functions */
@@ -255,11 +256,12 @@ QHash<int, QByteArray> StationModel::roleNames (void) const
     return roles;
 }
 
+
 void StationModel::setIfaceHandle (pcap_t *handle)
 {
-    if (m_ifaceHandle == NULL)
+    if (handle == NULL)
     {
-        qDebug() << "setIfaceHandle failed: handle does not exist";
+        qWarning() << "setIfaceHandle failed: handle does not exist";
         return;
     }
 
@@ -271,7 +273,7 @@ void StationModel::setIfaceHandle (pcap_t *handle)
     struct pcap_pkthdr *packet_header;
     const u_char *packet;
 
-    this->pcap_loop (m_ifaceHandle);
+    this->create_pcapThread (m_ifaceHandle);
 }
 
 void StationModel::addStation ()
@@ -280,50 +282,292 @@ void StationModel::addStation ()
 }
 
 
-int StationModel::pcap_loop(pcap_t *handle)
+void StationModel::create_pcapThread (pcap_t *handle)
 {
-    int n;
+    int n=0;
     int status;
 
-    QThread *thread = QThread::create([handle]
+    m_pcapThread = QThread::create([handle, this]
     {
+        QByteArray *packet;
         struct pcap_pkthdr *packet_header;
+        const u_char *pk_data;
 
-        const u_char *packet;
+
+        int n = 0;
 
         while (true)
         {
+
             if (handle == NULL)
             {
                 continue;
             }
 
-            switch (pcap_next_ex (handle, &packet_header, &packet))
+            // capture the next packet
+            switch (pcap_next_ex (handle, &packet_header, &pk_data))
             {
             case PCAP_ERROR:
-                qDebug() << "Error: Failed while reading packet";
+                qWarning() << "Error: Failed while reading packet";
                 qDebug() << pcap_geterr (handle);
                 break;
+
             case PCAP_ERROR_BREAK:
-                qDebug() << "Warning: No more packets to read";
+                qWarning() << "Warning: No more packets to read";
                 break;
+
             default:
-                qDebug() << "packet captured";
-                qDebug() << "capture lenght" << packet_header->caplen;
-                qDebug() << "length" << packet_header->len;
-                break;
+
+                // convert unsigned char* array to QByteArray
+                packet = new QByteArray (reinterpret_cast<const char*>(pk_data),
+                                         packet_header->caplen);
+
+                // filter out radiotap header
+                int n = static_cast<uint>(packet->at(RADIOTAP_HDR_LEN));
+                *packet = packet->mid(n);
+
+                // filtering packets subtype for debugging
+                static int i = 0;
+                if (packet->at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
+                {
+                    Q_EMIT packetCaptured (pk_data, *packet);
+
+                    ++i;
+                    if (i > 10)
+                    {
+                        return;
+                    }
+                }
             }
 
         }
     });
-    thread->start();
-
-    return 0;
+    m_pcapThread->start();
 }
 
 
-void StationModel::capturePacket ()
+/* Request from device to connect to ap
+** Parameters:
+**     packet:
+** Return:
+** Notes:
+**     index 0: indicates the tag type
+**     index 1: inicates the size of the tag
+*/
+bool StationModel::probe_request(const QByteArray &packet, const QByteArray &stmac)
 {
+    QByteArray tag = packet.mid(24);
+    QByteArray essid;
 
+    int tag_id;
+    int tag_len;
+
+    // Probe tagged parameters
+    int i=24;
+    while (i < packet.size())
+    {
+        tag_id = BYTE_TO_INT(tag, 0);
+        tag_len = BYTE_TO_INT(tag, 1);
+
+        if (2 + tag_len > packet.size())
+        {
+            break;
+        }
+
+        if (tag_id == TAG_PARAM_SSID
+            && tag_len > 0
+            && tag.at(2) != '\0'
+            && (tag_len > 1 || tag.at(2) != ' '))
+        {
+            essid = tag.mid(2, tag_len);
+        }
+
+        // move to the next tag
+        tag = tag.mid(2 + tag_len);
+
+        i += 2 + tag_len;
+    }
+
+    return true;
+}
+
+void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
+{
+    QByteArray stmac;
+    QByteArray bssid;
+
+    // broadcast address
+    QByteArray wildcard;
+    wildcard.fill(0xFF, 6);
+
+
+    /* packets to skip */
+
+    // skip packets smaller than IEEE 802.11 Frames
+    if (packet.size() < IEEE80211_FRAME_LEN)
+    {
+                // go to write packet?
+        return;
+    }
+
+    // skip control frame
+    if ((packet.at(0) & IEEE80211_FC0_TYPE_MASK)
+        == IEEE80211_FC0_TYPE_CTL)
+    {
+        // go to write packet?
+        return;
+    }
+
+    // skip LLC null packets
+    if (((packet.at(0) & IEEE80211_FC0_TYPE_MASK) == IEEE80211_FC0_TYPE_DATA)
+        && (packet.size() > 28))
+    {
+        if (packet.mid(24,4) == llcnull)
+            return;
+    }
+
+
+    // find access point - bssid
+    switch (packet.at(1) & IEEE80211_FC1_DIR_MASK)
+    {
+        case IEEE80211_FC1_DIR_NODS:
+            bssid = packet.mid(16, 6);
+            break; // Adhoc
+
+        case IEEE80211_FC1_DIR_TODS:
+            bssid = packet.mid(4, 6);
+            break; // ToDS
+
+        case IEEE80211_FC1_DIR_FROMDS:
+        case IEEE80211_FC1_DIR_DSTODS:
+            bssid = packet.mid(10, 6);
+            break; // WDS -> Transmitter taken as BSSID
+
+        default:
+            qDebug() << "returned";
+            return;
+    }
+
+    // find station - mac address
+    switch (packet.at(1) & IEEE80211_FC1_DIR_MASK)
+    {
+            case IEEE80211_FC1_DIR_NODS:
+
+                /* if management, check that SA != BSSID */
+                if (packet.mid(10,6) == bssid)
+                {
+                    // skip station
+                    break;
+                }
+
+                stmac = packet.mid(10, 6);
+                break;
+
+            case IEEE80211_FC1_DIR_TODS:
+
+                /* ToDS packet, must come from a client */
+                stmac = packet.mid(10, 6);
+                break;
+
+            case IEEE80211_FC1_DIR_FROMDS:
+
+                /* FromDS packet, reject broadcast MACs */
+                if ((packet.at(4) % 2) != 0)
+                {
+                    // skip station
+                    break;
+                }
+
+                stmac = packet.mid(4, 6);
+                break;
+
+            case IEEE80211_FC1_DIR_DSTODS:
+                break;
+
+            default:
+                qDebug() << "returned";
+                return;
+    }
+
+    if (!m_accessPoint.contains(bssid))
+    {
+        m_accessPoint.append(bssid);
+
+        //find manufacturer
+    }
+
+
+    // Probe Request - ST -> AP
+    QByteArray essid;
+    if (packet.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ && !stmac.isNull())
+    {
+        if (bssid == wildcard)
+        {
+            bssid.clear();
+        }
+
+        probe_request(packet, stmac);
+    }
+
+
+//////////////////////// DEBUGGING ////////////////////////
+
+    // print captured packet to console
+    QDebug debug = qDebug();
+    debug << "capture length" << packet.size() << Qt::endl << Qt::endl;
+    debug << packet << Qt::endl << Qt::endl;
+
+    for (int i=0; i<packet.size()*2; ++i)
+    {
+        debug.nospace();
+
+        if (i % 2)
+        {
+            debug << packet.toHex().at(i) << " ";
+        }
+        else
+        {
+            debug << Qt::hex << packet.toHex().at(i);
+        }
+    }
+    debug << Qt::endl << Qt::endl;
+
+    // print access point
+    debug << "access point" << Qt::endl;
+    debug << "bssid: ";
+    for (int i=0; i < bssid.size()*2; ++i)
+    {
+        debug.nospace();
+
+        if (i % 2)
+        {
+            debug << bssid.toHex().at(i) << ":";
+        }
+        else
+        {
+            debug << Qt::hex << bssid.toHex().at(i);
+        }
+    }
+    debug << Qt::endl;
+    debug << "essid: " << essid;
+    debug << Qt::endl << Qt::endl;
+
+
+    // print station
+    debug << "station" << Qt::endl;
+    for (int i=0; i < stmac.size()*2; ++i)
+    {
+        debug.nospace();
+
+        if (i % 2)
+        {
+            debug << stmac.toHex().at(i) << ":";
+        }
+        else
+        {
+            debug << Qt::hex << stmac.toHex().at(i);
+        }
+    }
+    debug << Qt::endl;
 }
 

@@ -109,14 +109,14 @@ void Deauther::toggle_monitoring ()
 
         if (iface_handle == NULL)
         {
-            qDebug() << "pcap_create failed:" << error_buffer->data();
+            qWarning() << "pcap_create failed:" << error_buffer->data();
             return;
         }
 
         // check if iface supports monitoring
         if (!pcap_can_set_rfmon (iface_handle))
         {
-            qDebug() << "Monitor mode is not supported for" << iface.data();
+            qWarning() << "Monitor mode is not supported for" << iface.data();
             pcap_close (iface_handle);
             return;
         }
@@ -124,7 +124,7 @@ void Deauther::toggle_monitoring ()
         // set handle to monitor mode
         if (pcap_set_rfmon (iface_handle, 1))
         {
-            qDebug() << "Setting" << iface.data() << "to monitor mode failed";
+            qWarning() << "Setting" << iface.data() << "to monitor mode failed";
             pcap_close (iface_handle);
             return;
         }
@@ -132,13 +132,13 @@ void Deauther::toggle_monitoring ()
         // activate new monitor iface
         if (pcap_activate (iface_handle))
         {
-            qDebug() << "Creating monitoring interface for" << iface.data() << "failed";
-            qDebug() << "Do you have permissions?";
+            qWarning() << "Creating monitoring interface for" << iface.data() << "failed";
+            qWarning() << "Do you have permissions?";
             pcap_close (iface_handle);
             return;
         }
 
-        station_model->setIfaceHandle(iface_handle);
+        station_model->setIfaceHandle (iface_handle);
 
         // start packet search icon
         search_animation_timer->start();

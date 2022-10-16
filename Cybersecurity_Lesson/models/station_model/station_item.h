@@ -54,13 +54,13 @@ private:
     QString indent;
 
     /* Station Items */
-    uint8_t m_stmac;                                        /* the client's MAC address  */
+    QByteArray m_stmac;                                     /* the client's MAC address  */
+    QByteArray m_ap;
     QString m_manuf;                                        /* the client's manufacturer */
     int m_channel;
 
     /* Network Probes */
     int m_probe_index;                                      /* probed ESSIDs ring index  */
-    QVector<QString> m_probes[NB_PRB][MAX_IE_ELEMENT_SIZE];
     unsigned long nb_pkt;                                   /* total number of packets   */
     int m_missed;
 

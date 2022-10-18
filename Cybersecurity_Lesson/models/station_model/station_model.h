@@ -82,6 +82,7 @@ private:
     const QByteArray llcnull = QByteArray(4, 0);
 
     bool probe_request(const QByteArray &pk, QByteArray &essid);
+    bool probe_response(const QByteArray &pk, QByteArray &essid);
 
 protected:
     StationModel (StationModelPrivate &dd);

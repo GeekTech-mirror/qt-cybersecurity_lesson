@@ -14,7 +14,8 @@
 #include <net/ethernet.h>
 
 StationModel::StationModel (QObject *parent)
-    : QAbstractItemModel (parent)
+    : QAbstractItemModel (parent),
+      m_pcapThread (new QThread(this))
 {
     rootItem = new StationItem ();
 
@@ -351,89 +352,11 @@ void StationModel::create_pcapThread (pcap_t *handle)
 }
 
 
-/* Request from device to connect to ap
-** Parameters:
-**     packet:
-** Return:
-** Notes:
-**     index 0: indicates the tag type
-**     index 1: inicates the size of the tag
-*/
-bool StationModel::probe_request(const QByteArray &pk, QByteArray &essid)
-{
-    // start parsing at Wireless Management Header
-    QByteArray tag = pk.sliced(24);
-
-    int tag_id;
-    int tag_len;
-
-    // timout if process takes too long
-    QTimer *timeout = new QTimer();
-    timeout->setSingleShot(true);
-    timeout->start(2000);
-
-    // Probe tagged parameters
-    while (timeout->isActive())
-    {
-        tag_id = BYTE_TO_UCHAR(tag, 0);
-        tag_len = BYTE_TO_UCHAR(tag, 1);
-
-
-        if (tag_len == 0)
-        {
-            qDebug() << "Info: packet contains a wildcard ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
-
-            return false;
-        }
-        else if (tag_len == 1 && tag.at(2) == ' ')
-        {
-            qDebug() << "Info: packet contains a empty ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
-
-            return false;
-        }
-        else if (tag.at(2) == '\0')
-        {
-            qDebug() << tag;
-            qDebug() << pk;
-            qDebug() << "Info: packet contains a null ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
-
-            return false;
-        }
-
-
-        /* find access point - essid */
-        if (tag_id == TAG_PARAM_SSID)
-        {
-            essid = tag.sliced(2, tag_len);
-
-            return true;
-        }
-
-
-        // avoid going out of bounds
-        if ((2+tag_len) > tag.size() )
-        {
-            qDebug() << "Error: tag parsing attempted to move out of bounds";
-            qDebug() << "Skipping Packet" << Qt::endl;
-
-            return false;
-        }
-
-        // move to the next tag
-        tag = tag.sliced(2 + tag_len);
-    }
-
-    qDebug() << "Warning: probe_request() timed out";
-    return false;
-}
-
 void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
 {
     QByteArray stmac;
     QByteArray bssid;
+    QByteArray essid;
 
     // broadcast address
     QByteArray wildcard;
@@ -537,7 +460,6 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
 
 
     /* Probe Request: ST -> AP */
-    QByteArray essid;
     if (packet.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ
         && !stmac.isNull())
     {
@@ -575,3 +497,123 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
     debug << stmac.toHex(':') << Qt::endl;
 }
 
+
+/* Request from device to connect to ap
+** Parameters:
+**     packet:
+** Return:
+** Notes:
+**     index 0: indicates the tag type
+**     index 1: inicates the size of the tag
+*/
+bool StationModel::probe_request(const QByteArray &pk, QByteArray &essid)
+{
+    // start parsing at Wireless Management Header
+    QByteArray tags = pk.sliced(24);
+
+    int tag_id;
+    int tag_len;
+    QByteArray tag_data;
+
+    // timout if process takes too long
+    QTimer *timeout = new QTimer();
+    timeout->setSingleShot(true);
+    timeout->start(2000);
+
+    // return if subtype is not a probe request
+    if (pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_REQ)
+    {
+        return true;
+    }
+
+    // Probe tagged parameters
+    while (timeout->isActive())
+    {
+        tag_id = BYTE_TO_UCHAR(tags, 0);
+        tag_len = BYTE_TO_UCHAR(tags, 1);
+
+
+        if (tag_len == 0)
+        {
+            qDebug() << "Info: packet contains a wildcard ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+        else if (tag_len == 1 && tags.at(2) == ' ')
+        {
+            qDebug() << "Info: packet contains a empty ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+        else if (tags.at(2) == '\0')
+        {
+            qDebug() << "Info: packet contains a null ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+
+
+        /* find access point - essid */
+        if (tag_id == TAG_PARAM_SSID)
+        {
+            tag_data = tags.sliced (2, tag_len);
+
+            for (int i=0; i < tag_len; ++i)
+            {
+                // avoid ascii special characters
+                if (tag_data.at(i) < 0x20)
+                {
+                    tag_data[i] = '.';
+                }
+            }
+
+            if (tag_data.isValidUtf8())
+            {
+                essid = tag_data;
+            }
+
+            return true;
+        }
+
+
+        // avoid going out of bounds
+        if ((2+tag_len) > tags.size() )
+        {
+            qDebug() << "Error: tag parsing attempted to move out of bounds";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+
+        // move to the next tag
+        tags = tags.sliced (2+tag_len);
+    }
+
+    qDebug() << "Warning: probe_request() timed out";
+    qDebug() << "Skipping Packet" << Qt::endl;
+    return false;
+}
+
+bool StationModel::probe_response(const QByteArray &pk, QByteArray &essid)
+{
+    if (pk.at(0) != IEEE80211_FC0_SUBTYPE_BEACON
+        && pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_RESP)
+    {
+        return true;
+    }
+
+    // store preamble
+
+    // store timestamp
+
+    QByteArray tags = pk.sliced(36);
+
+    int tag_id;
+    int tag_len;
+    QByteArray tag_data;
+
+    return true;
+}

@@ -287,6 +287,11 @@ void StationModel::create_pcapThread (pcap_t *handle)
     int n=0;
     int status;
 
+    if (m_pcapThread->isRunning())
+    {
+        m_pcapThread->quit();
+    }
+
     m_pcapThread = QThread::create([handle, this]
     {
         QByteArray *packet;
@@ -298,7 +303,6 @@ void StationModel::create_pcapThread (pcap_t *handle)
 
         while (true)
         {
-
             if (handle == NULL)
             {
                 continue;
@@ -322,10 +326,11 @@ void StationModel::create_pcapThread (pcap_t *handle)
                 packet = new QByteArray (reinterpret_cast<const char*>(pk_data),
                                          packet_header->caplen);
 
-                // filter out radiotap header
-                int n = static_cast<uint>(packet->at(RADIOTAP_HDR_LEN));
-                *packet = packet->mid(n);
+                // skip radiotap header
+                int n = static_cast<uint>(packet->at(RADIOTAP_HDR_LEN_LOC));
+                *packet = packet->sliced(n);
 
+                qDebug() << "capture length" << packet_header->caplen;
                 // filtering packets subtype for debugging
                 static int i = 0;
                 if (packet->at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
@@ -354,41 +359,75 @@ void StationModel::create_pcapThread (pcap_t *handle)
 **     index 0: indicates the tag type
 **     index 1: inicates the size of the tag
 */
-bool StationModel::probe_request(const QByteArray &packet, const QByteArray &stmac)
+bool StationModel::probe_request(const QByteArray &pk, QByteArray &essid)
 {
-    QByteArray tag = packet.mid(24);
-    QByteArray essid;
+    // start parsing at Wireless Management Header
+    QByteArray tag = pk.sliced(24);
 
     int tag_id;
     int tag_len;
 
-    // Probe tagged parameters
-    int i=24;
-    while (i < packet.size())
-    {
-        tag_id = BYTE_TO_INT(tag, 0);
-        tag_len = BYTE_TO_INT(tag, 1);
+    // timout if process takes too long
+    QTimer *timeout = new QTimer();
+    timeout->setSingleShot(true);
+    timeout->start(2000);
 
-        if (2 + tag_len > packet.size())
+    // Probe tagged parameters
+    while (timeout->isActive())
+    {
+        tag_id = BYTE_TO_UCHAR(tag, 0);
+        tag_len = BYTE_TO_UCHAR(tag, 1);
+
+
+        if (tag_len == 0)
         {
-            break;
+            qDebug() << "Info: packet contains a wildcard ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+        else if (tag_len == 1 && tag.at(2) == ' ')
+        {
+            qDebug() << "Info: packet contains a empty ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+        else if (tag.at(2) == '\0')
+        {
+            qDebug() << tag;
+            qDebug() << pk;
+            qDebug() << "Info: packet contains a null ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
         }
 
-        if (tag_id == TAG_PARAM_SSID
-            && tag_len > 0
-            && tag.at(2) != '\0'
-            && (tag_len > 1 || tag.at(2) != ' '))
+
+        /* find access point - essid */
+        if (tag_id == TAG_PARAM_SSID)
         {
-            essid = tag.mid(2, tag_len);
+            essid = tag.sliced(2, tag_len);
+
+            return true;
+        }
+
+
+        // avoid going out of bounds
+        if ((2+tag_len) > tag.size() )
+        {
+            qDebug() << "Error: tag parsing attempted to move out of bounds";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
         }
 
         // move to the next tag
-        tag = tag.mid(2 + tag_len);
-
-        i += 2 + tag_len;
+        tag = tag.sliced(2 + tag_len);
     }
 
-    return true;
+    qDebug() << "Warning: probe_request() timed out";
+    return false;
 }
 
 void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
@@ -406,7 +445,7 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
     // skip packets smaller than IEEE 802.11 Frames
     if (packet.size() < IEEE80211_FRAME_LEN)
     {
-                // go to write packet?
+        // go to write packet?
         return;
     }
 
@@ -422,25 +461,25 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
     if (((packet.at(0) & IEEE80211_FC0_TYPE_MASK) == IEEE80211_FC0_TYPE_DATA)
         && (packet.size() > 28))
     {
-        if (packet.mid(24,4) == llcnull)
+        if (packet.sliced(24,4) == llcnull)
             return;
     }
 
 
-    // find access point - bssid
+    /* find access point - bssid */
     switch (packet.at(1) & IEEE80211_FC1_DIR_MASK)
     {
         case IEEE80211_FC1_DIR_NODS:
-            bssid = packet.mid(16, 6);
+            bssid = packet.sliced(16, 6);
             break; // Adhoc
 
         case IEEE80211_FC1_DIR_TODS:
-            bssid = packet.mid(4, 6);
+            bssid = packet.sliced(4, 6);
             break; // ToDS
 
         case IEEE80211_FC1_DIR_FROMDS:
         case IEEE80211_FC1_DIR_DSTODS:
-            bssid = packet.mid(10, 6);
+            bssid = packet.sliced(10, 6);
             break; // WDS -> Transmitter taken as BSSID
 
         default:
@@ -448,37 +487,37 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
             return;
     }
 
-    // find station - mac address
+    /* find station - mac address */
     switch (packet.at(1) & IEEE80211_FC1_DIR_MASK)
     {
             case IEEE80211_FC1_DIR_NODS:
 
-                /* if management, check that SA != BSSID */
-                if (packet.mid(10,6) == bssid)
+                // if management, check that SA != BSSID
+                if (packet.sliced(10,6) == bssid)
                 {
                     // skip station
                     break;
                 }
 
-                stmac = packet.mid(10, 6);
+                stmac = packet.sliced(10, 6);
                 break;
 
             case IEEE80211_FC1_DIR_TODS:
 
-                /* ToDS packet, must come from a client */
-                stmac = packet.mid(10, 6);
+                // ToDS packet, must come from a client
+                stmac = packet.sliced(10, 6);
                 break;
 
             case IEEE80211_FC1_DIR_FROMDS:
 
-                /* FromDS packet, reject broadcast MACs */
+                // FromDS packet, reject broadcast MACs
                 if ((packet.at(4) % 2) != 0)
                 {
                     // skip station
                     break;
                 }
 
-                stmac = packet.mid(4, 6);
+                stmac = packet.sliced(4, 6);
                 break;
 
             case IEEE80211_FC1_DIR_DSTODS:
@@ -497,16 +536,20 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
     }
 
 
-    // Probe Request - ST -> AP
+    /* Probe Request: ST -> AP */
     QByteArray essid;
-    if (packet.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ && !stmac.isNull())
+    if (packet.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ
+        && !stmac.isNull())
     {
         if (bssid == wildcard)
         {
             bssid.clear();
         }
 
-        probe_request(packet, stmac);
+        if(!probe_request(packet, essid))
+        {
+            return;
+        }
     }
 
 
@@ -514,60 +557,21 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
 
     // print captured packet to console
     QDebug debug = qDebug();
-    debug << "capture length" << packet.size() << Qt::endl << Qt::endl;
     debug << packet << Qt::endl << Qt::endl;
+    debug << packet.toHex(' ') << Qt::endl << Qt::endl;
 
-    for (int i=0; i<packet.size()*2; ++i)
-    {
-        debug.nospace();
-
-        if (i % 2)
-        {
-            debug << packet.toHex().at(i) << " ";
-        }
-        else
-        {
-            debug << Qt::hex << packet.toHex().at(i);
-        }
-    }
-    debug << Qt::endl << Qt::endl;
 
     // print access point
     debug << "access point" << Qt::endl;
-    debug << "bssid: ";
-    for (int i=0; i < bssid.size()*2; ++i)
-    {
-        debug.nospace();
-
-        if (i % 2)
-        {
-            debug << bssid.toHex().at(i) << ":";
-        }
-        else
-        {
-            debug << Qt::hex << bssid.toHex().at(i);
-        }
-    }
+    debug << "bssid:" << bssid.toHex(':');
     debug << Qt::endl;
-    debug << "essid: " << essid;
+
+    debug << "essid:" << essid;
     debug << Qt::endl << Qt::endl;
 
 
     // print station
     debug << "station" << Qt::endl;
-    for (int i=0; i < stmac.size()*2; ++i)
-    {
-        debug.nospace();
-
-        if (i % 2)
-        {
-            debug << stmac.toHex().at(i) << ":";
-        }
-        else
-        {
-            debug << Qt::hex << stmac.toHex().at(i);
-        }
-    }
-    debug << Qt::endl;
+    debug << stmac.toHex(':') << Qt::endl;
 }
 

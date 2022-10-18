@@ -81,7 +81,7 @@ private:
     // LLC null packet
     const QByteArray llcnull = QByteArray(4, 0);
 
-    bool probe_request(const QByteArray &packet, const QByteArray &stmac);
+    bool probe_request(const QByteArray &pk, QByteArray &essid);
 
 protected:
     StationModel (StationModelPrivate &dd);

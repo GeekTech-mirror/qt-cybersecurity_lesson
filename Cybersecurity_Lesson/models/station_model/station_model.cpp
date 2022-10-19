@@ -331,10 +331,10 @@ void StationModel::create_pcapThread (pcap_t *handle)
                 int n = static_cast<uint>(packet->at(RADIOTAP_HDR_LEN_LOC));
                 *packet = packet->sliced(n);
 
+
                 // filtering packets subtype for debugging
                 static int i = 0;
-                if (packet->at(0) == IEEE80211_FC0_SUBTYPE_PROBE_RESP
-                    || packet->at(0) == IEEE80211_FC0_SUBTYPE_BEACON)
+                if ((uchar)packet->at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
                 {
                     qDebug() << "capture length" << packet_header->caplen;
 
@@ -415,42 +415,42 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
     /* find station - mac address */
     switch (packet.at(1) & IEEE80211_FC1_DIR_MASK)
     {
-            case IEEE80211_FC1_DIR_NODS:
+        case IEEE80211_FC1_DIR_NODS:
 
-                // if management, check that SA != BSSID
-                if (packet.sliced(10,6) == bssid)
-                {
-                    // skip station
-                    break;
-                }
-
-                stmac = packet.sliced(10, 6);
+            // if management, check that SA != BSSID
+            if (packet.sliced(10,6) == bssid)
+            {
+                // skip station
                 break;
+            }
 
-            case IEEE80211_FC1_DIR_TODS:
+            stmac = packet.sliced(10, 6);
+            break;
 
-                // ToDS packet, must come from a client
-                stmac = packet.sliced(10, 6);
+        case IEEE80211_FC1_DIR_TODS:
+
+            // ToDS packet, must come from a client
+            stmac = packet.sliced(10, 6);
+            break;
+
+        case IEEE80211_FC1_DIR_FROMDS:
+
+            // FromDS packet, reject broadcast MACs
+            if ((packet.at(4) % 2) != 0)
+            {
+                // skip station
                 break;
+            }
 
-            case IEEE80211_FC1_DIR_FROMDS:
+            stmac = packet.sliced(4, 6);
+            break;
 
-                // FromDS packet, reject broadcast MACs
-                if ((packet.at(4) % 2) != 0)
-                {
-                    // skip station
-                    break;
-                }
+        case IEEE80211_FC1_DIR_DSTODS:
+            break;
 
-                stmac = packet.sliced(4, 6);
-                break;
-
-            case IEEE80211_FC1_DIR_DSTODS:
-                break;
-
-            default:
-                qDebug() << "returned";
-                return;
+        default:
+            qDebug() << "returned";
+            return;
     }
 
     if (!m_accessPoint.contains(bssid))
@@ -540,49 +540,17 @@ bool StationModel::probe_request(const QByteArray &pk, QByteArray &essid)
         tag_len = BYTE_TO_UCHAR(tags, 1);
 
 
-        if (tag_len == 0)
+        switch (find_ssid(tags, essid))
         {
-            qDebug() << "Info: packet contains a wildcard ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
+            case TagSearch::Error:
+                return false;
 
-            return false;
-        }
-        else if (tag_len == 1 && tags.at(2) == ' ')
-        {
-            qDebug() << "Info: packet contains a empty ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
+            case TagSearch::TagFound:
+                return true;
 
-            return false;
-        }
-        else if (tags.at(2) == '\0')
-        {
-            qDebug() << "Info: packet contains a null ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
+            case TagSearch::TagNotFound:
+                break;
 
-            return false;
-        }
-
-
-        /* find access point - essid */
-        if (tag_id == TAG_PARAM_SSID)
-        {
-            tag_data = tags.sliced (2, tag_len);
-
-            for (int i=0; i < tag_len; ++i)
-            {
-                // avoid ascii special characters
-                if (tag_data.at(i) < 0x20)
-                {
-                    tag_data[i] = '.';
-                }
-            }
-
-            if (tag_data.isValidUtf8())
-            {
-                essid = tag_data;
-            }
-
-            return true;
         }
 
 
@@ -616,10 +584,21 @@ bool StationModel::probe_request(const QByteArray &pk, QByteArray &essid)
 */
 bool StationModel::probe_response(const QByteArray &pk, QByteArray &essid)
 {
-    if (pk.at(0) != IEEE80211_FC0_SUBTYPE_BEACON
+    // type cast to uchar (0x80 or b1000 0000 results in a negative with signed char)
+    if ((uchar)pk.at(0) != IEEE80211_FC0_SUBTYPE_BEACON
         && pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_RESP)
     {
         return true;
+    }
+
+    if ((uchar)pk.at(0) == IEEE80211_FC0_SUBTYPE_BEACON)
+    {
+        qDebug() << "Beacon Frame";
+    }
+
+    if (pk.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_RESP)
+    {
+        qDebug() << "Probe Response";
     }
 
     // store preamble
@@ -630,7 +609,6 @@ bool StationModel::probe_response(const QByteArray &pk, QByteArray &essid)
 
     int tag_id;
     int tag_len;
-    QByteArray tag_data;
 
     // timout if process takes too long
     QTimer *timeout = new QTimer();
@@ -644,49 +622,17 @@ bool StationModel::probe_response(const QByteArray &pk, QByteArray &essid)
         tag_len = BYTE_TO_UCHAR(tags, 1);
 
 
-        if (tag_len == 0)
+        switch (find_ssid(tags, essid))
         {
-            qDebug() << "Info: packet contains a wildcard ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
+            case TagSearch::Error:
+                return false;
 
-            return false;
-        }
-        else if (tag_len == 1 && tags.at(2) == ' ')
-        {
-            qDebug() << "Info: packet contains a empty ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
+            case TagSearch::TagFound:
+                return true;
 
-            return false;
-        }
-        else if (tags.at(2) == '\0')
-        {
-            qDebug() << "Info: packet contains a null ssid";
-            qDebug() << "Skipping Packet" << Qt::endl;
+            case TagSearch::TagNotFound:
+                break;
 
-            return false;
-        }
-
-
-        /* find access point - essid */
-        if (tag_id == TAG_PARAM_SSID)
-        {
-            tag_data = tags.sliced (2, tag_len);
-
-            for (int i=0; i < tag_len; ++i)
-            {
-                // avoid ascii special characters
-                if (tag_data.at(i) < 0x20)
-                {
-                    tag_data[i] = '.';
-                }
-            }
-
-            if (tag_data.isValidUtf8())
-            {
-                essid = tag_data;
-            }
-
-            return true;
         }
 
 
@@ -707,3 +653,63 @@ bool StationModel::probe_response(const QByteArray &pk, QByteArray &essid)
     qDebug() << "Skipping Packet" << Qt::endl;
     return false;
 }
+
+
+TagSearch StationModel::find_ssid(const QByteArray &tags, QByteArray &essid)
+{
+    int tag_id;             // index 0
+    int tag_len;            // index 1
+    QByteArray tag_data;    // index 2+
+
+    tag_id = BYTE_TO_UCHAR(tags, 0);
+    tag_len = BYTE_TO_UCHAR(tags, 1);
+
+
+    if (tag_len == 0)
+    {
+        qDebug() << "Info: packet contains a wildcard ssid";
+        qDebug() << "Skipping Packet" << Qt::endl;
+
+        return TagSearch::Error;
+    }
+    else if (tag_len == 1 && tags.at(2) == ' ')
+    {
+        qDebug() << "Info: packet contains a empty ssid";
+        qDebug() << "Skipping Packet" << Qt::endl;
+
+        return TagSearch::Error;
+    }
+    else if (tags.at(2) == '\0')
+    {
+        qDebug() << "Info: packet contains a null ssid";
+        qDebug() << "Skipping Packet" << Qt::endl;
+
+        return TagSearch::Error;
+    }
+
+
+    /* find access point - essid */
+    if (tag_id == TAG_PARAM_SSID)
+    {
+        tag_data = tags.sliced (2, tag_len);
+
+        for (int i=0; i < tag_len; ++i)
+        {
+            // avoid ascii special characters
+            if (tag_data.at(i) < 0x20)
+            {
+                tag_data[i] = '.';
+            }
+        }
+
+        if (tag_data.isValidUtf8())
+        {
+            essid = tag_data;
+        }
+
+        return TagSearch::TagFound;
+    }
+
+    return TagSearch::TagNotFound;
+}
+

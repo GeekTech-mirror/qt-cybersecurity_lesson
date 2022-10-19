@@ -73,6 +73,12 @@ enum StationItemRole {
 #define BYTE_TO_UCHAR(arr,pos) \
     *reinterpret_cast<uchar*>(arr.sliced(pos,1).data())
 
+enum TagSearch {
+    Error,
+    TagNotFound,
+    TagFound
+};
+
 
 /* oui struct for list management */
 struct oui

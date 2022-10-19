@@ -84,6 +84,8 @@ private:
     bool probe_request(const QByteArray &pk, QByteArray &essid);
     bool probe_response(const QByteArray &pk, QByteArray &essid);
 
+    TagSearch find_ssid(const QByteArray &tags, QByteArray &essid);
+
 protected:
     StationModel (StationModelPrivate &dd);
     StationModelPrivate *d_ptr;

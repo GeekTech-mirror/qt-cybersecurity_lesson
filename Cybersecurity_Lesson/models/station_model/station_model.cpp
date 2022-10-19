@@ -331,11 +331,13 @@ void StationModel::create_pcapThread (pcap_t *handle)
                 int n = static_cast<uint>(packet->at(RADIOTAP_HDR_LEN_LOC));
                 *packet = packet->sliced(n);
 
-                qDebug() << "capture length" << packet_header->caplen;
                 // filtering packets subtype for debugging
                 static int i = 0;
-                if (packet->at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
+                if (packet->at(0) == IEEE80211_FC0_SUBTYPE_PROBE_RESP
+                    || packet->at(0) == IEEE80211_FC0_SUBTYPE_BEACON)
                 {
+                    qDebug() << "capture length" << packet_header->caplen;
+
                     Q_EMIT packetCaptured (pk_data, *packet);
 
                     ++i;
@@ -474,6 +476,11 @@ void StationModel::filterPacket (const uchar *pk_data, const QByteArray &packet)
         }
     }
 
+    if (!probe_response(packet, essid))
+    {
+        return;
+    }
+
 
 //////////////////////// DEBUGGING ////////////////////////
 
@@ -597,6 +604,16 @@ bool StationModel::probe_request(const QByteArray &pk, QByteArray &essid)
     return false;
 }
 
+
+/* Access Point response from device probe request
+** Parameters:
+**     packet:
+** Return:
+** Notes:
+**     index 0: indicates the tag type
+**     index 1: inicates the size of the tag
+**     index 2->tag_size: contains the tag data
+*/
 bool StationModel::probe_response(const QByteArray &pk, QByteArray &essid)
 {
     if (pk.at(0) != IEEE80211_FC0_SUBTYPE_BEACON
@@ -615,5 +632,78 @@ bool StationModel::probe_response(const QByteArray &pk, QByteArray &essid)
     int tag_len;
     QByteArray tag_data;
 
-    return true;
+    // timout if process takes too long
+    QTimer *timeout = new QTimer();
+    timeout->setSingleShot(true);
+    timeout->start(2000);
+
+    // Probe tagged parameters
+    while (timeout->isActive())
+    {
+        tag_id = BYTE_TO_UCHAR(tags, 0);
+        tag_len = BYTE_TO_UCHAR(tags, 1);
+
+
+        if (tag_len == 0)
+        {
+            qDebug() << "Info: packet contains a wildcard ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+        else if (tag_len == 1 && tags.at(2) == ' ')
+        {
+            qDebug() << "Info: packet contains a empty ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+        else if (tags.at(2) == '\0')
+        {
+            qDebug() << "Info: packet contains a null ssid";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+
+
+        /* find access point - essid */
+        if (tag_id == TAG_PARAM_SSID)
+        {
+            tag_data = tags.sliced (2, tag_len);
+
+            for (int i=0; i < tag_len; ++i)
+            {
+                // avoid ascii special characters
+                if (tag_data.at(i) < 0x20)
+                {
+                    tag_data[i] = '.';
+                }
+            }
+
+            if (tag_data.isValidUtf8())
+            {
+                essid = tag_data;
+            }
+
+            return true;
+        }
+
+
+        // avoid going out of bounds
+        if ((2+tag_len) > tags.size() )
+        {
+            qDebug() << "Error: tag parsing attempted to move out of bounds";
+            qDebug() << "Skipping Packet" << Qt::endl;
+
+            return false;
+        }
+
+        // move to the next tag
+        tags = tags.sliced (2+tag_len);
+    }
+
+    qDebug() << "Warning: probe_request() timed out";
+    qDebug() << "Skipping Packet" << Qt::endl;
+    return false;
 }

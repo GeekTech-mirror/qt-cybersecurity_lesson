@@ -67,7 +67,7 @@ private:
 
     /* Station Items */
     QByteArray m_stmac;                                     /* the client's MAC address  */
-    ap_info *m_apInfo;
+    ap_info m_apInfo;
     QString m_manuf;                                        /* the client's manufacturer */
 
     /* Security Properties */

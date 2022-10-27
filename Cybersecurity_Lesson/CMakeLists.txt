@@ -54,7 +54,6 @@ target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Networ
 #target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Test)
 
 target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
-#target_link_libraries(Cybersecurity_Lesson STATIC libpcap)
 
 target_link_libraries(Cybersecurity_Lesson PRIVATE Iface_Model)
 target_link_libraries(Cybersecurity_Lesson PRIVATE Network_Model)
@@ -88,6 +87,7 @@ install(TARGETS Cybersecurity_Lesson
 
 add_subdirectory(networkmanager-qt)
 
+add_subdirectory(libs)
 add_subdirectory(models)
 add_subdirectory(styles)
 

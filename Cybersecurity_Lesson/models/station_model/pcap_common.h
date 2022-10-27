@@ -1,24 +1,18 @@
-#ifndef STATION_ENUMS_H
-#define STATION_ENUMS_H
+#ifndef PCAP_ENUM_H
+#define PCAP_ENUM_H
 
-#include <QObject>
-#include <QByteArray>
-
-enum StationItemRole {
-    StationRole = Qt::UserRole + 1,
-    InterfaceRole,
-    AccessPointRole,
-};
-
-/* IEEE 802.11 wireless LAN protocol filters */
-/* definitions */
-/* FC: Frame Control Byte */
-/* DIR: Direction */
-/* TO/FROM DS: To/From Distribution System */
+/* IEEE 802.11 wireless LAN protocol filters
+ *
+ * definitions
+ *
+ * FC: Frame Control Byte
+ * DIR: Direction
+ * TO/FROM DS: To/From Distribution System
+ */
 #define IEEE80211_FRAME_LEN 24
 
-/* Traffic direction */
-/*
+/* Traffic direction
+ *
  * DS bit usage
  *
  * TA = transmitter address
@@ -59,19 +53,31 @@ enum StationItemRole {
 #define	IEEE80211_FC0_SUBTYPE_AUTH          0xb0
 #define	IEEE80211_FC0_SUBTYPE_DEAUTH		0xc0
 
-/* Frame locations */
-// location of radiotap header length
-#define RADIOTAP_HDR_LEN_LOC    0x02
+
+/* Radiotap properties */
+#define RADIOTAP_HDR_LEN           2
+
+#define RADIOTAP_CHAN_FLAGS        28
+#define RADIOTAP_CHAN_2GHZ         0x0080
+#define RADIOTAP_CHAN_5GHZ         0x0100
+
 
 /* Tag properties */
-#define TAG_PARAM_SSID          0x00
+#define TAG_PARAM_SSID              0x00
+#define TAG_PARAM_AP_CHANNEL        0x03
 
 /* Data properties */
 #define ESSID_LEN 32 /* The spec. says 32 maximum. */
 
 // returns the raw uchar* from a QByteArray at the position pos
-#define BYTE_TO_UCHAR(arr,pos) \
-    *reinterpret_cast<uchar*>(arr.sliced(pos,1).data())
+#define BYTE_TO_UCHAR(arr, pos) \
+    *reinterpret_cast<uchar*>(arr.sliced(pos,2).data())
+
+#define BYTES_TO_UCHAR(arr, pos, size) \
+    *reinterpret_cast<uchar*>(arr.sliced(pos,size).data())
+
+#define BYTE_P_TO_UCHAR(arr, pos) \
+    *reinterpret_cast<uchar*>(arr->sliced(pos,1).data())
 
 enum TagSearch {
     Error,
@@ -79,14 +85,4 @@ enum TagSearch {
     TagFound
 };
 
-
-/* oui struct for list management */
-struct oui
-{
-    QString id[9]; /* TODO: Don't use ASCII chars to compare, use unsigned char[3]
-                   (later) with the value (hex ascii will have to be converted)
-                   */
-    QString manuf[128]; /* TODO: Switch to a char * later to improve memory usage */
-};
-
-#endif // STATION_ENUMS_H
+#endif // PCAP_ENUM_H

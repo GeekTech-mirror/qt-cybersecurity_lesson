@@ -1,0 +1,86 @@
+diff --git a/Cybersecurity_Lesson/models/station_model/CMakeLists.txt b/Cybersecurity_Lesson/models/station_model/CMakeLists.txt
+index 81b3253..2c5c550 100644
+--- a/Cybersecurity_Lesson/models/station_model/CMakeLists.txt
++++ b/Cybersecurity_Lesson/models/station_model/CMakeLists.txt
+@@ -1,5 +1,6 @@
+ set(STATION_MODEL_SRCS
+-    station_enums.h
++    pcap_common.h
++    station_common.h
+     station_model.cpp
+     station_model.h
+     station_model_p.h
+diff --git a/Cybersecurity_Lesson/models/station_model/station_item.cpp b/Cybersecurity_Lesson/models/station_model/station_item.cpp
+index 7284818..ad174bb 100644
+--- a/Cybersecurity_Lesson/models/station_model/station_item.cpp
++++ b/Cybersecurity_Lesson/models/station_model/station_item.cpp
+@@ -1,7 +1,7 @@
+ #include <NetworkManagerQt/WirelessDevice>
+ 
+ #include "station_item.h"
+-#include "station_enums.h"
++#include "station_common.h"
+ 
+ StationItem::StationItem(StationItem *parent)
+     : m_parentItem(parent)
+diff --git a/Cybersecurity_Lesson/models/station_model/station_item.h b/Cybersecurity_Lesson/models/station_model/station_item.h
+index 7f92ed2..c8de444 100644
+--- a/Cybersecurity_Lesson/models/station_model/station_item.h
++++ b/Cybersecurity_Lesson/models/station_model/station_item.h
+@@ -1,7 +1,7 @@
+ #ifndef STATIONITEM_H
+ #define STATIONITEM_H
+ 
+-#include "station_enums.h"
++#include "station_common.h"
+ 
+ class StationItem : public QObject
+ {
+diff --git a/Cybersecurity_Lesson/models/station_model/station_model.cpp b/Cybersecurity_Lesson/models/station_model/station_model.cpp
+index d79f27d..4f6dc6e 100644
+--- a/Cybersecurity_Lesson/models/station_model/station_model.cpp
++++ b/Cybersecurity_Lesson/models/station_model/station_model.cpp
+@@ -6,6 +6,7 @@
+ #include "station_model.h"
+ #include "station_model_p.h"
+ #include "station_item.h"
++#include "pcap_common.h"
+ 
+ #include "pcap.h"
+ #include "custom_colors.h"
+@@ -15,7 +16,8 @@
+ 
+ StationModel::StationModel (QObject *parent)
+     : QAbstractItemModel (parent),
+-      m_pcapThread (new QThread(this))
++      m_pcapThread (new QThread(this)),
++      m_apInfo (QVector<ap_info*>())
+ {
+     rootItem = new StationItem ();
+ 
+diff --git a/Cybersecurity_Lesson/models/station_model/station_model.h b/Cybersecurity_Lesson/models/station_model/station_model.h
+index e4f8ea9..1cdd308 100644
+--- a/Cybersecurity_Lesson/models/station_model/station_model.h
++++ b/Cybersecurity_Lesson/models/station_model/station_model.h
+@@ -10,8 +10,9 @@
+ #include "pcap.h"
+ 
+ #include "iface_model.h"
++#include "pcap_common.h"
+ 
+-#include "station_enums.h"
++#include "station_common.h"
+ #include "station_item.h"
+ 
+ class StationModelPrivate;
+@@ -69,7 +70,7 @@ private Q_SLOT:
+ private:
+     StationItem *rootItem;
+     QVector<StationItemRole> columnRoles;
+-    QVector<QByteArray> m_accessPoint;
++    QVector<ap_info*> m_apInfo;
+ 
+     QThread *m_pcapThread;
+ 
+
+ 

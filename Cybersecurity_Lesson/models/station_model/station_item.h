@@ -1,13 +1,15 @@
 #ifndef STATIONITEM_H
 #define STATIONITEM_H
 
-#include "station_enums.h"
+#include "station_common.h"
 
 class StationItem : public QObject
 {
     Q_OBJECT
 public:
     explicit StationItem (StationItem *parent = nullptr);
+    explicit StationItem (const QVector<QString> &data,
+                          StationItem *parent = nullptr);
 
     ~StationItem();
 
@@ -45,6 +47,16 @@ public:
         m_changedRoles.clear();
     }
 
+    QByteArray apEssid () const;
+    QByteArray apBssid (ChannelFrequency chan_type) const;
+    int apChannel (ChannelFrequency chan_type) const;
+
+    ap_info apInfo () const;
+    void setApInfo (const ap_info &apInfo);
+
+    QByteArray stmac () const;
+    void setStmac (const QByteArray &stmac);
+
 signals:
 
 private:
@@ -55,14 +67,8 @@ private:
 
     /* Station Items */
     QByteArray m_stmac;                                     /* the client's MAC address  */
-    QByteArray m_ap;
+    ap_info *m_apInfo;
     QString m_manuf;                                        /* the client's manufacturer */
-    int m_channel;
-
-    /* Network Probes */
-    int m_probe_index;                                      /* probed ESSIDs ring index  */
-    unsigned long nb_pkt;                                   /* total number of packets   */
-    int m_missed;
 
     /* Security Properties */
     int m_wpatype;                                          /* 1=wpa1 2=wpa2             */

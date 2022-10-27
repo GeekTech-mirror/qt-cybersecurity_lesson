@@ -1,5 +1,6 @@
 set(STATION_MODEL_SRCS
-    station_enums.h
+    pcap_common.h
+    station_common.h
     station_model.cpp
     station_model.h
     station_model_p.h
@@ -19,5 +20,6 @@ target_link_libraries(Station_Model PRIVATE Iface_Model)
 
 target_include_directories(Station_Model PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+include_directories(${CMAKE_SOURCE_DIR}/models/network_model)
 include_directories(${CMAKE_SOURCE_DIR}/models/iface_model)
 include_directories(${CMAKE_SOURCE_DIR}/styles)

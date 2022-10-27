@@ -20,11 +20,17 @@ Deauther::Deauther(QWidget *parent) :
 
     setup_network_list();
 
-    station_model = new StationModel();
+    QVector<StationItemRole> roles ({StationItemRole::StationRole,
+                                     StationItemRole::AccessPointRole});
+    station_model = new StationModel(roles);
     iface_model = new IfaceModel();
 
     // create drop down list for network interfaces
     ui->iface_list->setModel(iface_model);
+    ui->station_view->setModel(station_model);
+
+    // Set treeview header font
+    ui->station_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
 
     // set up toggle for monitor mode (creates a pcap handle)
     ui->monitor_status->

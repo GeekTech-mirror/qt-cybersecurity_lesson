@@ -1,11 +1,24 @@
 #include <NetworkManagerQt/WirelessDevice>
 
 #include "station_item.h"
-#include "station_enums.h"
+#include "station_common.h"
 
 StationItem::StationItem(StationItem *parent)
-    : m_parentItem(parent)
+    : m_parentItem(parent),
+      indent(1,' ')
 {
+}
+
+StationItem::StationItem (const QVector<QString> &data, StationItem *parent)
+    : m_headerData(data),
+      m_parentItem(parent),
+      m_stmac(QByteArray()),
+      indent(1,' ')
+{
+    for (int i = 0; i < m_headerData.size(); ++i)
+    {
+        this->insertRole (StationItemRole::StationHeaderRole);
+    }
 }
 
 StationItem::~StationItem() = default;
@@ -81,13 +94,17 @@ QVariant StationItem::data (int column) const
     if (column < 0 || column >= m_roles.size())
         return QVariant();
 
+    //qDebug() << "Display Station:" << stmac().toHex(':');
     switch (m_roles.at(column)) {
-        case StationItemRole::AccessPointRole:
-            return QVariant();
-    case StationItemRole::InterfaceRole:
+    case AccessPointRole:
+        //return apEssid().constData();
+        return apEssid().constData();
+    case InterfaceRole:
         return QVariant();
-    case StationItemRole::StationRole:
-        return QVariant();
+    case StationRole:
+        return stmac().toHex(':');
+    case StationHeaderRole:
+        return m_headerData[column];
     default:
         break;
     }
@@ -109,6 +126,7 @@ QString StationItem::headerData(int column) const
 
 bool StationItem::setHeaderData (int column, const QString &value)
 {
+    qDebug() << value;
 
     if (column < 0 || column >= m_headerData.size())
         return false;
@@ -125,3 +143,69 @@ bool StationItem::setHeaderData (int column, const QString &value)
 /*
  *  Station Items
  */
+QByteArray StationItem::apEssid () const
+{
+    return m_apInfo->essid;
+}
+
+QByteArray StationItem::apBssid (ChannelFrequency chan_type) const
+{
+    if (chan_type == Chan_2GHz)
+    {
+        return m_apInfo->bssid[0];
+    }
+    else if (chan_type == Chan_5GHz)
+    {
+        return m_apInfo->bssid[1];
+    }
+
+    qWarning() << "Warning: No BSSID found for this network" << Qt::endl;
+
+    return QByteArray();
+}
+
+int StationItem::apChannel(ChannelFrequency chan_type) const
+{
+    if (chan_type == Chan_2GHz)
+    {
+        return m_apInfo->channel[0];
+    }
+    else if (chan_type == Chan_5GHz)
+    {
+        return m_apInfo->channel[1];
+    }
+
+    qWarning() << "Warning: No channel found for this network" << Qt::endl;
+
+    return int();
+}
+
+
+ap_info StationItem::apInfo () const
+{
+    return *m_apInfo;
+}
+
+void StationItem::setApInfo (const ap_info &apInfo)
+{
+    if (m_apInfo != &apInfo)
+    {
+        *m_apInfo = apInfo;
+        m_changedRoles << StationItemRole::AccessPointRole;
+    }
+}
+
+
+QByteArray StationItem::stmac () const
+{
+    return m_stmac;
+}
+
+void StationItem::setStmac (const QByteArray &stmac)
+{
+    if (m_stmac != stmac)
+    {
+        m_stmac = stmac;
+        m_changedRoles << StationItemRole::StationRole;
+    }
+}

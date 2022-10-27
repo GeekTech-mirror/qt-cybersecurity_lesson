@@ -27,13 +27,13 @@ public:
 
         switch (dd->rootItem->getRole(index.column())) {
         case StationItemRole::StationRole:
-            return QVariant ();
+            return item->stmac ();
             break;
         case StationItemRole::InterfaceRole:
             return QVariant ();
             break;
         case StationItemRole::AccessPointRole:
-            return QVariant ();
+            return item->apEssid ();
             break;
 
         default:
@@ -48,14 +48,14 @@ public:
         StationItem *item = getItem (index, dd);
 
         switch (role.toInt()) {
-        case StationItemRole::StationRole:
-            item->insertRole (StationItemRole::StationRole);
+        case StationItemRole::AccessPointRole:
+            item->insertRole (StationItemRole::AccessPointRole);
             break;
         case StationItemRole::InterfaceRole:
             item->insertRole (StationItemRole::InterfaceRole);
             break;
-        case StationItemRole::AccessPointRole:
-            item->insertRole (StationItemRole::AccessPointRole);
+        case StationItemRole::StationRole:
+            item->insertRole (StationItemRole::StationRole);
             break;
         default:
             return false;

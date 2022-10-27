@@ -17,9 +17,6 @@
     <disabled/>
    </palette>
   </property>
-  <property name="windowTitle">
-   <string>Form</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QComboBox" name="iface_list">
@@ -101,7 +98,17 @@
     </layout>
    </item>
    <item>
-    <widget class="QTreeView" name="treeView"/>
+    <widget class="QTreeView" name="station_view">
+     <property name="font">
+      <font>
+       <family>Libertinus Sans</family>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::NoSelection</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <spacer name="horizontalSpacer">

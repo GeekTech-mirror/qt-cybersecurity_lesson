@@ -2,6 +2,7 @@
 #define STATION_MODEL_H
 
 #include <QAbstractItemModel>
+#include <QMutex>
 #include <QTimer>
 
 #include <NetworkManagerQt/Manager>
@@ -10,8 +11,9 @@
 #include "pcap.h"
 
 #include "iface_model.h"
+#include "pcap_common.h"
 
-#include "station_enums.h"
+#include "station_common.h"
 #include "station_item.h"
 
 class StationModelPrivate;
@@ -21,7 +23,7 @@ class StationModel : public QAbstractItemModel
     Q_DECLARE_PRIVATE (StationModel)
 public:
     /* Constructor */
-    explicit StationModel (QObject *parent = nullptr);
+    explicit StationModel (const QVector<StationItemRole> &roles, QObject *parent = nullptr);
 
     ~StationModel ();
 
@@ -56,22 +58,22 @@ public:
 
     void setIfaceHandle (pcap_t *handle);
 
-    void addStation ();
-
     void create_pcapThread (pcap_t *handle);
 
 signals:
-    void packetCaptured (const uchar *pk_data, const QByteArray &packet);
+    void packetCaptured (const QByteArray &packet, int caplen);
 
 private Q_SLOT:
-    void filterPacket (const uchar *pk_data, const QByteArray &packet);
+    void filterPacket (const QByteArray &packet, int caplen);
+
 
 private:
     StationItem *rootItem;
     QVector<StationItemRole> columnRoles;
-    QVector<QByteArray> m_accessPoint;
+    QVector<ap_info*> m_apInfo;
 
     QThread *m_pcapThread;
+    QMutex m_mutex;
 
     IfaceModel *m_iface;
     pcap_t *m_ifaceHandle;
@@ -81,10 +83,15 @@ private:
     // LLC null packet
     const QByteArray llcnull = QByteArray(4, 0);
 
-    bool probe_request(const QByteArray &pk, QByteArray &essid);
-    bool probe_response(const QByteArray &pk, QByteArray &essid);
+    void addStation (QByteArray &stmac, ap_probe &apProbe);
+    bool addAccessPoint (ap_probe &ap_cur);
 
-    TagSearch find_ssid(const QByteArray &tags, QByteArray &essid);
+
+    bool filterRadiotapHdr(QByteArray &pk, ap_probe &ap);
+    bool probe_request(const QByteArray &pk, ap_probe &ap);
+    bool probe_response(const QByteArray &pk, ap_probe &ap);
+
+    TagSearch find_ssid(const QByteArray &tags, ap_probe &ap);
 
 protected:
     StationModel (StationModelPrivate &dd);

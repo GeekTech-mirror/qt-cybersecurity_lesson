@@ -97,7 +97,7 @@ NetworkModel::NetworkModel (NetworkModelPrivate &dd)
 }
 
 /* Destructor */
-NetworkModel::~NetworkModel ()  = default;
+NetworkModel::~NetworkModel () = default;
 /*{
     delete rootItem;
     delete m_scanHandler;

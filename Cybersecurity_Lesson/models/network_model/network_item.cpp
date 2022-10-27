@@ -209,7 +209,6 @@ QString NetworkItem::headerData(int column) const
 
 bool NetworkItem::setHeaderData (int column, const QString &value)
 {
-
     if (column < 0 || column >= m_headerData.size())
         return false;
 

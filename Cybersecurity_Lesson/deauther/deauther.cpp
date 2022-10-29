@@ -1,4 +1,7 @@
+#include <QScrollBar>
+#include <QStringBuilder>
 #include <QTimer>
+
 
 /* NetworkManager Include files */
 #include <NetworkManagerQt/ConnectionSettings>
@@ -13,8 +16,9 @@
 
 Deauther::Deauther(QWidget *parent) :
     QWidget(parent),
+    ui(new Ui::Deauther),
     search_animation_timer (new QTimer (this)),
-    ui(new Ui::Deauther)
+    stylesheets (new CustomStyleSheets)
 {
     ui->setupUi(this);
 
@@ -31,6 +35,22 @@ Deauther::Deauther(QWidget *parent) :
 
     // Set treeview header font
     ui->station_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
+
+    // Set treeview header size for scrollbar gutter
+    treeview_stylesheet = stylesheets->
+                          treeview_scrollbar
+                          (
+                              ui->station_view->header()->
+                              sizeHint().height()
+                          );
+
+    // Set treeview scrollbar colors
+    ui->station_view->setStyleSheet (treeview_stylesheet
+                                     % stylesheets->vertical_scrollbar_quirk());
+
+    // install filter to correct horizontal scrollbar quirks
+    ui->station_view->horizontalScrollBar()->installEventFilter(this);
+
 
     // set up toggle for monitor mode (creates a pcap handle)
     ui->monitor_status->
@@ -189,4 +209,31 @@ void Deauther::search_animation (QPushButton *button)
     {
         search_animation_state = 1;
     }
+}
+
+
+/* Filter to fix vertical scrollbar border when horizontal scrollbar appears
+**
+** Add bottom border to vertical scrollbar, on horizontal scrollbar hide
+**
+** Remove bottom border to vertical scrollbar on horizontal scrollbar appear
+**/
+bool Deauther::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::Hide)
+    {
+        QString update_scrollbar;
+
+        update_scrollbar =
+                treeview_stylesheet
+                % stylesheets->vertical_scrollbar_quirk();
+
+        ui->station_view->setStyleSheet (update_scrollbar);
+    }
+    else if (event->type() == QEvent::Show)
+    {
+        ui->station_view->setStyleSheet (treeview_stylesheet);
+    }
+
+    return QWidget::eventFilter (object, event);
 }

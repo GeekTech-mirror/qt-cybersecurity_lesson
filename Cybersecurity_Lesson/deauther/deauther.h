@@ -12,6 +12,8 @@
 #include "network_model.h"
 #include "iface_model.h"
 
+#include "custom_stylesheets.h"
+
 namespace Ui {
 class Deauther;
 }
@@ -29,6 +31,9 @@ public:
 private:
     Ui::Deauther *ui;
 
+    CustomStyleSheets *stylesheets;
+    QString treeview_stylesheet;
+
     StationModel *station_model;
     IfaceModel *iface_model;
 
@@ -43,6 +48,9 @@ private:
     void toggle_monitoring ();
 
     void search_animation (QPushButton *button);
+
+protected:
+    bool eventFilter (QObject *object, QEvent *event) override;
 };
 
 #endif // DEAUTHER_H

@@ -9,6 +9,7 @@ set(NETWORK_MODEL_SRCS
     network_scan.h
     network_sort.cpp
     network_sort.h
+    tree_model.cpp
 )
 
 add_library(Network_Model STATIC ${NETWORK_MODEL_SRCS})

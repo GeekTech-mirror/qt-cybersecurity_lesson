@@ -339,6 +339,13 @@ QString CustomStyleSheets::vertical_scrollbar_quirk (void)
 
 void CustomStyleSheets::setHeaderHeight(int height)
 {
+    if (height < 2)
+    {
+        qWarning() << "Warning: Passing header height of less than 2px"
+                   << "to setHeaderHeight";
+        return;
+    }
+
     sb_metrics.header_height = height - 2;
     sb_metrics.treeview_scrollbar_padding = height + 6;
 }

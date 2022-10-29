@@ -88,10 +88,13 @@ private:
 
 
     bool filterRadiotapHdr(QByteArray &pk, ap_probe &ap);
-    bool probe_request(const QByteArray &pk, ap_probe &ap);
-    bool probe_response(const QByteArray &pk, ap_probe &ap);
 
-    TagSearch find_ssid(const QByteArray &tags, ap_probe &ap);
+    //bool probe_request(const QByteArray &pk, ap_probe &ap);
+    //bool probe_response(const QByteArray &pk, ap_probe &ap);
+
+    //TagSearch find_ssid(const QByteArray &tags, ap_probe &ap);
+    //bool find_bssid (QByteArray &pk, ap_probe &ap);
+    //bool find_stmac (QByteArray &pk, ap_probe &ap, QByteArray &stmac);
 
 protected:
     StationModel (StationModelPrivate &dd);

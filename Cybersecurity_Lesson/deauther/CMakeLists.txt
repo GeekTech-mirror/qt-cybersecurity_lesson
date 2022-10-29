@@ -2,7 +2,6 @@ set(WIFI_DEAUTHER_SRCS
     deauther.cpp
     deauther.h
     deauther.ui
-    airodump.h
 )
 
 add_library(WiFi_Deauther STATIC ${WIFI_DEAUTHER_SRCS})
@@ -10,6 +9,9 @@ add_library(WiFi_Deauther STATIC ${WIFI_DEAUTHER_SRCS})
 target_link_libraries(WiFi_Deauther PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(WiFi_Deauther PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(WiFi_Deauther PRIVATE NetworkManagerQt)
+#target_link_libraries(WiFi_Deauther PRIVATE PolkitQt${QT_VERSION_MAJOR}-1::Core
+#                                            PolkitQt${QT_VERSION_MAJOR}-1::Gui
+#                                            PolkitQt${QT_VERSION_MAJOR}-1::Agent)
 target_link_libraries(WiFi_Deauther PRIVATE pcap)
 
 target_link_libraries(WiFi_Deauther PRIVATE Iface_Model)

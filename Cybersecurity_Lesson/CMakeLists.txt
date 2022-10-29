@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(Cybersecurity_Lesson VERSION 0.5 LANGUAGES CXX)
+project(Cybersecurity_Lesson VERSION 0.51 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

@@ -1,4 +1,5 @@
 set(STATION_MODEL_SRCS
+    debug_packets.h
     pcap_common.h
     station_common.h
     station_model.cpp

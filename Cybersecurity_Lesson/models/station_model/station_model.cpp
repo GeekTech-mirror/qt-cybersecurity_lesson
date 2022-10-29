@@ -14,6 +14,8 @@
 #include <netinet/in.h>
 #include <net/ethernet.h>
 
+#include "debug_packets.h"
+
 
 StationModel::StationModel (const QVector<StationItemRole> &roles, QObject *parent)
     : QAbstractItemModel (parent),
@@ -30,6 +32,18 @@ StationModel::StationModel (const QVector<StationItemRole> &roles, QObject *pare
             break;
         case StationItemRole::AccessPointRole:
             rootData << "Access Points";
+            break;
+        case StationItemRole::Bssid2Role:
+            rootData << "BSSID 2GHz";
+            break;
+        case StationItemRole::Bssid5Role:
+            rootData << "BSSID 5GHz";
+            break;
+        case StationItemRole::Channel2Role:
+            rootData << "Ch 2GHz";
+            break;
+        case StationItemRole::Channel5Role:
+            rootData << "Ch 5GHz";
             break;
         default:
             break;
@@ -115,7 +129,7 @@ bool StationModel::setData (const QModelIndex &index,
 
     StationItem *item = d_ptr->getItem (index, this);
 
-    // Set WiFi info to display
+    // Set pcap info to display
     bool result = d_ptr->setItemRole (station_role, index, this);
     if (result)
         Q_EMIT dataChanged (index, index, item->changedRoles());
@@ -177,6 +191,10 @@ QHash<int, QByteArray> StationModel::roleNames (void) const
 {
     QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
     roles[StationItemRole::AccessPointRole] = "AccessPoint";
+    roles[StationItemRole::Bssid2Role] = "BSSID 2GHz";
+    roles[StationItemRole::Bssid5Role] = "BSSID 5GHz";
+    roles[StationItemRole::Channel2Role] = "Channel 2GHz";
+    roles[StationItemRole::Channel5Role] = "Channel 5GHz";
     roles[StationItemRole::InterfaceRole] = "Interface";
     roles[StationItemRole::StationRole] = "Station";
     roles[StationItemRole::StationHeaderRole] = "Header";
@@ -185,12 +203,13 @@ QHash<int, QByteArray> StationModel::roleNames (void) const
 }
 
 
-void StationModel::setIfaceHandle (pcap_t *handle)
+bool StationModel::setIfaceHandle (pcap_t *handle)
 {
     if (handle == NULL)
     {
-        qWarning() << "setIfaceHandle failed: handle does not exist";
-        return;
+        qWarning() << "Warning: failed to set iface handle";
+        qWarning() << "Handle does not exist" << Qt::endl;
+        return false;
     }
 
     if (m_ifaceHandle != handle)
@@ -198,10 +217,52 @@ void StationModel::setIfaceHandle (pcap_t *handle)
         m_ifaceHandle = handle;
     }
 
-    struct pcap_pkthdr *packet_header;
-    const u_char *packet;
+    return true;
+}
 
-    this->create_pcapThread (m_ifaceHandle);
+
+void StationModel::start_pcapThread (pcap_t *handle)
+{
+    if (!setIfaceHandle(handle))
+    {
+        return;
+    }
+
+    create_pcapThread (m_ifaceHandle);
+
+    m_pcapThread->start(QThread::HighPriority);
+}
+
+void StationModel::stop_pcapThread ()
+{
+    int result = -1;
+    int timeout = 3000;
+
+    if (!m_pcapThread->isRunning())
+    {
+        return;
+    }
+
+    // tell pcap loop to stop
+    m_pcapThread->requestInterruption();
+
+    m_pcapThread->exit(result);
+    if (!result)
+    {
+        qCritical() << "Error: thread did not exit safely" << Qt::endl;
+        qCritical() << "Terminating pcap thread" << Qt::endl;
+        m_pcapThread->terminate();
+    }
+
+    // wait for thread process to end
+    m_pcapThread->wait(timeout);
+
+    if(!m_pcapThread->isFinished())
+    {
+        qCritical() << "Error: thread did not exit safely";
+        qCritical() << "Terminating pcap thread" << Qt::endl;
+        m_pcapThread->terminate();
+    }
 }
 
 
@@ -218,16 +279,22 @@ void StationModel::create_pcapThread (pcap_t *handle)
     m_pcapThread = QThread::create([handle, this]
     {
         QByteArray *packet;
-        //ChannelFrequency chan_type;
 
         const u_char *pk_data;
         struct pcap_pkthdr *packet_header;
 
+        // Test packet
+        addAccessPoint(test_ap_bssid_chang1);
+        addStation(test_stmac, test_ap_bssid_chang1);
 
-        int n = 0;
+        addAccessPoint(test_ap_bssid_chang2);
+        //updateStations()
 
-        while (true)
+        while (!QThread::currentThread()->isInterruptionRequested())
         {
+            //QElapsedTimer timer;
+            //timer.start();
+
             if (handle == NULL)
             {
                 continue;
@@ -254,9 +321,13 @@ void StationModel::create_pcapThread (pcap_t *handle)
                 Q_EMIT packetCaptured (*packet, packet_header->caplen);
             }
 
+            //if (timer.elapsed() > 2000)
+            //{
+            //    qDebug() << "loop time" << timer.elapsed() << "milliseconds"
+            //             << "caplen:" << packet_header->caplen << Qt::endl;
+            //}
         }
     });
-    m_pcapThread->start();
 }
 
 
@@ -270,8 +341,11 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
     ChannelFrequency chan_type;
 
     // broadcast address
-    QByteArray wildcard;
-    wildcard.fill(0xFF, 6);
+    QByteArray wildcard = QByteArray(6, 0xFF);
+
+    // llc null packet
+    const QByteArray llcnull = QByteArray(4, 0);
+
 
     if (!filterRadiotapHdr(pk, ap))
     {
@@ -346,7 +420,10 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
         }
 
         //m_mutex.lock();
-        addStation(stmac, ap);
+        if (!addStation(stmac, ap))
+        {
+            return;
+        }
     }
 
 
@@ -384,6 +461,8 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
     case IEEE80211_FC0_SUBTYPE_ACK:
     case IEEE80211_FC0_SUBTYPE_CF_END:
     case IEEE80211_FC0_SUBTYPE_CF_END_ACK:
+
+
         break;
     default:
         return;
@@ -417,7 +496,7 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
 
         // print station
         info << "station" << Qt::endl;
-        info << stmac.toHex(':') << Qt::endl;
+        info << "stmac:" << stmac.toHex(':') << Qt::endl;
 }
 
 
@@ -457,7 +536,7 @@ bool StationModel::filterRadiotapHdr (QByteArray &pk, ap_probe &ap)
 }
 
 
-void StationModel::addStation(QByteArray &stmac, ap_probe &apProbe)
+bool StationModel::addStation(QByteArray &stmac, ap_probe &apProbe)
 {
     bool apFound = false;
     ap_info *apInfo;
@@ -467,16 +546,25 @@ void StationModel::addStation(QByteArray &stmac, ap_probe &apProbe)
     {
         qWarning() << "Warning: tried to add station with null mac address";
         qWarning() << "Skipping Station" << Qt::endl;
-        return;
+        return false;
     }
+
+    if (apProbe.essid.isNull())
+    {
+        return false;
+    }
+
 
     for (int i = 0; i < rootItem->childCount(); ++i)
     {
         if (rootItem->child(i)->stmac() == stmac)
         {
-            qInfo() << "station:" << stmac.toHex(':') << "is already in model";
+            qInfo() << "Info: station" << stmac.toHex(':') << "is already in model";
             qInfo() << "Skipping Station" << Qt::endl;
-            return;
+
+            updateStations();
+
+            return false;
         }
     }
 
@@ -491,7 +579,9 @@ void StationModel::addStation(QByteArray &stmac, ap_probe &apProbe)
 
     if (!apFound)
     {
-        return;
+        apInfo = new ap_info();
+
+        apInfo->essid = apProbe.essid;
     }
 
 
@@ -511,18 +601,18 @@ void StationModel::addStation(QByteArray &stmac, ap_probe &apProbe)
     {
         setData (this->index(row,i), columnRoles.at(i));
     }
-    qDebug() << "added station";
 
     endInsertRows ();   // END ADDING NETWORK
 
-    return;
-}
+    qInfo() << "Info: station" << stmac.toHex(':') << "added" << Qt::endl;
 
+    return true;;
+}
 
 
 bool StationModel::addAccessPoint (ap_probe &ap_cur)
 {
-    QDebug debug = qDebug();
+    QDebug info = qInfo();
 
     if (ap_cur.essid.isEmpty())
     {
@@ -543,8 +633,8 @@ bool StationModel::addAccessPoint (ap_probe &ap_cur)
     }
     else
     {
-        debug << "Warning: Channel type not found";
-        debug << "Skipping Packet" << Qt::endl << Qt::endl;
+        qWarning() << "Warning: Channel type not found";
+        qWarning() << "Skipping Packet" << Qt::endl << Qt::endl;
         return false;
     }
 
@@ -559,6 +649,8 @@ bool StationModel::addAccessPoint (ap_probe &ap_cur)
                 ap->bssid[i] = ap_cur.bssid;
                 ap->channel[i] = ap_cur.channel;
 
+                updateStations();
+
                 return true;
             }
 
@@ -568,12 +660,15 @@ bool StationModel::addAccessPoint (ap_probe &ap_cur)
         // update channel
         if (ap->channel[i] != ap_cur.channel)
         {
-            debug << ap->essid << Qt::endl;
-            debug << "channel changed:" <<
-                     ap->channel[i] << "->" << ap_cur.channel;
-            debug << Qt::endl << Qt::endl;
+            qInfo() << "Info:" << ap->essid
+                    << "channel changed:"
+                    <<  ap->channel[i] << "->" << ap_cur.channel;
+
+            qInfo() << Qt::endl;
 
             ap->channel[i] = ap_cur.channel;
+
+            updateStations();
         }
 
         return true;
@@ -588,6 +683,8 @@ bool StationModel::addAccessPoint (ap_probe &ap_cur)
 
     m_apInfo.append(apInfo);
 
+    updateStations();
+
     //if (!m_apInfo.contains(bssid))
     //{
     //    m_accessPoint.append(bssid);
@@ -595,4 +692,43 @@ bool StationModel::addAccessPoint (ap_probe &ap_cur)
         //find manufacturer
     //}
     return true;
+}
+
+
+void StationModel::updateStations()
+{
+    bool updateAp = false;
+
+    for (int i = 0; i < rootItem->childCount(); ++i)
+    {
+        for (ap_info *ap : m_apInfo)
+        {
+            if (rootItem->child(i)->apEssid() != ap->essid )
+            {
+                continue;
+            }
+
+            if (rootItem->child(i)->apBssid(Chan_2GHz) != ap->bssid[0])
+                updateAp = true;
+
+            if (rootItem->child(i)->apBssid(Chan_5GHz) != ap->bssid[1])
+                updateAp = true;
+
+            if (rootItem->child(i)->apChannel(Chan_2GHz) != ap->channel[0])
+                updateAp = true;
+
+            if (rootItem->child(i)->apChannel(Chan_5GHz) != ap->channel[1])
+                updateAp = true;
+
+            if (updateAp)
+            {
+                QModelIndex index = this->index(i, 1);
+                StationItem *item = d_ptr->getItem (index, this);
+
+                item->setApInfo(*ap);
+
+                Q_EMIT dataChanged (index, index, item->changedRoles());
+            }
+        }
+    }
 }

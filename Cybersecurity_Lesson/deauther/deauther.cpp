@@ -14,6 +14,7 @@
 #include "pcap.h"
 #include "network_model.h"
 
+
 Deauther::Deauther(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Deauther),
@@ -25,13 +26,19 @@ Deauther::Deauther(QWidget *parent) :
     setup_network_list();
 
     QVector<StationItemRole> roles ({StationItemRole::StationRole,
-                                     StationItemRole::AccessPointRole});
+                                     StationItemRole::AccessPointRole,
+                                     StationItemRole::Bssid2Role});
     station_model = new StationModel(roles);
     iface_model = new IfaceModel();
 
     // create drop down list for network interfaces
     ui->iface_list->setModel(iface_model);
     ui->station_view->setModel(station_model);
+
+    ui->station_view->resizeColumnToContents (network_model->columnCount()-1);
+    ui->station_view->setIndentation (10);
+    //ui->station_view->setIconSize (QSize (36,36));
+    ui->station_view->setColumnWidth (0, 180);
 
     // Set treeview header font
     ui->station_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
@@ -50,6 +57,7 @@ Deauther::Deauther(QWidget *parent) :
 
     // install filter to correct horizontal scrollbar quirks
     ui->station_view->horizontalScrollBar()->installEventFilter(this);
+
 
 
     // set up toggle for monitor mode (creates a pcap handle)
@@ -135,14 +143,14 @@ void Deauther::toggle_monitoring ()
 
         if (iface_handle == NULL)
         {
-            qWarning() << "pcap_create failed:" << error_buffer->data();
+            qWarning() << "Warning: pcap_create failed with" << error_buffer->data();
             return;
         }
 
         // check if iface supports monitoring
         if (!pcap_can_set_rfmon (iface_handle))
         {
-            qWarning() << "Monitor mode is not supported for" << iface.data();
+            qInfo() << "Info: monitor mode is not supported for" << iface.data();
             pcap_close (iface_handle);
             return;
         }
@@ -150,21 +158,28 @@ void Deauther::toggle_monitoring ()
         // set handle to monitor mode
         if (pcap_set_rfmon (iface_handle, 1))
         {
-            qWarning() << "Setting" << iface.data() << "to monitor mode failed";
+            qWarning() << "Warning: setting" << iface.data() << "to monitor mode failed";
             pcap_close (iface_handle);
             return;
         }
+
+        // avoid blocking pcap thread
+        pcap_set_immediate_mode(iface_handle, 1);
+        pcap_set_timeout(iface_handle, 500);
 
         // activate new monitor iface
         if (pcap_activate (iface_handle))
         {
-            qWarning() << "Creating monitoring interface for" << iface.data() << "failed";
-            qWarning() << "Do you have permissions?";
+            qWarning() << "Warning: Creating monitoring interface for"
+                       << iface.data() << "failed" << Qt::endl
+                       << "Do you have permissions?" << Qt::endl;
             pcap_close (iface_handle);
             return;
         }
 
-        station_model->setIfaceHandle (iface_handle);
+        station_model->start_pcapThread (iface_handle);
+
+        ui->iface_list->setEnabled(false);
 
         // start packet search icon
         search_animation_timer->start();
@@ -173,6 +188,10 @@ void Deauther::toggle_monitoring ()
     }
     else
     {
+        station_model->stop_pcapThread ();
+
+        ui->iface_list->setEnabled(true);
+
         pcap_close (iface_handle);
 
         // stop packet search icon

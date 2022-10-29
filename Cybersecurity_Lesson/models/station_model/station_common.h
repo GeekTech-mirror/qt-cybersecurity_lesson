@@ -6,6 +6,10 @@
 
 enum StationItemRole {
     AccessPointRole = Qt::UserRole + 1,
+    Bssid2Role,
+    Bssid5Role,
+    Channel2Role,
+    Channel5Role,
     InterfaceRole,
     StationRole,
     StationHeaderRole

@@ -1,6 +1,8 @@
 #ifndef STATION_MODEL_P_H
 #define STATION_MODEL_P_H
 
+#include "pcap_common.h"
+
 #include "station_model.h"
 #include "station_item.h"
 
@@ -35,6 +37,17 @@ public:
         case StationItemRole::AccessPointRole:
             return item->apEssid ();
             break;
+        case StationItemRole::Bssid2Role:
+            return item->apBssid(Chan_2GHz);
+            break;
+        case StationItemRole::Bssid5Role:
+            return item->apBssid(Chan_5GHz);
+        case StationItemRole::Channel2Role:
+            return item->apChannel(Chan_2GHz);
+            break;
+        case StationItemRole::Channel5Role:
+            return item->apChannel(Chan_5GHz);
+            break;
 
         default:
             return "";
@@ -51,6 +64,18 @@ public:
         case StationItemRole::AccessPointRole:
             item->insertRole (StationItemRole::AccessPointRole);
             break;
+        case StationItemRole::Bssid2Role:
+            item->insertRole (StationItemRole::Bssid2Role);
+            break;
+        case StationItemRole::Bssid5Role:
+            item->insertRole (StationItemRole::Bssid5Role);
+            break;
+        case StationItemRole::Channel2Role:
+            item->insertRole (StationItemRole::Channel2Role);
+            break;
+        case StationItemRole::Channel5Role:
+            item->insertRole (StationItemRole::Channel5Role);
+            break;
         case StationItemRole::InterfaceRole:
             item->insertRole (StationItemRole::InterfaceRole);
             break;
@@ -65,6 +90,7 @@ public:
         return true;
     }
 
+
     /* Request from device to connect to ap
     ** Parameters:
     **     packet:
@@ -77,14 +103,18 @@ public:
     {
         // return if subtype is not a probe request
         if (pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_REQ
-            || pk.at(0) != IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
+            && pk.at(0) != IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
         {
             return true;
         }
 
-        qDebug() << "processing request";
-        // start parsing at Wireless Management Header
-        QByteArray tags = pk.sliced(24);
+        // start at tagged parameters
+        QByteArray tags;
+        if (pk.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
+            tags = pk.sliced(24);
+
+        if (pk.at(0) == IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
+            tags = pk.sliced(28);
 
         int tag_len;
 
@@ -162,7 +192,7 @@ public:
         int tag_id;
         int tag_len;
 
-        // timout if process takes too long
+         // start at tagged parameters
         QTimer *timeout = new QTimer();
         timeout->setSingleShot(true);
         timeout->start(2000);

@@ -19,6 +19,7 @@
 #include "custom_stylesheets.h"
 #include "custom_colors.h"
 
+#include "pcap.h"
 
 Main_Window::Main_Window (QWidget *parent)
     : QMainWindow (parent),
@@ -140,7 +141,8 @@ QString Main_Window::main_window_stylesheet()
     // Set background color and button font color
     QString stylesheet =
     "* { background-color: rgb(30, 34, 39); } \
-     QPushButton { color: rgb(209, 213, 218); }";
+     QPushButton { color: rgb(209, 213, 218); } \
+     QComboBox { color: rgb(209, 213, 218); }";
 
     return stylesheet;
 }

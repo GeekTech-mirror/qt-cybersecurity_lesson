@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(Cybersecurity_Lesson VERSION 0.4 LANGUAGES CXX)
+project(Cybersecurity_Lesson VERSION 0.5 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -11,10 +11,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Dependencies
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
-#find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Test)
+##find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Test)
 
 
 set(CYBERSECURITY_SRCS
@@ -25,7 +26,6 @@ set(CYBERSECURITY_SRCS
         icons.qrc
         fonts.qrc
 )
-
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Cybersecurity_Lesson
@@ -49,15 +49,29 @@ else()
     endif()
 endif()
 
-target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Network)
-target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-#target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Test)
-target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
 
+# Standard Libs
+target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+##target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Test)
+
+# Third-party Libs
+target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
+#target_link_libraries(Cybersecurity_Lesson PRIVATE PolkitQt${QT_VERSION_MAJOR}-1::Core
+#                                                   PolkitQt${QT_VERSION_MAJOR}-1::Gui
+#                                                   PolkitQt${QT_VERSION_MAJOR}-1::Agent)
+target_link_libraries(Cybersecurity_Lesson PRIVATE pcap)
+
+# Custom Qt Models
+target_link_libraries(Cybersecurity_Lesson PRIVATE Iface_Model)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Network_Model)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Station_Model)
+target_link_libraries(Cybersecurity_Lesson PRIVATE Styles)
+
+# Cyberattack Demos
 target_link_libraries(Cybersecurity_Lesson PRIVATE Rubber_Ducky)
 target_link_libraries(Cybersecurity_Lesson PRIVATE WarDriving)
 target_link_libraries(Cybersecurity_Lesson PRIVATE WiFi_Deauther)
-target_link_libraries(Cybersecurity_Lesson PRIVATE Styles)
 
 
 set_target_properties(Cybersecurity_Lesson PROPERTIES
@@ -80,18 +94,22 @@ install(TARGETS Cybersecurity_Lesson
     LIBRARY DESTINATION "${INSTALL_DESTDIR}"
 )
 
-add_subdirectory(networkmanager-qt)
-add_subdirectory(network_model)
+#add_subdirectory(networkmanager-qt)
+
+add_subdirectory(libs)
+add_subdirectory(models)
+add_subdirectory(styles)
+
 add_subdirectory(rubberducky)
 add_subdirectory(wardriving)
 add_subdirectory(deauther)
-add_subdirectory(styles)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rubberducky)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/wardriving)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deauther)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/styles)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/models)
 
 #add_subdirectory(network_model)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/network_model)

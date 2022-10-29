@@ -157,10 +157,14 @@ void RubberDucky::setup_cmd_buttons()
             this, [&]{ cmd_open_image_clicked(); });
 
     connect(ui->cmd_alt_space, &QPushButton::clicked,
-            this, [&]{ insert_command("ALT SPACE"); });
+            this, [&]{ clear_current_line();
+                       insert_command("ALT SPACE");
+                       insert_newline(); });
 
     connect(ui->cmd_cd, &QPushButton::clicked,
-            this, [&]{ insert_command("STRING CD %TEMP%"); });
+            this, [&]{ clear_current_line();
+                       insert_command("STRING CD %TEMP%");
+                       insert_newline(); });
 
 
     // Change page of stacked widget

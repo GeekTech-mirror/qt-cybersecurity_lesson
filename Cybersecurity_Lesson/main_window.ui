@@ -73,8 +73,8 @@
            <string notr="true">color: rgb(220, 225, 232);</string>
           </property>
           <property name="text">
-           <string>Cybersecurity
- Lesson</string>
+           <string>PenPI
+ Lessons</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>

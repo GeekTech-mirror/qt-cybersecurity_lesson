@@ -22,5 +22,12 @@
         <file>icons/actions/24/cmdline.svg</file>
         <file>icons/network/24/network_scan_active.svg</file>
         <file>icons/network/24/network_scan_inactive.svg</file>
+        <file>icons/actions/24/edit-find.svg</file>
+        <file>icons/actions/24/edit-find-replace.svg</file>
+        <file>icons/actions/24/edit-find-replace_inactive.svg</file>
+        <file>icons/actions/24/edit-find-replace_state1.svg</file>
+        <file>icons/actions/24/edit-find-replace_state2.svg</file>
+        <file>icons/actions/24/edit-find-replace_state3.svg</file>
+        <file>icons/actions/24/edit-find-replace_state0.svg</file>
     </qresource>
 </RCC>

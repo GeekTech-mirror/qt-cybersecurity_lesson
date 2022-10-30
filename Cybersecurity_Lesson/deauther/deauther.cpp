@@ -26,8 +26,7 @@ Deauther::Deauther(QWidget *parent) :
     setup_network_list();
 
     QVector<StationItemRole> roles ({StationItemRole::StationRole,
-                                     StationItemRole::AccessPointRole,
-                                     StationItemRole::Bssid2Role});
+                                     StationItemRole::AccessPointRole});
     station_model = new StationModel(roles);
     iface_model = new IfaceModel();
 

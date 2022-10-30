@@ -8,6 +8,7 @@ set(STATION_MODEL_SRCS
     station_item.cpp
     station_item.h
     tree_model.cpp
+    oui.txt
 )
 
 add_library(Station_Model STATIC ${STATION_MODEL_SRCS})
@@ -25,3 +26,10 @@ target_include_directories(Station_Model PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/models/network_model)
 include_directories(${CMAKE_SOURCE_DIR}/models/iface_model)
 include_directories(${CMAKE_SOURCE_DIR}/styles)
+
+set(LIB_DESTDIR "/usr/lib/cybersecurity_lesson")
+
+install(FILES
+    "oui.txt"
+    DESTINATION ${LIB_DESTDIR}
+)

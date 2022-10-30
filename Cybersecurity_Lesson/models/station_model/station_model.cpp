@@ -1,3 +1,4 @@
+#include <QDir>
 #include <QThread>
 
 /* NetworkManager Include files */
@@ -20,8 +21,13 @@
 StationModel::StationModel (const QVector<StationItemRole> &roles, QObject *parent)
     : QAbstractItemModel (parent),
       m_pcapThread (new QThread(this)),
-      m_apInfo (QVector<ap_info*>())
+      m_apInfo (QVector<ap_info*>()),
+      m_ouiFile (QDir::currentPath()+"/oui.txt")
 {
+    qDebug() << QDir::current();
+    qDebug() << QDir::currentPath();
+    qDebug() << m_ouiFile.open (QIODevice::ReadOnly | QIODevice::Text);
+
     // Create header titles based on column roles
     QVector<QString> rootData;
     for (int i = 0; i < roles.count(); ++i)
@@ -282,13 +288,6 @@ void StationModel::create_pcapThread (pcap_t *handle)
 
         const u_char *pk_data;
         struct pcap_pkthdr *packet_header;
-
-        // Test packet
-        addAccessPoint(test_ap_bssid_chang1);
-        addStation(test_stmac, test_ap_bssid_chang1);
-
-        addAccessPoint(test_ap_bssid_chang2);
-        //updateStations()
 
         while (!QThread::currentThread()->isInterruptionRequested())
         {

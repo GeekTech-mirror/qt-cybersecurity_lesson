@@ -2,6 +2,7 @@
 #define STATION_MODEL_H
 
 #include <QAbstractItemModel>
+#include <QFile>
 #include <QMutex>
 #include <QTimer>
 
@@ -72,6 +73,7 @@ private:
     QVector<ap_info*> m_apInfo;
 
     QThread *m_pcapThread;
+    QFile m_ouiFile;
     QMutex m_mutex;
 
     IfaceModel *m_iface;

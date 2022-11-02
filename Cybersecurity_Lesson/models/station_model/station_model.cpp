@@ -289,6 +289,11 @@ void StationModel::create_pcapThread (pcap_t *handle)
         const u_char *pk_data;
         struct pcap_pkthdr *packet_header;
 
+        // test packets
+        addAccessPoint(tp_link_2GHz);
+        addAccessPoint(tp_link_5GHz);
+        addStation(samsung_stmac, tp_link_2GHz);
+
         while (!QThread::currentThread()->isInterruptionRequested())
         {
             //QElapsedTimer timer;

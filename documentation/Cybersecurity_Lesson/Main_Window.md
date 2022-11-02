@@ -11,7 +11,7 @@ The toplevel cmake module contains two source files and is responsible for setti
 
 ### *Main Window UI*
 ![Main Window UI](./UI-Main_Window.png)
-*__Main Winodow UI__*
+<p style="text-align: center;"><strong><i>Main Winodow UI</iz></strong></p>
 
 The above layout is contained in the main_window.ui file.
 
@@ -21,7 +21,7 @@ The above layout is contained in the main_window.ui file.
  
 ### *Custom Widget UI*
  ![Custom Widget UI](./UI-Custom_Widget.png)
- *__Custom Widget UI__*
+ <p style="text-align: center;"><strong><i>Custom Widget UI</iz></strong></p>
  
 The page above is one of four seperate pages for each attack
 
@@ -178,7 +178,7 @@ The contents of the functions above are responsible for configuring the Main Win
 
  * The setup_fonts() function embed Dejavu and Liberation fonts into the app executable, rather than relying on the OS to provide the fonts. This to avoid some unusual behavior with aliasing on the fonts, when launching the app on a raspberrypi 4.
  * The setup_main_menu() function sets the font type and size for each ui element on the main menu
- * The main_window_stylesheet() function contains style sheets for the apps background color and the fon color for QPushButtons
+ * The main_window_stylesheet() function contains style sheets for the apps background color and the font color for QPushButtons
  
 *__Menu Navigation w/ Qt Slots__*
 

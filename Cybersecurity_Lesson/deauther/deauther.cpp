@@ -24,39 +24,12 @@ Deauther::Deauther(QWidget *parent) :
     ui->setupUi(this);
 
     setup_network_list();
+    setup_station_view();
 
-    QVector<StationItemRole> roles ({StationItemRole::StationRole,
-                                     StationItemRole::AccessPointRole});
-    station_model = new StationModel(roles);
     iface_model = new IfaceModel();
 
     // create drop down list for network interfaces
     ui->iface_list->setModel(iface_model);
-    ui->station_view->setModel(station_model);
-
-    ui->station_view->resizeColumnToContents (network_model->columnCount()-1);
-    ui->station_view->setIndentation (10);
-    //ui->station_view->setIconSize (QSize (36,36));
-    ui->station_view->setColumnWidth (0, 180);
-
-    // Set treeview header font
-    ui->station_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
-
-    // Set treeview header size for scrollbar gutter
-    treeview_stylesheet = stylesheets->
-                          treeview_scrollbar
-                          (
-                              ui->station_view->header()->
-                              sizeHint().height()
-                          );
-
-    // Set treeview scrollbar colors
-    ui->station_view->setStyleSheet (treeview_stylesheet
-                                     % stylesheets->vertical_scrollbar_quirk());
-
-    // install filter to correct horizontal scrollbar quirks
-    ui->station_view->horizontalScrollBar()->installEventFilter(this);
-
 
 
     // set up toggle for monitor mode (creates a pcap handle)
@@ -125,6 +98,40 @@ void Deauther::setup_network_list (void)
 }
 
 
+void Deauther::setup_station_view (void)
+{
+    QVector<StationItemRole> roles ({StationItemRole::StationRole,
+                                     StationItemRole::AccessPointRole});
+
+    station_model = new StationModel(roles);
+
+    ui->station_view->setModel(station_model);
+
+    ui->station_view->resizeColumnToContents (network_model->columnCount()-1);
+    ui->station_view->setIndentation (10);
+    //ui->station_view->setIconSize (QSize (36,36));
+    ui->station_view->setColumnWidth (0, 180);
+
+    // Set treeview header font
+    ui->station_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
+
+    // Set treeview header size for scrollbar gutter
+    treeview_stylesheet = stylesheets->
+                          treeview_scrollbar
+                          (
+                              ui->station_view->header()->
+                              sizeHint().height()
+                          );
+
+    // Set treeview scrollbar colors
+    ui->station_view->setStyleSheet (treeview_stylesheet
+                                     % stylesheets->vertical_scrollbar_quirk());
+
+    // install filter to correct horizontal scrollbar quirks
+    ui->station_view->horizontalScrollBar()->installEventFilter(this);
+}
+
+
 void Deauther::toggle_monitoring ()
 {
     static bool monitoring = true;
@@ -143,6 +150,7 @@ void Deauther::toggle_monitoring ()
         if (iface_handle == NULL)
         {
             qWarning() << "Warning: pcap_create failed with" << error_buffer->data();
+            qWarning() << Qt::endl;
             return;
         }
 
@@ -150,6 +158,7 @@ void Deauther::toggle_monitoring ()
         if (!pcap_can_set_rfmon (iface_handle))
         {
             qInfo() << "Info: monitor mode is not supported for" << iface.data();
+            qInfo() << Qt::endl;
             pcap_close (iface_handle);
             return;
         }
@@ -158,6 +167,7 @@ void Deauther::toggle_monitoring ()
         if (pcap_set_rfmon (iface_handle, 1))
         {
             qWarning() << "Warning: setting" << iface.data() << "to monitor mode failed";
+            qWarning() << Qt::endl;
             pcap_close (iface_handle);
             return;
         }
@@ -227,6 +237,27 @@ void Deauther::search_animation (QPushButton *button)
     {
         search_animation_state = 1;
     }
+}
+
+
+void Deauther::deauther_attack ()
+{
+    QModelIndex index = ui->station_view->currentIndex();
+    StationItem *station_item = static_cast<StationItem*>(index.internalPointer());
+
+    QByteArray stmac = station_item->stmac();
+    ap_info ap = station_item->apInfo();
+
+
+    const unsigned char deauth_packet[26] = {
+        /*  0 - 1  */ 0xC0, 0x00,                         // type, subtype c0: deauth (a0: disassociate)
+        /*  2 - 3  */ 0x00, 0x00,                         // duration (SDK takes care of that)
+        /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // reciever (target)
+        /* 10 - 15 */ // source (ap)
+        /* 16 - 21 */ // BSSID (ap)
+        /* 22 - 23 */ 0x00, 0x00,                         // fragment & squence number
+        /* 24 - 25 */ 0x01, 0x00                          // reason code (1 = unspecified reason)
+    };
 }
 
 

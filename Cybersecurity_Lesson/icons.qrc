@@ -29,5 +29,6 @@
         <file>icons/actions/24/edit-find-replace_state2.svg</file>
         <file>icons/actions/24/edit-find-replace_state3.svg</file>
         <file>icons/actions/24/edit-find-replace_state0.svg</file>
+        <file>icons/actions/32/mail-send.svg</file>
     </qresource>
 </RCC>

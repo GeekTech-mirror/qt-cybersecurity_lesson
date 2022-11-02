@@ -43,11 +43,16 @@ private:
     QTimer *search_animation_timer;
     uint8_t search_animation_state = 1;
 
+    QByteArray deauther_packet;
+
     void setup_network_list (void);
+    void setup_station_view (void);
 
     void toggle_monitoring ();
 
     void search_animation (QPushButton *button);
+
+    void deauther_attack ();
 
 protected:
     bool eventFilter (QObject *object, QEvent *event) override;

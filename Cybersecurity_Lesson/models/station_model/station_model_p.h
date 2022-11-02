@@ -111,10 +111,10 @@ public:
         // start at tagged parameters
         QByteArray tags;
         if (pk.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
-            tags = pk.sliced(24);
+            tags = pk.sliced(PROBE_REQ_PARAMS);
 
         if (pk.at(0) == IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
-            tags = pk.sliced(28);
+            tags = pk.sliced(ASSOC_REQ_PARAMS);
 
         int tag_len;
 
@@ -185,7 +185,7 @@ public:
 
         // store timestamp
 
-        QByteArray tags = pk.sliced(36);
+        QByteArray tags = pk.sliced(PROBE_RESP_PARAMS);
         QVector<bool> tags_found;
         tags_found.fill (false, 2);
 

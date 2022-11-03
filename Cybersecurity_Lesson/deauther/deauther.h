@@ -31,6 +31,8 @@ public:
 private:
     Ui::Deauther *ui;
 
+    QMutex station_mutex;
+
     CustomStyleSheets *stylesheets;
     QString treeview_stylesheet;
 
@@ -44,6 +46,7 @@ private:
     uint8_t search_animation_state = 1;
 
     QByteArray deauther_packet;
+
 
     void setup_network_list (void);
     void setup_station_view (void);

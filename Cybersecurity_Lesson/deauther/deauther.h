@@ -18,9 +18,11 @@ namespace Ui {
 class Deauther;
 }
 
+class DeautherPrivate;
 class Deauther : public QWidget
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE (Deauther)
 
 public:
     explicit Deauther(QWidget *parent = nullptr);
@@ -59,6 +61,9 @@ private:
 
 protected:
     bool eventFilter (QObject *object, QEvent *event) override;
+
+    Deauther (DeautherPrivate &dd);
+    DeautherPrivate *d_ptr;
 };
 
 #endif // DEAUTHER_H

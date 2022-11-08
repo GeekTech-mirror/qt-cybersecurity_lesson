@@ -1,0 +1,4 @@
+#ifndef DEAUTH_PACKET_H
+#define DEAUTH_PACKET_H
+
+#endif // DEAUTH_PACKET_H

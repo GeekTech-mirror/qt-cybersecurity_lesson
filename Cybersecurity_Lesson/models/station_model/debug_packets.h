@@ -7,6 +7,7 @@ QByteArray test_stmac = QByteArray(6, 0x33);
 
 QByteArray samsung_stmac = QByteArray::fromRawData("\x42\x4f\xdd\x33\x97\xc3", 6);
 
+QByteArray precision_stmac = QByteArray::fromRawData("\xf8\xac\x65\xee\x22\xb2", 6);
 
 ap_probe test_essid_only = {"Test AP",
                             QByteArray(),
@@ -53,6 +54,12 @@ ap_probe tp_link_5GHz =  {"TP-Link_0424",
                           QByteArray::fromRawData("\x00\x31\x92\x19\x04\x22", 6),
                           161,
                           Chan_5GHz};
+
+ap_probe Netgear =  {"NETGEAR28",
+                          QByteArray::fromRawData("\x9c\xc9\xeb\x6a\xa6\x3a", 6),
+                          8,
+                          Chan_2GHz};
+
 
 static const unsigned char pkt5844[185] = {
 0x00, 0x00, 0x0d, 0x00, 0x04, 0x80, 0x02, 0x00, /* ........ */

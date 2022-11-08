@@ -1,7 +1,9 @@
 set(WIFI_DEAUTHER_SRCS
     deauther.cpp
     deauther.h
+    deauther_p.h
     deauther.ui
+    deauth_packet.h
 )
 
 add_library(WiFi_Deauther STATIC ${WIFI_DEAUTHER_SRCS})

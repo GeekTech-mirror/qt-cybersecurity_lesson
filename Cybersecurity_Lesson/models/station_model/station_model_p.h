@@ -111,12 +111,31 @@ public:
         // start at tagged parameters
         QByteArray tags;
         if (pk.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
+        {
+            if (pk.size() < PROBE_REQ_PARAMS)
+            {
+                qCritical() << "Error: Malformed Packet";
+                qCritical() << "Skipping Packet" << Qt::endl;
+                return false;
+            }
+
             tags = pk.sliced(PROBE_REQ_PARAMS);
+        }
 
         if (pk.at(0) == IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
+        {
+            if (pk.size() < ASSOC_REQ_PARAMS)
+            {
+                qCritical() << "Error: Malformed Packet";
+                qCritical() << "Skipping Packet" << Qt::endl;
+                return false;
+            }
+
             tags = pk.sliced(ASSOC_REQ_PARAMS);
+        }
 
         int tag_len;
+
 
         // timout if process takes too long
         QTimer *timeout = new QTimer();
@@ -124,11 +143,19 @@ public:
         timeout->start(2000);
 
 
-        // Probe tagged parameters
+        /* Probe tagged parameters
+        ** Tag Format:
+        **     Tag ID -> Tag Length -> Tag Data
+        */
         while (timeout->isActive())
         {
+            if (tags.size() < 3)
+            {
+                qCritical() << "Error: Malformed Tag Params";
+                qCritical() << "Skipping Packet" << Qt::endl;
+                return false;
+            }
             tag_len = BYTE_TO_UCHAR(tags, 1);
-
 
             switch (find_essid(tags, ap))
             {
@@ -141,7 +168,6 @@ public:
                 case TagSearch::TagNotFound:
                     break;
             }
-
 
             // avoid going out of bounds
             if ((2+tag_len) > tags.size() )
@@ -173,7 +199,9 @@ public:
     */
     bool ap_response(const QByteArray &pk, ap_probe &ap)
     {
-        // type cast to uchar (0x80 or b1000 0000 results in a negative with signed char)
+        /* type cast to uchar
+         * (0x80 or b1000 0000 results in a negative with signed char)
+         */
         if ((uchar)pk.at(0) != IEEE80211_FC0_SUBTYPE_BEACON
             && pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_RESP)
         {
@@ -184,6 +212,12 @@ public:
         // store preamble
 
         // store timestamp
+
+        if (pk.size() < PROBE_RESP_PARAMS)
+        {
+            qCritical() << "Error: Malformed Packet";
+            qCritical() << Qt::endl;
+        }
 
         QByteArray tags = pk.sliced(PROBE_RESP_PARAMS);
         QVector<bool> tags_found;
@@ -290,6 +324,13 @@ public:
         /* find access point - essid */
         if (tag_id == TAG_PARAM_SSID)
         {
+            if ((2+tag_len) > tags.size() )
+            {
+                qCritical() << "Error: tag size is less than expected tag length";
+                qCritical() << "Skipping Packet" << Qt::endl;
+
+                return TagSearch::Error;
+            }
             tag_data = tags.sliced (2, tag_len);
 
             for (int i=0; i < tag_len; ++i)

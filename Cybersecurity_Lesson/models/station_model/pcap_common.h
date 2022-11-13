@@ -84,7 +84,6 @@
 #define PROBE_RESP_PARAMS           36
 #define BEACON_PARAMS               36
 
-
 /* Tag properties */
 #define TAG_PARAM_SSID              0x00
 #define TAG_PARAM_AP_CHANNEL        0x03

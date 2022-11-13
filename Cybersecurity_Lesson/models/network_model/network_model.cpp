@@ -27,7 +27,7 @@
 #include "network_model_p.h"
 #include "network_item.h"
 
-#include "custom_colors.h"
+
 
 
 /* Constructor */
@@ -102,116 +102,6 @@ NetworkModel::~NetworkModel () = default;
     delete rootItem;
     delete m_scanHandler;
 }*/
-
-
-/* Tree Model
-** --------
-** reimplement functions from Tree Model
-** --------
-**/
-
-/* Return data from model
-** Parameters:
-**     index: specify model index for row and column
-**     role: controls the display method for the model contents
-** Return: value stored in the model index
-*/
-QVariant NetworkModel::data (const QModelIndex &index, int role) const
-{
-    // Checks for valid index
-    if (!index.isValid())
-        return QVariant();
-
-    //qDebug() << role;
-
-    NetworkItem *item = static_cast<NetworkItem*>(index.internalPointer());
-
-    switch (role) {
-//    case Qt::BackgroundRole:
-//        if (0 == index.row() % 2)
-//            return CustomColors::frame_color();
-//        else
-//            return CustomColors::frame_color().lighter(145);
-
-//        break;
-    case Qt::ForegroundRole:
-        return CustomColors::frame_font_color();
-        break;
-    case Qt::DecorationRole:
-        // Display Network Symbol in first column
-        if (index.column() == 0)
-        {
-            return QIcon (item->icon());
-        }
-        break;
-    case Qt::DisplayRole:
-        return item->data (index.column());
-        break;
-    case Qt::EditRole:
-        return item->data (index.column());
-        break;
-    }
-
-    return QVariant();
-}
-
-
-/* Store value in model index */
-bool NetworkModel::setData (const QModelIndex &index,
-                            const QVariant &network_role,
-                            int role)
-{
-    if (role != Qt::EditRole)
-        return false;
-
-    NetworkItem *item = d_ptr->getItem (index, this);
-
-    // Set WiFi info to display
-    bool result = d_ptr->setItemRole (network_role, index, this);
-    if (result)
-        Q_EMIT dataChanged (index, index, item->changedRoles());
-        item->clearChangedRoles();
-
-    return result;
-}
-
-
-/* Return header data from model
-** Parameters:
-**     index: specify model index for row and column
-**     orientation: control location of header (vertical or horizontal)
-**     role: controls the display method for the model contents
-** Return: value stored in the model index
-*/
-QVariant NetworkModel::headerData (int section,
-                                   Qt::Orientation orientation,
-                                   int role) const
-{
-    switch (role) {
-    case Qt::ForegroundRole:
-        return CustomColors::frame_font_color();
-    case Qt::DisplayRole:
-        return rootItem->data (section);
-        break;
-    }
-    return QVariant();
-}
-
-/* Store header data in model index */
-bool NetworkModel::setHeaderData (int section,
-                                  Qt::Orientation orientation,
-                                  const QVariant &value, int role)
-{
-    if (role != Qt::EditRole || orientation != Qt::Horizontal)
-        return false;
-
-    const bool result = rootItem->setHeaderData (section, value.toString());
-
-    if (result)
-        emit headerDataChanged (orientation, section, section);
-
-    return result;
-}
 
 
 /* Network Model

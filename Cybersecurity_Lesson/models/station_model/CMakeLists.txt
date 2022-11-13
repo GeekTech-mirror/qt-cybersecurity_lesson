@@ -2,12 +2,12 @@ set(STATION_MODEL_SRCS
     debug_packets.h
     pcap_common.h
     station_common.h
-    station_model.cpp
+    station_model-filter.cpp
+    station_model-tree.cpp
     station_model.h
     station_model_p.h
     station_item.cpp
     station_item.h
-    tree_model.cpp
     oui.txt
 )
 
@@ -31,5 +31,5 @@ set(LIB_DESTDIR "/usr/lib/cybersecurity_lesson")
 
 install(FILES
     "oui.txt"
-    DESTINATION ${LIB_DESTDIR}
+    LIBRARY DESTINATION ${LIB_DESTDIR}
 )

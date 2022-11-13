@@ -112,17 +112,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="network_list">
+    <widget class="ReasonsList" name="reasons_list">
      <property name="font">
       <font>
        <pointsize>14</pointsize>
       </font>
      </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
+     <property name="frame">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -170,8 +167,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
-         <bold>false</bold>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="text">
@@ -263,6 +259,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ReasonsList</class>
+   <extends>QComboBox</extends>
+   <header>reasons_list.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../icons.qrc"/>
  </resources>

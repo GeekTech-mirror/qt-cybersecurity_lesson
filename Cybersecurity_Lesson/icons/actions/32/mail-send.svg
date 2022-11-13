@@ -22,13 +22,13 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      inkscape:zoom="16.046875"
-     inkscape:cx="5.0788705"
-     inkscape:cy="18.757546"
-     inkscape:window-width="2520"
-     inkscape:window-height="1411"
+     inkscape:cx="18.290166"
+     inkscape:cy="18.819864"
+     inkscape:window-width="936"
+     inkscape:window-height="1051"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg6" /><defs
      id="defs3051"><style
        type="text/css"
@@ -44,12 +44,13 @@
       }
       </style></defs><g
      id="g293"
-     transform="translate(0.88704925)"><path
-       style="fill:currentColor;fill-opacity:1;stroke:none"
+     transform="translate(0.88704925)"
+     style="fill:#eff0f1;fill-opacity:1"><path
+       style="fill:#eff0f1;fill-opacity:1;stroke:none"
        d="M 8.8549174,9.0000002 V 28.683594 31 H 36.854918 V 28.683594 9.0000002 Z m 1,0.9999997 h 0.023437 L 18.92523,18.841797 9.8549174,27.707031 Z m 1.4531256,0 h 23.09375 L 22.854918,21.285156 Z m 24.523437,0 h 0.02344 V 27.707031 l -9.070312,-8.865234 z m -16.191406,9.5410161 3.214844,3.142578 3.214844,-3.142578 9.355468,9.142578 0.429688,0.408203 V 30 H 9.8549174 v -0.888672 l 0.4296876,-0.427734 z"
        class="ColorScheme-Text"
        id="path4" /><path
-       style="color:#eff0f1;fill:currentColor;fill-opacity:1;stroke:none"
+       style="color:#eff0f1;fill:#eff0f1;fill-opacity:1;stroke:none"
        d="m 1.3709835,16.5 v 1 h 6.0000001 v -1 z m 2.0000001,3 v 1 h 4 v -1 z m 2,3 v 1 h 2 v -1 z"
        class="ColorScheme-Text"
        id="path293"

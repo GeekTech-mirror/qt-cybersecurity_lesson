@@ -1,6 +1,7 @@
 #ifndef DEAUTHER_H
 #define DEAUTHER_H
 
+#include <QComboBox>
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QTimer>
@@ -16,6 +17,7 @@
 
 namespace Ui {
 class Deauther;
+class DeautherPrivate;
 }
 
 class DeautherPrivate;
@@ -44,18 +46,22 @@ private:
     NetworkModel *network_model;
     NetworkSort *network_sort;
 
-    QTimer *search_animation_timer;
+    QTimer *search_animation_t;
     uint8_t search_animation_state = 1;
+
+    QTimer *send_animation_t;
+    uint8_t send_animation_state = 1;
 
     QByteArray deauther_packet;
 
 
-    void setup_network_list (void);
+    //void setup_reasons_list (void);
     void setup_station_view (void);
 
     void toggle_monitoring ();
 
     void search_animation (QPushButton *button);
+    void send_animation (QPushButton *button);
 
     void deauther_attack ();
 

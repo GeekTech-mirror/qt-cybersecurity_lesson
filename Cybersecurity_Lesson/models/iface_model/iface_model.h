@@ -2,6 +2,7 @@
 #define IFACE_MODEL_H
 
 #include <QAbstractItemModel>
+#include <QNetworkInterface>
 #include <QTimer>
 
 #include <NetworkManagerQt/Manager>
@@ -25,7 +26,7 @@ public:
 
     int rowCount (const QModelIndex &parent = QModelIndex()) const override;
 
-    bool insertRow (const NetworkManager::Device::Ptr iface);
+    bool insertRow (const QNetworkInterface iface);
 
     bool removeRows (int position, int rows = 1,
                      const QModelIndex &parent = QModelIndex()) override;
@@ -35,16 +36,14 @@ public:
 private Q_SLOTS:
     void updateIface ();
 
-    void ifaceRemoved (NetworkManager::Device::State newState,
-                                   NetworkManager::Device::State oldState,
-                                   NetworkManager::Device::StateChangeReason reason);
+    void removeIface (QNetworkInterface iface);
 
     void ifaceAdded ();
 
 private:
-    QList<NetworkManager::Device::Ptr> m_interfaces;
+    QList<QNetworkInterface> m_interfaces;
     QList<QString> interface_name;
-    QTimer *m_ifaceUpdateInterval = nullptr;
+    QTimer *m_ifaceUpdate_t = nullptr;
 
     void initIface ();
 };

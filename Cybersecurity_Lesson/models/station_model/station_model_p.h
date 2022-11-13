@@ -431,6 +431,74 @@ public:
 
         return true;
     }
+
+
+    /* Print QByteArray as a formatted packet
+    **
+    ** The returned packet can be imported to wireshark as a
+    ** hex dump
+    **
+    ** Parameters:
+    **     packet
+    ** Return:
+    **     formatted packet stored in QDebug();
+    ** Notes:
+    */
+    void print_packet (QByteArray packet, QDebug &print_pk)
+    {
+        int len = 8;            // each row contains 8 Bytes
+        int rem = 0;            // remaining space on last line
+
+        int pos_padding = 6;    // pad position indicator on each line
+
+        QString ascii;          // display packet data as ascii text
+        ascii.resize(len);
+        ascii.fill('.');
+
+        for (int i=0; i<packet.size(); ++i)
+        {
+            // print current position after 'len' number of bytes
+            if (!(i%len))
+            {
+                // pad
+                QString pos = QString("%1").arg(i, pos_padding, 16, QLatin1Char( '0' ));
+                print_pk << pos.toUtf8().data();
+
+                // pad last line with spaces
+                (packet.size() < i+len) ? rem = packet.size()-i : rem = len;
+                print_pk << packet.sliced(i,rem).toHex(' ').data();
+            }
+
+            // skip special characters
+            // (ascii special characters are below 0x20)
+            if (packet.at(i)  > 0x20)
+            {
+                ascii[i%len] = packet[i];
+            }
+
+            // print ascii text after 'len' bytes
+            // and move to the next line
+            if (!(((i+1)%len)))
+            {
+                print_pk << ascii.toUtf8().data() << Qt::endl;
+
+                ascii.fill('.');
+            }
+            // print ascii text on the last line
+            // pad the remaining byte positions with spaces
+            else if (i == packet.size() - 1)
+            {
+                /* each byte is 2 characters wide and has 1 space between each byte
+                ** so multiple the missing bytes on the last line by 3
+                ** and substitue missing bytes with spaces
+                */
+                QString align;
+                align.resize (3*(len-rem)-1);
+                align.fill (' ');
+                print_pk << align.toUtf8().data() << ascii.left(rem).toUtf8().data() << Qt::endl;
+            }
+        }
+    }
 };
 
 

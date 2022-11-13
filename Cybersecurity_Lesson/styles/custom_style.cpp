@@ -280,14 +280,12 @@ void CustomStyle::drawControl (ControlElement element,
         }
         painter->restore();
         break;
-
     default:
         QProxyStyle::drawControl (element,option,painter,widget);
         break;
     }
 
 }
-
 
 
 int CustomStyle::pixelMetric (PixelMetric metric,
@@ -300,6 +298,29 @@ int CustomStyle::pixelMetric (PixelMetric metric,
         break;
     default:
         return QProxyStyle::pixelMetric(metric, option, widget);
+    }
+}
+
+int CustomStyle::styleHint(StyleHint hint,
+                           const QStyleOption *option,
+                           const QWidget *widget,
+                           QStyleHintReturn *returnData) const
+{
+    switch (hint)
+    {
+    case SH_ComboBox_Popup:
+        //if (const QStyleOptionComboBox *cmb =
+        //        qstyleoption_cast<const QStyleOptionComboBox *>(option))
+        //{
+        //    return !cmb->editable;
+        //}
+        return 456;
+
+
+        return 0;
+    default:
+        return QProxyStyle::styleHint(hint, option, widget, returnData);
+        break;
     }
 }
 

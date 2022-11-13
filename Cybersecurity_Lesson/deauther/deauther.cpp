@@ -1,5 +1,6 @@
 #include <QScrollBar>
 #include <QStringBuilder>
+#include <QStringListModel>
 #include <QTimer>
 
 
@@ -13,18 +14,18 @@
 #include "ui_deauther.h"
 
 #include "pcap.h"
-#include "network_model.h"
 
 
 Deauther::Deauther(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Deauther),
-    search_animation_timer (new QTimer (this)),
+    search_animation_t (new QTimer (this)),
+    send_animation_t (new QTimer (this)),
     stylesheets (new CustomStyleSheets)
 {
     ui->setupUi(this);
 
-    setup_network_list();
+    d_ptr->setup_reasons_list(ui);
     setup_station_view();
 
     iface_model = new IfaceModel();
@@ -42,12 +43,22 @@ Deauther::Deauther(QWidget *parent) :
             this, &Deauther::toggle_monitoring);
 
     // set up packet search icon
-    search_animation_timer->setInterval (1000);
-    connect (search_animation_timer, &QTimer::timeout,
+    search_animation_t->setInterval (1000);
+    connect (search_animation_t, &QTimer::timeout,
              this, [&]() {search_animation(ui->monitor_status);});
+
+
+    // set up attack button
+    ui->packet_sent->setIcon(QIcon(":/icons/actions/32/mail-send_inactive.svg"));
+    ui->monitor_status->setIconSize(QSize(50, 50));
 
     connect(ui->deauth_attack, &QPushButton::clicked,
             this, &Deauther::deauther_attack);
+
+    // set packet sent icon
+    send_animation_t->setInterval (500);
+    connect (send_animation_t, &QTimer::timeout,
+             this, [&]() {send_animation(ui->packet_sent);});
 
 
     /* Pseudo Code for Deathor */
@@ -92,22 +103,6 @@ Deauther::~Deauther()
 }
 
 
-void Deauther::setup_network_list (void)
-{
-    QVector<ItemRole> roles ({ItemRole::NameRole});
-
-    network_model = new NetworkModel (roles);
-    network_model->setWirelessProperties (WirelessProperties::RemoveUnavailableNetworks, true);
-    network_model->start_scan();
-
-    network_sort = new NetworkSort();
-    network_sort->setSourceModel (network_model);
-
-    ui->network_list->setModel (network_sort);
-    ui->network_list->model()->sort(0, Qt::AscendingOrder);
-}
-
-
 void Deauther::setup_station_view (void)
 {
     QVector<StationItemRole> roles ({StationItemRole::StationRole,
@@ -117,7 +112,7 @@ void Deauther::setup_station_view (void)
 
     ui->station_view->setModel(station_model);
 
-    ui->station_view->resizeColumnToContents (network_model->columnCount()-1);
+    ui->station_view->resizeColumnToContents (station_model->columnCount()-1);
     ui->station_view->setIndentation (10);
     //ui->station_view->setIconSize (QSize (36,36));
     ui->station_view->setColumnWidth (0, 180);
@@ -151,49 +146,11 @@ void Deauther::toggle_monitoring ()
 
     // create a pcap handle using the selected network interface
     QByteArray iface = ui->iface_list->currentText().toUtf8();
-    QByteArray error_buffer[PCAP_ERRBUF_SIZE];
 
     if (monitoring)
     {
-        iface_handle = pcap_create(iface.data(), error_buffer->data());
-
-        if (iface_handle == NULL)
+        if (!d_ptr->create_monitorIface (iface, this))
         {
-            qWarning() << "Warning: pcap_create failed with" << error_buffer->data();
-            qWarning() << Qt::endl;
-            return;
-        }
-
-        // check if iface supports monitoring
-        if (!pcap_can_set_rfmon (iface_handle))
-        {
-            qInfo() << "Info: monitor mode is not supported for" << iface.data();
-            qInfo() << Qt::endl;
-            pcap_close (iface_handle);
-            return;
-        }
-
-        // set handle to monitor mode
-        if (pcap_set_rfmon (iface_handle, 1))
-        {
-            qWarning() << "Warning: setting" << iface.data() << "to monitor mode failed";
-            qWarning() << Qt::endl;
-            pcap_close (iface_handle);
-            return;
-        }
-
-        // avoid blocking pcap thread
-        pcap_set_immediate_mode(iface_handle, 1);
-        pcap_set_timeout(iface_handle, 500);
-        pcap_setdirection(iface_handle, PCAP_D_INOUT);
-
-        // activate new monitor iface
-        if (pcap_activate (iface_handle))
-        {
-            qWarning() << "Warning: Creating monitoring interface for"
-                       << iface.data() << "failed" << Qt::endl
-                       << "Do you have permissions?" << Qt::endl;
-            pcap_close (iface_handle);
             return;
         }
 
@@ -202,7 +159,7 @@ void Deauther::toggle_monitoring ()
         ui->iface_list->setEnabled(false);
 
         // start packet search icon
-        search_animation_timer->start();
+        search_animation_t->start();
         ui->monitor_status->setIcon (search_active);
         search_animation_state = 1;
     }
@@ -215,7 +172,7 @@ void Deauther::toggle_monitoring ()
         pcap_close (iface_handle);
 
         // stop packet search icon
-        search_animation_timer->stop();
+        search_animation_t->stop();
         ui->monitor_status->setIcon (search_inactive);
     }
 
@@ -250,10 +207,36 @@ void Deauther::search_animation (QPushButton *button)
     }
 }
 
+void Deauther::send_animation (QPushButton *button)
+{
+    switch (send_animation_state) {
+    case 1:
+        button->setIcon (QIcon (":/icons/actions/32/mail-send_inactive.svg"));
+        break;
+    case 2:
+        button->setIcon (QIcon (":/icons/actions/32/mail-send.svg"));
+        break;
+    default:
+        send_animation_state = 1;
+        break;
+    }
+    ++send_animation_state;
+
+
+    if (send_animation_state > 2)
+    {
+        send_animation_state = 1;
+    }
+}
 
 void Deauther::deauther_attack ()
 {
     static bool attack_active = false;
+
+    const QIcon send_inactive = QIcon (":/icons/actions/32/mail-send_inactive.svg");
+    const QIcon send_active = QIcon (":/icons/actions/32/mail-send.svg");
+
+    const QIcon search_paused = QIcon (":/icons/actions/24/edit-find-replace_state0.svg");
 
     static QTimer pcap_send_t1;
     pcap_send_t1.setInterval (1000);
@@ -313,194 +296,64 @@ void Deauther::deauther_attack ()
 
 
     /* create deauth packet */
+    int reason_index = ui->reasons_list->currentIndex();
+    QByteArray reason;
+    reason.append(reason_index+1);
 
     // 2GHz deauth packet
-    QByteArray packet_2 = QByteArray::fromRawData
-            (reinterpret_cast<const char*>(radiotap_h), 13);
-
-    packet_2.append(reinterpret_cast<const char*>(deauth_packet), 26);
-
-    packet_2.replace(17, 6, bssid_2);
-    packet_2.replace(23, 6, stmac);
-    packet_2.replace(29, 6, bssid_2);
-
+    QByteArray packet_2 = d_ptr->create_deauthPacket (stmac, bssid_2, reason);
 
     // 5GHz deauth packet
-    QByteArray packet_5 = QByteArray::fromRawData
-            (reinterpret_cast<const char*>(radiotap_h), 13);
-
-    packet_5.append(reinterpret_cast<const char*>(deauth_packet), 26);
-
-    packet_5.replace(17, 6, bssid_5);
-    packet_5.replace(23, 6, stmac);
-    packet_5.replace(29, 6, bssid_5);
-
-
-    QDebug print_pk = qDebug();
-
-    int len = 8;
-    int rem = 0;
-    QString ascii;
-    ascii.resize(len);
-    ascii.fill('.');
-    for (int i=0; i<packet_2.size(); ++i)
-    {
-        if (!(i%len))
-        {
-            QString pos = QString("%1").arg(i, 6, 16, QLatin1Char( '0' ));
-            print_pk << pos.toUtf8().data();
-
-            (packet_2.size() < i+len) ? rem = packet_2.size()-i : rem = len;
-            print_pk << packet_2.sliced(i,rem).toHex(' ').data();
-        }
-
-        if (packet_2.at(i)  > 0x20)
-        {
-            ascii[i%len] = packet_2[i];
-        }
-
-        if (!(((i+1)%len)))
-        {
-            QString align;
-            align.resize (4*(len-rem)-1);
-            align.fill (' ');
-            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
-
-            ascii.fill('.');
-        }
-        else if (i == packet_2.size() - 1)
-        {
-            QString align;
-            align.resize (4*(len-rem)-1);
-            align.fill (' ');
-            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
-        }
-    }
-
-    print_pk << Qt::endl;
-
-
-
-    const uchar* pk_data = reinterpret_cast<const uchar*>(packet_2.data());
-    // confirm results of conversion from qbytearray to uchar*
-    len = 8;
-    rem = 0;
-    ascii.resize(len);
-    ascii.fill('.');
-    for (int i=0; i<packet_2.size(); ++i)
-    {
-        if (!(i%len))
-        {
-            QString pos = QString("%1").arg(i, 6, 16, QLatin1Char( '0' ));
-            print_pk << pos.toUtf8().data();
-
-            (packet_2.size() < i+len) ? rem = packet_2.size()-i : rem = len;
-            //print_pk << packet_2.sliced(i,rem).toHex(' ').data();
-        }
-
-        QString byte = QString("%1").arg(quint8(pk_data[i]), 2, 16, QLatin1Char( '0' ));
-        print_pk << byte.toUtf8().data();
-
-        if (packet_2.at(i)  > 0x20)
-        {
-            ascii[i%len] = packet_2[i];
-        }
-
-        if (!(((i+1)%len)))
-        {
-
-            QString align;
-            align.resize (4*(len-rem)-1);
-            align.fill (' ');
-            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
-
-            ascii.fill('.');
-        }
-        else if (i == packet_2.size() - 1)
-        {
-            QString align;
-            align.resize (4*(len-rem)-1);
-            align.fill (' ');
-            print_pk << align.toUtf8().data() << ascii.toUtf8().data() << Qt::endl;
-        }
-    }
+    QByteArray packet_5 = d_ptr->create_deauthPacket (stmac, bssid_5, reason);
 
 
     /* send deauth packet */
     int i = 0;
     if (!attack_active)
     {
-        qDebug() << "Start Deauth Attack";
+        qDebug() << "Start Deauther Attack";
         qDebug() << Qt::endl;
+
+        // stop monitoring to avoid collision
         station_model->stop_pcapThread ();
         ui->toggle_monitoring->setEnabled(false);
 
 
         if (!bssid_2.isNull())
         {
-            //int fd_handle = pcap_fileno(iface_handle);
-            connect (&pcap_send_t1, &QTimer::timeout, this, [&, packet_2]
+            connect (&pcap_send_t1, &QTimer::timeout, this, [&, packet_2]()
             {
-                const uchar* pk_data = reinterpret_cast<const uchar*>(packet_2.data());
-                bool sent_packet = false;
-
-                station_mutex.lock();
-                for (int i=0; i<64; ++i)
-                {
-                    if(pcap_inject (this->iface_handle, pk_data, 39) == 0)
-                    {
-                        sent_packet = true;
-                    }
-                }
-
-                if (!sent_packet)
-                {
-                    qWarning() << "Warning: failed to send 2GHz deauth packet";
-                    qWarning() << Qt::endl;
-                }
-                //else { qDebug() << "Packet sent 2GHz" << Qt::endl; }
-                station_mutex.unlock();
-
-                //qDebug() << "sent" << i;
-                //++i;
+                d_ptr->send_packet (packet_2, RADIOTAP_SIZE+DEAUTH_SIZE, 64, this);
             });
 
             pcap_send_t1.start();
-            attack_active = true;;
+            attack_active = true;
         }
 
         if (!bssid_5.isNull())
         {
-            connect (&pcap_send_t2, &QTimer::timeout, this, [&, packet_5]
+            connect (&pcap_send_t2, &QTimer::timeout, this, [&, packet_5]()
             {
-                    const uchar* pk_data = reinterpret_cast<const uchar*>(packet_5.data());
-                    bool sent_packet = false;
-
-                    station_mutex.lock();
-                    for (int i=0; i<64; ++i)
-                    {
-                        if(pcap_inject (this->iface_handle, pk_data, 39) == 0)
-                        {
-                            sent_packet = true;
-                        }
-                    }
-
-                    if (!sent_packet)
-                    {
-                        qWarning() << "Warning: failed to send 5GHz deauth packet";
-                        qWarning() << Qt::endl;
-                    }
-                    //else { qDebug() << "Packet sent 2GHz" << Qt::endl; }
-                    station_mutex.unlock();
+                d_ptr->send_packet (packet_5, RADIOTAP_SIZE+DEAUTH_SIZE, 64, this);
             });
 
             pcap_send_t2.start();
             attack_active = true;
         }
+
+        if (attack_active)
+        {
+            send_animation_t->start();
+            ui->packet_sent->setIcon (send_active);
+            send_animation_state = 1;
+
+            search_animation_t->stop();
+            ui->monitor_status->setIcon(search_paused);
+        }
     }
     else
     {
-        qDebug() << "deauth off deactivate";
+        qDebug() << "Stop Deauther Attack";
         pcap_send_t1.stop();
         pcap_send_t2.stop();
 
@@ -509,6 +362,12 @@ void Deauther::deauther_attack ()
 
         station_model->start_pcapThread(iface_handle);
         ui->toggle_monitoring->setEnabled(true);
+
+        send_animation_t->stop();
+        ui->packet_sent->setIcon (send_inactive);
+
+        search_animation_t->start();
+        search_animation_state = 1;
 
         attack_active = false;
     }

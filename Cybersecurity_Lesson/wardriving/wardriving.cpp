@@ -66,7 +66,7 @@ void WarDriving::setup_network_view (void)
 
 
     // Set treeview font
-    ui->network_view->setFont (QFont("DejavuSerif", 16, QFont::Normal));
+    ui->network_view->setFont (QFont("LiberationSerif", 16, QFont::Normal));
 
 
     // Set treeview header size for scrollbar gutter

@@ -1,4 +1,5 @@
 #include <QTimer>
+#include <QNetworkInterface>
 
 /* NetworkManager Include files */
 #include <NetworkManagerQt/ConnectionSettings>
@@ -13,35 +14,17 @@ IfaceModel::IfaceModel (QObject *parent)
     // populate list of network interfaces
     initIface();
 
-    m_ifaceUpdateInterval = new QTimer (this);
-    m_ifaceUpdateInterval->setInterval (2000);
+    m_ifaceUpdate_t = new QTimer (this);
+    m_ifaceUpdate_t->setInterval (2000);
 
-    connect (m_ifaceUpdateInterval, &QTimer::timeout,
+    connect (m_ifaceUpdate_t, &QTimer::timeout,
              this, &IfaceModel::updateIface);
 
-    m_ifaceUpdateInterval->start();
+    m_ifaceUpdate_t->start();
 
     // Testing with the following commands
     // nmcli con add type bridge con-name br0 ifname br
     // nmcli con delete br0
-
-    connect (NetworkManager::notifier(), &NetworkManager::Notifier::deviceAdded,
-             this, &IfaceModel::ifaceAdded, Qt::UniqueConnection);
-
-    //connect (NetworkManager::notifier(), &NetworkManager::Notifier::serviceAppeared,
-    //         this, &IfaceModel::ifaceAdded, Qt::UniqueConnection);
-
-    //connect(NetworkManager::settingsNotifier(),
-    //        &NetworkManager::SettingsNotifier::connectionAdded,
-    //        this,
-    //        &IfaceModel::ifaceAdded,
-    //        Qt::UniqueConnection);
-
-//    connect(NetworkManager::settingsNotifier(),
-//            &NetworkManager::SettingsNotifier::connectionRemoved,
-//            this,
-//            &IfaceModel::ifaceAdded,
-//            Qt::UniqueConnection);
 }
 
 /* Destructor */
@@ -67,7 +50,7 @@ QVariant IfaceModel::data (const QModelIndex &index, int role) const
         return QVariant();
 
     const int row = index.row();
-    NetworkManager::Device::Ptr item = m_interfaces.at(row);
+    QNetworkInterface item = m_interfaces.at(row);
 
     switch (role) {
         case Qt::ForegroundRole:
@@ -75,13 +58,13 @@ QVariant IfaceModel::data (const QModelIndex &index, int role) const
             break;
 
         case Qt::DisplayRole: {
-            QString iface_name = item->interfaceName();
+            QString iface_name = item.humanReadableName();
 
             return iface_name;
             break;
         }
         case Qt::EditRole: {
-            QString iface_name = item->interfaceName();
+            QString iface_name = item.humanReadableName();
 
             return iface_name;
             break;
@@ -102,10 +85,10 @@ int IfaceModel::rowCount (const QModelIndex &parent) const
 
 
 /* Insert number of rows below specified position */
-bool IfaceModel::insertRow (const NetworkManager::Device::Ptr iface)
+bool IfaceModel::insertRow (const QNetworkInterface iface)
 {
     int position = m_interfaces.size();
-    NetworkManager::Device::Ptr item = iface;
+    QNetworkInterface item = iface;
 
     beginInsertRows (QModelIndex(), position, position);
     if (position < 0
@@ -165,56 +148,35 @@ Qt::ItemFlags IfaceModel::flags (const QModelIndex &index) const
 */
 void IfaceModel::updateIface ()
 {
-    // Not working
     bool isDuplicate = false;
-    NetworkManager::networkInterfaces();
 
-    for (NetworkManager::Device::Ptr &device :
-         NetworkManager::networkInterfaces())
+    QList<QNetworkInterface> iface_list = QNetworkInterface::allInterfaces();
+    for (const QNetworkInterface &iface : iface_list)
     {
         // Error handling
         if (rowCount() < 0)
         {
             // add error message
+            return;
         }
 
-        if (!device->isAvailable())
-        {
-            qDebug() << device->interfaceName() << "  Unavailable";
-            qDebug() << "State: " << device->state();
-            continue;
-        }
-
-        //qDebug() << device->interfaceName();
-
-        // Look for duplicates (skip duplicate devices)
-        int row = rowCount();
-        QString iface_name = device->interfaceName();
-        for (int i = 0; i < row; ++i)
-        {
-            if (m_interfaces.at(i)->interfaceName() == iface_name)
-                isDuplicate = true;
-        }
-
-        if (isDuplicate)
+        // Look for duplicates (skip duplicate interfaces)
+        if (m_interfaces.contains(iface))
         {
             continue;
         }
 
-        // Add new network interfaces to model
-        connect (device.data(), &NetworkManager::Device::stateChanged,
-                 this, &IfaceModel::ifaceRemoved, Qt::UniqueConnection);
+        insertRow (iface);
+    }
 
-        if (device->type() == NetworkManager::Device::Wifi)
-        {
-            NetworkManager::WirelessDevice::Ptr wifiDevice =
-                    device.objectCast<NetworkManager::WirelessDevice>();
 
-            insertRow (wifiDevice);
-        }
-        else
+    for (const QNetworkInterface &iface : m_interfaces)
+    {
+        if (!iface_list.contains(iface))
         {
-            insertRow (device);
+            qInfo() << "Info:" << iface.humanReadableName() << "removed";
+            qInfo() << Qt::endl;
+            removeIface(iface);
         }
     }
 }
@@ -229,77 +191,29 @@ void IfaceModel::initIface ()
         endRemoveRows();
     }
 
-    for (const NetworkManager::Device::Ptr &device :
-         NetworkManager::networkInterfaces())
+    QList<QNetworkInterface> iface_list = QNetworkInterface::allInterfaces();
+    for (const QNetworkInterface &iface : iface_list)
     {
-        if (!device->isAvailable())
-        {
-            qDebug() << device->interfaceName() << "  Unavailable";
-            qDebug() << "State: " << device->state();
-            continue;
-        }
-
-        if (device->interfaceName() == "br0")
-        {
-            qDebug() << device->udi();
-        }
-
         // Add new network interfaces to model
-        connect (device.data(), &NetworkManager::Device::stateChanged,
-                 this, &IfaceModel::ifaceRemoved, Qt::UniqueConnection);
-
-        if (device->type() == NetworkManager::Device::Wifi)
-        {
-            NetworkManager::WirelessDevice::Ptr wifiDevice =
-                    device.objectCast<NetworkManager::WirelessDevice>();
-
-            insertRow (wifiDevice);
-        }
-        else
-        {
-            insertRow (device);
-        }
+        insertRow (iface);
     }
 
 }
 
 
-void IfaceModel::ifaceRemoved (NetworkManager::Device::State newState,
-                               NetworkManager::Device::State oldState,
-                               NetworkManager::Device::StateChangeReason reason)
+void IfaceModel::removeIface (QNetworkInterface iface)
 {
-    // finds interface from signal sender
-    NetworkManager::Device::Ptr device = NetworkManager::findNetworkInterface
-            (qobject_cast<NetworkManager::Device *>(sender())->uni());
-
-    if (!device)
-    {
-        // add error handling
-        return;
-    }
-
-    // Remove device if no longer available
-    if (!device->isAvailable()
-        || reason == NetworkManager::Device::ConnectionRemovedReason)
-    {
-        removeRows(m_interfaces.indexOf(device));
-    }
-
+    removeRows(m_interfaces.indexOf(iface));
 }
 
 
-// Not working properly
 void IfaceModel::ifaceAdded ()
 {
-    // finds interface from signal sender
-    //NetworkManager::Connection::Ptr connection = NetworkManager::findConnection(path);
-    //NetworkManager::Device device() =
-
-
     qDebug() << "added device";
-    //qDebug() << path;
-    //qDebug() << connection->name();
-    //qDebug() << connection->uuid();
-    //NetworkManager::Device::Ptr device;
-    //qDebug() << device->interfaceName();
+}
+
+
+bool operator==(const QNetworkInterface &a, const QNetworkInterface &b)
+{
+    return a.hardwareAddress() == b.hardwareAddress();
 }

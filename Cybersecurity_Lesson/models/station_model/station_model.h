@@ -2,6 +2,7 @@
 #define STATION_MODEL_H
 
 #include <QAbstractItemModel>
+#include <QFile>
 #include <QMutex>
 #include <QTimer>
 
@@ -11,7 +12,6 @@
 #include "pcap.h"
 
 #include "iface_model.h"
-#include "pcap_common.h"
 
 #include "station_common.h"
 #include "station_item.h"
@@ -56,9 +56,9 @@ public:
     /* Station Model */
     QHash<int, QByteArray> roleNames (void) const override;
 
-    void setIfaceHandle (pcap_t *handle);
+    void start_pcapThread (pcap_t *handle);
 
-    void create_pcapThread (pcap_t *handle);
+    void stop_pcapThread ();
 
 signals:
     void packetCaptured (const QByteArray &packet, int caplen);
@@ -73,28 +73,26 @@ private:
     QVector<ap_info*> m_apInfo;
 
     QThread *m_pcapThread;
+    QFile m_ouiFile;
     QMutex m_mutex;
 
     IfaceModel *m_iface;
     pcap_t *m_ifaceHandle;
 
 
-    /* static variables for packet filtering */
-    // LLC null packet
-    const QByteArray llcnull = QByteArray(4, 0);
+    bool setIfaceHandle(pcap_t *handle);
 
-    void addStation (QByteArray &stmac, ap_probe &apProbe);
+    void create_pcapThread(pcap_t *handle);
+
+
+    bool addStation(QByteArray &stmac, ap_probe &apProbe);
+    void updateStations();
+
     bool addAccessPoint (ap_probe &ap_cur);
 
 
+
     bool filterRadiotapHdr(QByteArray &pk, ap_probe &ap);
-
-    //bool probe_request(const QByteArray &pk, ap_probe &ap);
-    //bool probe_response(const QByteArray &pk, ap_probe &ap);
-
-    //TagSearch find_ssid(const QByteArray &tags, ap_probe &ap);
-    //bool find_bssid (QByteArray &pk, ap_probe &ap);
-    //bool find_stmac (QByteArray &pk, ap_probe &ap, QByteArray &stmac);
 
 protected:
     StationModel (StationModelPrivate &dd);

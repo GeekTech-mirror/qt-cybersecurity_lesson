@@ -54,11 +54,19 @@
 #define	IEEE80211_FC0_SUBTYPE_DEAUTH		0xc0
 
 /* Type Control */
-#define	IEEE80211_FC0_SUBTYPE_RTS		0xb0
-#define	IEEE80211_FC0_SUBTYPE_CTS		0xc0
-#define	IEEE80211_FC0_SUBTYPE_ACK		0xd0
+#define	IEEE80211_FC0_SUBTYPE_RTS           0xb0
+#define	IEEE80211_FC0_SUBTYPE_CTS           0xc0
+#define	IEEE80211_FC0_SUBTYPE_ACK           0xd0
 #define	IEEE80211_FC0_SUBTYPE_CF_END		0xe0
 #define	IEEE80211_FC0_SUBTYPE_CF_END_ACK	0xf0
+
+
+/* Linktype */
+#define LINKTYPE_ETHERNET 1
+#define LINKTYPE_IEEE802_11 105
+#define LINKTYPE_PRISM_HEADER 119
+#define LINKTYPE_RADIOTAP_HDR 127
+#define LINKTYPE_PPI_HDR 192
 
 
 /* Radiotap properties */
@@ -69,6 +77,13 @@
 #define RADIOTAP_CHAN_5GHZ         0x0100
 
 
+/* Tag parameters */
+#define PROBE_REQ_PARAMS            24
+#define ASSOC_REQ_PARAMS            28
+
+#define PROBE_RESP_PARAMS           36
+#define BEACON_PARAMS               36
+
 /* Tag properties */
 #define TAG_PARAM_SSID              0x00
 #define TAG_PARAM_AP_CHANNEL        0x03
@@ -76,9 +91,9 @@
 /* Data properties */
 #define ESSID_LEN 32 /* The spec. says 32 maximum. */
 
-// returns the raw uchar* from a QByteArray at the position pos
+/* returns the raw uchar* from a QByteArray at the position pos */
 #define BYTE_TO_UCHAR(arr, pos) \
-    *reinterpret_cast<uchar*>(arr.sliced(pos,2).data())
+    *reinterpret_cast<uchar*>(arr.sliced(pos,1).data())
 
 #define BYTES_TO_UCHAR(arr, pos, size) \
     *reinterpret_cast<uchar*>(arr.sliced(pos,size).data())

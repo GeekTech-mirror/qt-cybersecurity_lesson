@@ -309,7 +309,6 @@ QString CustomStyleSheets::treeview_scrollbar (int header_height)
     // add padding on left and right of horizontal scrollbar
     stylesheet = stylesheet.arg(12);
 
-
     return stylesheet;
 }
 

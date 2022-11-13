@@ -13,6 +13,7 @@ StationItem::StationItem (const QVector<QString> &data, StationItem *parent)
     : m_headerData(data),
       m_parentItem(parent),
       m_stmac(QByteArray()),
+      m_apInfo(ap_info()),
       indent(1,' ')
 {
     for (int i = 0; i < m_headerData.size(); ++i)
@@ -96,8 +97,15 @@ QVariant StationItem::data (int column) const
 
     switch (m_roles.at(column)) {
     case AccessPointRole:
-        //return apEssid().constData();
         return apEssid().constData();
+    case Bssid2Role:
+        return apBssid(Chan_2GHz).toHex(':');
+    case Bssid5Role:
+        return apBssid(Chan_5GHz).toHex(':');
+    case Channel2Role:
+        return QString::number(apChannel(Chan_2GHz));
+    case Channel5Role:
+        return QString::number(apChannel(Chan_5GHz));
     case InterfaceRole:
         return QVariant();
     case StationRole:
@@ -187,17 +195,6 @@ ap_info StationItem::apInfo () const
 
 void StationItem::setApInfo (const ap_info &apInfo)
 {
-    if (m_apInfo.essid == apInfo.essid)
-    {
-        return;
-    }
-
-    if (m_apInfo.channel[0] == apInfo.channel[0]
-        && m_apInfo.channel[1] == apInfo.channel[1])
-    {
-        return;
-    }
-
     m_apInfo = apInfo;
     m_changedRoles << StationItemRole::AccessPointRole;
 }

@@ -79,6 +79,15 @@ public:
         return highlighted_outline;
     }
 
+    static QColor highlighted_outline(void) {
+        QColor highlighted_outline = highlight().darker(125);
+        if (highlighted_outline.value() > 160)
+            highlighted_outline.setHsl(highlighted_outline.hue(),
+                                       highlighted_outline.saturation(),
+                                       160);
+        return highlighted_outline;
+    }
+
     static QColor tab_frame_color(const QPalette &pal) {
         if (pal.window().style() == Qt::TexturePattern)
             return QColor (255, 255, 255, 8);

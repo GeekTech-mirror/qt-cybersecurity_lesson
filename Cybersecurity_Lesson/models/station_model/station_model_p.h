@@ -1,6 +1,8 @@
 #ifndef STATION_MODEL_P_H
 #define STATION_MODEL_P_H
 
+#include "pcap_common.h"
+
 #include "station_model.h"
 #include "station_item.h"
 
@@ -35,6 +37,17 @@ public:
         case StationItemRole::AccessPointRole:
             return item->apEssid ();
             break;
+        case StationItemRole::Bssid2Role:
+            return item->apBssid(Chan_2GHz);
+            break;
+        case StationItemRole::Bssid5Role:
+            return item->apBssid(Chan_5GHz);
+        case StationItemRole::Channel2Role:
+            return item->apChannel(Chan_2GHz);
+            break;
+        case StationItemRole::Channel5Role:
+            return item->apChannel(Chan_5GHz);
+            break;
 
         default:
             return "";
@@ -51,6 +64,18 @@ public:
         case StationItemRole::AccessPointRole:
             item->insertRole (StationItemRole::AccessPointRole);
             break;
+        case StationItemRole::Bssid2Role:
+            item->insertRole (StationItemRole::Bssid2Role);
+            break;
+        case StationItemRole::Bssid5Role:
+            item->insertRole (StationItemRole::Bssid5Role);
+            break;
+        case StationItemRole::Channel2Role:
+            item->insertRole (StationItemRole::Channel2Role);
+            break;
+        case StationItemRole::Channel5Role:
+            item->insertRole (StationItemRole::Channel5Role);
+            break;
         case StationItemRole::InterfaceRole:
             item->insertRole (StationItemRole::InterfaceRole);
             break;
@@ -65,6 +90,7 @@ public:
         return true;
     }
 
+
     /* Request from device to connect to ap
     ** Parameters:
     **     packet:
@@ -77,16 +103,39 @@ public:
     {
         // return if subtype is not a probe request
         if (pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_REQ
-            || pk.at(0) != IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
+            && pk.at(0) != IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
         {
             return true;
         }
 
-        qDebug() << "processing request";
-        // start parsing at Wireless Management Header
-        QByteArray tags = pk.sliced(24);
+        // start at tagged parameters
+        QByteArray tags;
+        if (pk.at(0) == IEEE80211_FC0_SUBTYPE_PROBE_REQ)
+        {
+            if (pk.size() < PROBE_REQ_PARAMS)
+            {
+                qCritical() << "Error: Malformed Packet";
+                qCritical() << "Skipping Packet" << Qt::endl;
+                return false;
+            }
+
+            tags = pk.sliced(PROBE_REQ_PARAMS);
+        }
+
+        if (pk.at(0) == IEEE80211_FC0_SUBTYPE_ASSOC_REQ)
+        {
+            if (pk.size() < ASSOC_REQ_PARAMS)
+            {
+                qCritical() << "Error: Malformed Packet";
+                qCritical() << "Skipping Packet" << Qt::endl;
+                return false;
+            }
+
+            tags = pk.sliced(ASSOC_REQ_PARAMS);
+        }
 
         int tag_len;
+
 
         // timout if process takes too long
         QTimer *timeout = new QTimer();
@@ -94,11 +143,19 @@ public:
         timeout->start(2000);
 
 
-        // Probe tagged parameters
+        /* Probe tagged parameters
+        ** Tag Format:
+        **     Tag ID -> Tag Length -> Tag Data
+        */
         while (timeout->isActive())
         {
+            if (tags.size() < 3)
+            {
+                qCritical() << "Error: Malformed Tag Params";
+                qCritical() << "Skipping Packet" << Qt::endl;
+                return false;
+            }
             tag_len = BYTE_TO_UCHAR(tags, 1);
-
 
             switch (find_essid(tags, ap))
             {
@@ -111,7 +168,6 @@ public:
                 case TagSearch::TagNotFound:
                     break;
             }
-
 
             // avoid going out of bounds
             if ((2+tag_len) > tags.size() )
@@ -143,7 +199,9 @@ public:
     */
     bool ap_response(const QByteArray &pk, ap_probe &ap)
     {
-        // type cast to uchar (0x80 or b1000 0000 results in a negative with signed char)
+        /* type cast to uchar
+         * (0x80 or b1000 0000 results in a negative with signed char)
+         */
         if ((uchar)pk.at(0) != IEEE80211_FC0_SUBTYPE_BEACON
             && pk.at(0) != IEEE80211_FC0_SUBTYPE_PROBE_RESP)
         {
@@ -155,14 +213,20 @@ public:
 
         // store timestamp
 
-        QByteArray tags = pk.sliced(36);
+        if (pk.size() < PROBE_RESP_PARAMS)
+        {
+            qCritical() << "Error: Malformed Packet";
+            qCritical() << Qt::endl;
+        }
+
+        QByteArray tags = pk.sliced(PROBE_RESP_PARAMS);
         QVector<bool> tags_found;
         tags_found.fill (false, 2);
 
         int tag_id;
         int tag_len;
 
-        // timout if process takes too long
+         // start at tagged parameters
         QTimer *timeout = new QTimer();
         timeout->setSingleShot(true);
         timeout->start(2000);
@@ -260,6 +324,13 @@ public:
         /* find access point - essid */
         if (tag_id == TAG_PARAM_SSID)
         {
+            if ((2+tag_len) > tags.size() )
+            {
+                qCritical() << "Error: tag size is less than expected tag length";
+                qCritical() << "Skipping Packet" << Qt::endl;
+
+                return TagSearch::Error;
+            }
             tag_data = tags.sliced (2, tag_len);
 
             for (int i=0; i < tag_len; ++i)
@@ -359,6 +430,74 @@ public:
         }
 
         return true;
+    }
+
+
+    /* Print QByteArray as a formatted packet
+    **
+    ** The returned packet can be imported to wireshark as a
+    ** hex dump
+    **
+    ** Parameters:
+    **     packet
+    ** Return:
+    **     formatted packet stored in QDebug();
+    ** Notes:
+    */
+    void print_packet (QByteArray packet, QDebug &print_pk)
+    {
+        int len = 8;            // each row contains 8 Bytes
+        int rem = 0;            // remaining space on last line
+
+        int pos_padding = 6;    // pad position indicator on each line
+
+        QString ascii;          // display packet data as ascii text
+        ascii.resize(len);
+        ascii.fill('.');
+
+        for (int i=0; i<packet.size(); ++i)
+        {
+            // print current position after 'len' number of bytes
+            if (!(i%len))
+            {
+                // pad
+                QString pos = QString("%1").arg(i, pos_padding, 16, QLatin1Char( '0' ));
+                print_pk << pos.toUtf8().data();
+
+                // pad last line with spaces
+                (packet.size() < i+len) ? rem = packet.size()-i : rem = len;
+                print_pk << packet.sliced(i,rem).toHex(' ').data();
+            }
+
+            // skip special characters
+            // (ascii special characters are below 0x20)
+            if (packet.at(i)  > 0x20)
+            {
+                ascii[i%len] = packet[i];
+            }
+
+            // print ascii text after 'len' bytes
+            // and move to the next line
+            if (!(((i+1)%len)))
+            {
+                print_pk << ascii.toUtf8().data() << Qt::endl;
+
+                ascii.fill('.');
+            }
+            // print ascii text on the last line
+            // pad the remaining byte positions with spaces
+            else if (i == packet.size() - 1)
+            {
+                /* each byte is 2 characters wide and has 1 space between each byte
+                ** so multiple the missing bytes on the last line by 3
+                ** and substitue missing bytes with spaces
+                */
+                QString align;
+                align.resize (3*(len-rem)-1);
+                align.fill (' ');
+                print_pk << align.toUtf8().data() << ascii.left(rem).toUtf8().data() << Qt::endl;
+            }
+        }
     }
 };
 

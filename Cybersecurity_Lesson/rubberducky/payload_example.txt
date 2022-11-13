@@ -61,7 +61,7 @@ TAB
 DELAY 500
 ENTER
 
-REM The remaining commands move to Set as > Set as background
+REM The remaining commands move the selected dropdown to Set as -> Set as background
 DELAY 500
 DOWN
 DELAY 500

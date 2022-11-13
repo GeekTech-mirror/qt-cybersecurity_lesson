@@ -33,11 +33,6 @@ public:
                     const QStyleOption *option = nullptr,
                     const QWidget *widget = nullptr) const override;
 
-    int styleHint (StyleHint hint,
-                   const QStyleOption *option,
-                   const QWidget *widget,
-                   QStyleHintReturn *returnData) const override;
-
 private:
     ScrollBar_Metrics sb_metrics;
 

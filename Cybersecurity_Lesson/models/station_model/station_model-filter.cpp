@@ -9,7 +9,7 @@
 #include "station_item.h"
 #include "pcap_common.h"
 
-#include "pcap.h"
+#include <pcap/pcap.h>
 
 #include <netinet/in.h>
 #include <net/ethernet.h>

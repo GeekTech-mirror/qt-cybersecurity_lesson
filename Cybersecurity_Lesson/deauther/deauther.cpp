@@ -13,7 +13,7 @@
 #include "deauther_p.h"
 #include "ui_deauther.h"
 
-#include "pcap.h"
+#include <pcap/pcap.h>
 
 
 Deauther::Deauther(QWidget *parent) :

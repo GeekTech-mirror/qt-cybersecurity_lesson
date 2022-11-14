@@ -7,7 +7,7 @@
 #include <QTimer>
 #include <QWidget>
 
-#include "pcap.h"
+#include <pcap/pcap.h>
 
 #include "station_model.h"
 #include "network_model.h"

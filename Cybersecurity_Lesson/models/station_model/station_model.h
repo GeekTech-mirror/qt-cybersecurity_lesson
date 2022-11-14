@@ -9,7 +9,7 @@
 #include <NetworkManagerQt/Manager>
 #include <NetworkManagerQt/WirelessDevice>
 
-#include "pcap.h"
+#include <pcap/pcap.h>
 
 #include "iface_model.h"
 

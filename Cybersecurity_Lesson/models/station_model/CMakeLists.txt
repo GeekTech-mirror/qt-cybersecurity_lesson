@@ -27,9 +27,9 @@ include_directories(${CMAKE_SOURCE_DIR}/models/network_model)
 include_directories(${CMAKE_SOURCE_DIR}/models/iface_model)
 include_directories(${CMAKE_SOURCE_DIR}/styles)
 
-set(LIB_DESTDIR "/usr/lib/cybersecurity_lesson")
+#set(LIB_DESTDIR "/usr/lib/cybersecurity_lesson")
 
-install(FILES
-    "oui.txt"
-    LIBRARY DESTINATION ${LIB_DESTDIR}
-)
+#install(FILES
+#    "oui.txt"
+#    LIBRARY DESTINATION ${LIB_DESTDIR}
+#)

@@ -104,12 +104,10 @@ public:
     }
 
 
-    QByteArray create_deauthPacket (QByteArray stmac,
-                                    QByteArray bssid,
-                                    QByteArray reason)
+    QByteArray create_deauthPacket (QByteArray &stmac,
+                                    QByteArray &bssid,
+                                    QByteArray &reason)
     {
-
-
         QByteArray deauth_pk = QByteArray::fromRawData
                 (reinterpret_cast<const char*>(radiotap_h), RADIOTAP_SIZE);
 
@@ -124,28 +122,26 @@ public:
     }
 
 
-    void send_packet (QByteArray packet, int size, int count, Deauther *dd)
+    void send_packet (QByteArray packet, int pk_len, int count, Deauther *dd)
     {
         const uchar* pk_data = reinterpret_cast<const uchar*>(packet.data());
         bool sent_packet = false;
-
-        // send number of packets equal to count
         dd->station_mutex.lock();
         for (int i=0; i<count; ++i)
         {
-            if(pcap_inject (dd->iface_handle, pk_data, size) == 0)
+            if(pcap_sendpacket (dd->iface_handle, pk_data, pk_len) == 0)
             {
                 sent_packet = true;
             }
         }
 
-        /* warning if all packets fail to send
+        /* All packets fail to send
         **
-        ** some packets will inevitably fail
+        ** (Some packets will inevitably fail)
         */
         if (!sent_packet)
         {
-            qWarning() << "Warning: failed to send 2GHz deauth packet";
+            qWarning() << "Warning: failed to send deauth packet";
             qWarning() << Qt::endl;
         }
         dd->station_mutex.unlock();

@@ -155,7 +155,6 @@ void Deauther::toggle_monitoring ()
         }
 
         station_model->start_pcapThread (iface_handle);
-
         ui->iface_list->setEnabled(false);
 
         // start packet search icon
@@ -166,9 +165,7 @@ void Deauther::toggle_monitoring ()
     else
     {
         station_model->stop_pcapThread ();
-
         ui->iface_list->setEnabled(true);
-
         pcap_close (iface_handle);
 
         // stop packet search icon
@@ -229,6 +226,7 @@ void Deauther::send_animation (QPushButton *button)
     }
 }
 
+
 void Deauther::deauther_attack ()
 {
     static bool attack_active = false;
@@ -239,14 +237,13 @@ void Deauther::deauther_attack ()
     const QIcon search_paused = QIcon (":/icons/actions/24/edit-find-replace_state0.svg");
 
     static QTimer pcap_send_t1;
-    pcap_send_t1.setInterval (1000);
+    pcap_send_t1.setInterval (200);
 
     static QTimer pcap_send_t2;
-    pcap_send_t2.setInterval (900);
+    pcap_send_t2.setInterval (300);
 
     /* Find current row of station view */
     QModelIndex index = ui->station_view->currentIndex();
-
     if (index.row() == -1
         && !attack_active)
     {
@@ -254,63 +251,63 @@ void Deauther::deauther_attack ()
     }
 
 
-    /* Retrieve selected station */
-    if (!station_mutex.tryLock())
-    {
-        return;
-    }
-
-    StationItem *station_item = static_cast<StationItem*>(index.internalPointer());
-
-    QByteArray stmac = station_item->stmac();
-    ap_info ap = station_item->apInfo();
-
-    station_mutex.unlock();
-
-
-    /* find ap address */
-    bool ap_found = false;
-
-    QByteArray bssid_2;
-    int chan_2;
-    if (!ap.bssid[0].isNull())
-    {
-        bssid_2 = ap.bssid[0];
-
-        ap_found = true;
-    }
-
-    QByteArray bssid_5;
-    int chan_5;
-    if (!ap.bssid[1].isNull())
-    {
-        bssid_5 = ap.bssid[1];
-
-        ap_found = true;
-    }
-
-    if(!ap_found)
-    {
-        return;
-    }
-
-
-    /* create deauth packet */
-    int reason_index = ui->reasons_list->currentIndex();
-    QByteArray reason;
-    reason.append(reason_index+1);
-
-    // 2GHz deauth packet
-    QByteArray packet_2 = d_ptr->create_deauthPacket (stmac, bssid_2, reason);
-
-    // 5GHz deauth packet
-    QByteArray packet_5 = d_ptr->create_deauthPacket (stmac, bssid_5, reason);
-
-
     /* send deauth packet */
     int i = 0;
     if (!attack_active)
     {
+        /* Retrieve selected station */
+        if (!station_mutex.tryLock())
+        {
+            qDebug() << "mutex fail";
+            return;
+        }
+
+        StationItem *station_item = static_cast<StationItem*>(index.internalPointer());
+
+        QByteArray stmac = station_item->stmac();
+        ap_info ap = station_item->apInfo();
+
+        station_mutex.unlock();
+
+        /* find ap address */
+        bool ap_found = false;
+
+        QByteArray bssid_2;
+        int chan_2;
+        if (!ap.bssid[0].isNull())
+        {
+            bssid_2 = ap.bssid[0];
+
+            ap_found = true;
+        }
+
+        QByteArray bssid_5;
+        int chan_5;
+        if (!ap.bssid[1].isNull())
+        {
+            bssid_5 = ap.bssid[1];
+
+            ap_found = true;
+        }
+
+        if(!ap_found)
+        {
+            return;
+        }
+
+
+        /* create deauth packet */
+        int reason_index = ui->reasons_list->currentIndex();
+        QByteArray reason;
+        reason.append(reason_index+1);
+
+        // 2GHz deauth packet
+        QByteArray packet_2 = d_ptr->create_deauthPacket (stmac, bssid_2, reason);
+
+        // 5GHz deauth packet
+        QByteArray packet_5 = d_ptr->create_deauthPacket (stmac, bssid_5, reason);
+
+
         qDebug() << "Start Deauther Attack";
         qDebug() << Qt::endl;
 
@@ -343,12 +340,19 @@ void Deauther::deauther_attack ()
 
         if (attack_active)
         {
+            ui->iface_list->setEnabled(false);
+
             send_animation_t->start();
             ui->packet_sent->setIcon (send_active);
             send_animation_state = 1;
 
             search_animation_t->stop();
             ui->monitor_status->setIcon(search_paused);
+        }
+        else
+        {
+            station_model->start_pcapThread(iface_handle);
+            ui->toggle_monitoring->setEnabled(true);
         }
     }
     else
@@ -362,6 +366,7 @@ void Deauther::deauther_attack ()
 
         station_model->start_pcapThread(iface_handle);
         ui->toggle_monitoring->setEnabled(true);
+        ui->iface_list->setEnabled(true);
 
         send_animation_t->stop();
         ui->packet_sent->setIcon (send_inactive);

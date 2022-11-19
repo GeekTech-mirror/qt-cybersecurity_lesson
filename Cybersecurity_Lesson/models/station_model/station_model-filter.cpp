@@ -13,6 +13,8 @@
 
 #include <netinet/in.h>
 #include <net/ethernet.h>
+#include "radiotap.h"
+#include "radiotap_iter.h"
 
 #include "debug_packets.h"
 
@@ -56,7 +58,7 @@ void StationModel::start_pcapThread (pcap_t *handle)
 void StationModel::stop_pcapThread ()
 {
     int result = -1;
-    int timeout = 3000;
+    int timeout = 10000;
 
     if (!m_pcapThread->isRunning())
     {
@@ -108,13 +110,13 @@ void StationModel::create_pcapThread (pcap_t *handle)
         addAccessPoint(tp_link_5GHz);
         addStation(samsung_stmac, tp_link_2GHz);
 
-        //addAccessPoint(Netgear);
-        //addStation(precision_stmac, Netgear);
+        addAccessPoint(Netgear);
+        addStation(precision_stmac, Netgear);
 
         while (!QThread::currentThread()->isInterruptionRequested())
         {
-            //QElapsedTimer timer;
-            //timer.start();
+            QElapsedTimer timer;
+            timer.start();
 
             if (handle == NULL)
             {
@@ -142,11 +144,11 @@ void StationModel::create_pcapThread (pcap_t *handle)
                 Q_EMIT packetCaptured (*packet, packet_header->caplen);
             }
 
-            //if (timer.elapsed() > 2000)
-            //{
-            //    qDebug() << "loop time" << timer.elapsed() << "milliseconds"
-            //             << "caplen:" << packet_header->caplen << Qt::endl;
-            //}
+            if (timer.elapsed() > 2000)
+            {
+                qDebug() << "loop time" << timer.elapsed() << "milliseconds"
+                         << "caplen:" << packet_header->caplen << Qt::endl;
+            }
         }
     });
 }
@@ -170,8 +172,6 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
 
     if (!filterRadiotapHdr(pk, ap))
     {
-        qWarning() << "Warning: Radiotap Header Filter Failed ";
-        qWarning() << "Skipping Packet" << Qt::endl;
         return;
     }
 
@@ -285,7 +285,7 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
     // print captured packet to console
     QDebug info = qInfo();
     info << "capture length" << caplen << Qt::endl;
-    d_ptr->print_packet(pk, info);
+    d_ptr->print_packet(packet, info);
 
     info << Qt::endl << Qt::endl;
 
@@ -296,7 +296,7 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
     info << "channel:" << ap.channel << Qt::endl;
     info << "channel frequency:" <<
             ((ap.chan_type == Chan_2GHz) ? "2GHZ" :
-                                           (ap.chan_type == Chan_5GHz) ? "5GHZ" : "?") << Qt::endl;
+             (ap.chan_type == Chan_5GHz) ? "5GHZ" : "?") << Qt::endl;
     info << Qt::endl;
 
 
@@ -308,36 +308,54 @@ void StationModel::filterPacket (const QByteArray &packet, int caplen)
 
 bool StationModel::filterRadiotapHdr (QByteArray &pk, ap_probe &ap)
 {
-    if (pk.size() < RADIOTAP_CHAN_FLAGS)
+    struct ieee80211_radiotap_iterator iterator;
+    struct ieee80211_radiotap_header * radiotap_h;
+    const uchar* pk_data = reinterpret_cast<const uchar*>(pk.data());
+    radiotap_h = (struct ieee80211_radiotap_header *) pk_data;
+    int ret = ieee80211_radiotap_iterator_init(&iterator, radiotap_h, pk.size(), NULL);
+
+    while (!ret) {
+        ret = ieee80211_radiotap_iterator_next(&iterator);
+
+        if (ret)
+            continue;
+
+        switch (iterator.this_arg_index) {
+        case IEEE80211_CHAN_2GHZ:
+            ap.chan_type = Chan_2GHz;
+            break;
+
+        case IEEE80211_CHAN_5GHZ:
+            ap.chan_type = Chan_5GHz;
+            break;
+
+        default:
+            break;
+        }
+    }  /* while more rt headers */
+
+    if (ret == -EINVAL)
     {
+        qInfo() << "Error: Malformed Radiotap Header";
+        qInfo() << "Skipping Packet" << Qt::endl;
+
         return false;
     }
 
-    QByteArray channel_flags = pk.sliced(RADIOTAP_CHAN_FLAGS, 2);
 
-    // Radiotap header uses Little Endian
-    std::reverse(channel_flags.begin(), channel_flags.end());
+    // find radiotap header size
+    int n = iterator._max_length;
 
-    // Flags are 2 bytes wide (16-bit)
-    QDataStream dataStream (channel_flags);
-    quint16 flags;
-
-    dataStream >> flags;
-
-    /* find packet frequency */
-    if (flags & RADIOTAP_CHAN_2GHZ)
+    if (pk.size() < n)
     {
-        ap.chan_type = Chan_2GHz;
-    }
-    if (flags & RADIOTAP_CHAN_5GHZ)
-    {
-        ap.chan_type = Chan_5GHz;
+        qCritical() << "Error: Malformed Radiotap Header";
+        qCritical() << "Skipping Packet" << Qt::endl;
+
+        return false;
     }
 
     // skip radiotap header
-    int n = BYTE_TO_UCHAR(pk, RADIOTAP_HDR_LEN);
     pk = pk.sliced(n);
-
     return true;
 }
 
@@ -439,8 +457,8 @@ bool StationModel::addAccessPoint (ap_probe &ap_cur)
     }
     else
     {
-        qWarning() << "Warning: Channel type not found";
-        qWarning() << "Skipping Packet" << Qt::endl << Qt::endl;
+        //qWarning() << "Warning: Channel type not found";
+        //qWarning() << "Skipping Packet" << Qt::endl << Qt::endl;
         return false;
     }
 

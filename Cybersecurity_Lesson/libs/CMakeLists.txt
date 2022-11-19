@@ -1,2 +1,2 @@
 add_subdirectory(networkmanager-qt)
-#add_subdirectory(polkit-qt-1)
+add_subdirectory(radiotap)

@@ -58,6 +58,7 @@ target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Networ
 
 # Third-party Libs
 target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
+target_link_libraries(Cybersecurity_Lesson PRIVATE radiotap)
 #target_link_libraries(Cybersecurity_Lesson PRIVATE PolkitQt${QT_VERSION_MAJOR}-1::Core
 #                                                   PolkitQt${QT_VERSION_MAJOR}-1::Gui
 #                                                   PolkitQt${QT_VERSION_MAJOR}-1::Agent)

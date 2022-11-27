@@ -91,11 +91,7 @@ endif()
 set(INSTALL_DESTDIR "/usr/bin")
 set(LIBDIR "/usr/lib/cybersecurity_lesson")
 
-install(TARGETS Cybersecurity_Lesson
-    RUNTIME DESTINATION "${INSTALL_DESTDIR}"
-    BUNDLE DESTINATION "${INSTALL_DESTDIR}"
-    LIBRARY DESTINATION "${LIBDIR}"
-)
+install(TARGETS Cybersecurity_Lesson DESTINATION bin)
 
 #add_subdirectory(networkmanager-qt)
 

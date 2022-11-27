@@ -21,6 +21,8 @@ add_library(Network_Model STATIC ${NETWORK_MODEL_SRCS})
 target_link_libraries(Network_Model PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(Network_Model PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(Network_Model PRIVATE NetworkManagerQt)
+
+install(FILES ${NETWORK_MODEL_SRCS} DESTINATION include)
 target_include_directories(Network_Model PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR}/styles)

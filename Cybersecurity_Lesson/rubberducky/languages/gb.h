@@ -1,3 +1,6 @@
+#ifndef GB_H
+#define GB_H
+
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -176,5 +179,5 @@ QJsonObject gb
     {"COMMAND-OPTION-SHIFT'","12,00,00"}
 };
 
-//QJsonArray gb = QJsonArray,,fromStringList(lang);
+#endif
 

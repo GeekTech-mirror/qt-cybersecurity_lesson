@@ -118,9 +118,6 @@
        <pointsize>14</pointsize>
       </font>
      </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
     </widget>
    </item>
    <item>

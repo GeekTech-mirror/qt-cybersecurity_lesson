@@ -399,14 +399,12 @@ QByteArray RubberDucky::encode_script (QStringList &duck_script, QJsonObject &la
         {
             cmd = line.section(' ', 0, 0);
         }
-        qDebug() << cmd << instruction;
 
         // parse commands
         bool isInteger = false;
         if (!QString::compare(cmd, "DEFAULT_DELAY")
              || !QString::compare(cmd, "DEFAULTDELAY"))
         {
-            qDebug() << "DEF_DEL";
             default_delay = instruction.toInt(&isInteger);
 
             if (!isInteger)
@@ -418,7 +416,7 @@ QByteArray RubberDucky::encode_script (QStringList &duck_script, QJsonObject &la
 
         int repeat_cnt = 1;
         if (!QString::compare(cmd, "repeat", Qt::CaseInsensitive)
-                || !QString::compare(cmd, "replay", Qt::CaseInsensitive))
+             || !QString::compare(cmd, "replay", Qt::CaseInsensitive))
         {
             repeat_cnt = instruction.toInt(&isInteger);
 
@@ -439,7 +437,6 @@ QByteArray RubberDucky::encode_script (QStringList &duck_script, QJsonObject &la
             {
                 for (QChar &c : instruction)
                 {
-                    qDebug() << c;
                     json_value = lang.value(c);
                     key_string = json_value.toString().split(',');
 
@@ -552,8 +549,7 @@ QByteArray RubberDucky::encode_script (QStringList &duck_script, QJsonObject &la
 void RubberDucky::duckytools(QJsonObject &lang)
 {
     /* open ducky script file*/
-    //QString script_path = QDir::homePath() % "/payload.txt";
-    QString script_path = "/home/troytjh/.git_repo/Capstone/Cybersecurity_Lesson/rubberducky/payload_example.txt";
+    QString script_path = QDir::homePath() % "/payload.txt";
     QFile duck_file (script_path);
     if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
     {
@@ -563,6 +559,25 @@ void RubberDucky::duckytools(QJsonObject &lang)
             "File not opened",
             "Error: unable to open file"
         );
+    }
+
+    // If the saved script is blank use demo script
+    if (duck_file.size() <= 1)
+    {
+        duck_file.close();
+
+        //QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
+        QString script_path = "/home/troytjh/.git_repo/Capstone/build/install/share/cybersecurity_lesson/payload_example.txt";
+        duck_file.setFileName(script_path);
+        if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
+        {
+            QMessageBox::warning
+            (
+                this,
+                "File not opened",
+                "Error: unable to open file"
+            );
+        }
     }
 
 
@@ -581,8 +596,7 @@ void RubberDucky::duckytools(QJsonObject &lang)
 
 
     /* write encoded ducky script to file */
-    //QString bin_path = QDir::homePath() % "/payload.bin";
-    QString bin_path = "/home/troytjh/payload.bin";
+    QString bin_path = QDir::homePath() % "/payload.bin";
     QFile duck_bin (bin_path);
     if (!duck_bin.open (QFileDevice::WriteOnly))
     {
@@ -595,6 +609,9 @@ void RubberDucky::duckytools(QJsonObject &lang)
     }
     QDataStream out(&duck_bin);
     out.writeRawData(payload.data(), payload.size());
+
+    duck_file.close();
+    duck_bin.close();
 
 
     /* display pop-up */

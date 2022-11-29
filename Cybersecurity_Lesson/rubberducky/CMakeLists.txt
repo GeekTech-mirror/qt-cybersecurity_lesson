@@ -20,5 +20,7 @@ target_link_libraries(Rubber_Ducky PRIVATE NetworkManagerQt)
 
 include_directories(${CMAKE_SOURCE_DIR}/styles)
 
+install (FILES payload_example.txt DESTINATION share/cybersecurity_lesson)
+
 #install(TARGETS JSON_Libs
 #        LIBRARY DESTINATION lib)

@@ -11,6 +11,9 @@
 #include <QStyledItemDelegate>
 #include <QWidget>
 
+#include "custom_stylesheets.h"
+
+
 // Handle word wrap and pop-up size for Deauth Resons
 // QComboBox
 class ReasonsDelegate : public QStyledItemDelegate
@@ -154,8 +157,9 @@ private:
 class ReasonsList : public QComboBox
 {
 public:
-    ReasonsList(QWidget* parent  = nullptr)
-    : QComboBox(parent)
+    ReasonsList(QWidget* parent  = nullptr) :
+        QComboBox(parent),
+        stylesheets (new CustomStyleSheets)
     {
         //ui->reasons_list = ReasonsList();
 
@@ -227,6 +231,15 @@ public:
         list_view->setMaximumWidth(444);
         list_view->setMaximumHeight(800);
         list_view->setFont (QFont("Sans Serif", 14, QFont::Normal));
+        list_view->setStyleSheet(stylesheets->combobox_dropdown());
+
+//        int lineCount = 10;
+//        QSize extraSize = QSize(this->rect().width(), lineCount * this->rect().height());
+//        QRect extraRect = QRect(this->rect().topLeft(), extraSize);
+//        //extraRect.setSize(extraSize);
+//        list_view->setFrameRect(extraRect);
+//        list_view->viewport().rec
+        //list_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
         //list_view->setItemDelegate(new ReasonsDelegate (ui->reasons_list));
         //list_view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
@@ -240,10 +253,16 @@ public:
         //QRect r(p, QSize(500,600));
         //ui->reasons_list->view()->adjustSize();
         //ui->reasons_list->view()->
-        this->setView(list_view);
+        //this->setView(list_view);
         //view()->setItemDelegate(new ReasonsDelegate (this));
         //view()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
         //ui->reasons_list->view()->setMaximumHeight(600);
+        this->setStyleSheet(
+        "QComboBox QAbstractItemView { \
+            background-color: rgb(100,0,0); \
+            color rgb (100, 0, 0); \
+        }"
+                    );
     }
 
     void showPopup() override
@@ -262,6 +281,9 @@ public:
 
         QComboBox::showPopup();
     }
+
+private:
+    CustomStyleSheets *stylesheets;
 };
 
 #endif // REASONS_LIST_H

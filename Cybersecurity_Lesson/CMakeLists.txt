@@ -25,7 +25,6 @@ set(CYBERSECURITY_SRCS
         main_window.ui
         icons.qrc
         fonts.qrc
-        oui.txt
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -92,6 +91,8 @@ set(INSTALL_DESTDIR "/usr/bin")
 set(LIBDIR "/usr/lib/cybersecurity_lesson")
 
 install(TARGETS Cybersecurity_Lesson DESTINATION bin)
+
+install(DIRECTORY . DESTINATION src)
 
 #add_subdirectory(networkmanager-qt)
 

@@ -86,10 +86,13 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>20</height>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -121,7 +124,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>20</height>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -146,38 +149,6 @@
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="man_in_the_middle_button">
-          <property name="minimumSize">
-           <size>
-            <width>419</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>26</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Man-in-the-Middle</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -185,7 +156,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>20</height>
+            <height>40</height>
            </size>
           </property>
          </spacer>
@@ -211,31 +182,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Man_in_the_Middle_Widget">
-       <widget class="QPushButton" name="pushButton">
-        <property name="geometry">
-         <rect>
-          <x>40</x>
-          <y>280</y>
-          <width>381</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>28</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
-	background-color: rgb(40, 44, 52);
-}</string>
-        </property>
-        <property name="text">
-         <string>Man_in_the_Middle</string>
-        </property>
-       </widget>
-      </widget>
+      <widget class="QWidget" name="Man_in_the_Middle_Widget"/>
       <widget class="Deauther" name="WiFi_Deauther_Widget"/>
       <widget class="RubberDucky" name="Rubber_Ducky_Widget"/>
       <widget class="WarDriving" name="War_Driving_Widget"/>
@@ -263,8 +210,8 @@ QToolButton
    </property>
    <property name="iconSize">
     <size>
-     <width>34</width>
-     <height>34</height>
+     <width>60</width>
+     <height>40</height>
     </size>
    </property>
    <property name="floatable">

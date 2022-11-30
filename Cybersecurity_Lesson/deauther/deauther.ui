@@ -104,6 +104,12 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QComboBox" name="iface_list">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="font">
       <font>
        <pointsize>14</pointsize>
@@ -113,6 +119,12 @@
    </item>
    <item>
     <widget class="ReasonsList" name="reasons_list">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="font">
       <font>
        <pointsize>14</pointsize>

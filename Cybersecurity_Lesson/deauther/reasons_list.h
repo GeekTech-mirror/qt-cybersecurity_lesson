@@ -52,6 +52,7 @@ public:
 
             //Word wrap the text, 'elide' it if it goes past a pre-determined maximum
             QString newText = painter->fontMetrics().elidedText(text, Qt::ElideRight, widthUsed);
+            qDebug() << option.rect.bottomRight();
             painter->drawText( option.rect, (Qt::TextWrapAnywhere|Qt::TextWordWrap|Qt::AlignTop|Qt::AlignLeft), newText );
             painter->restore();
         }
@@ -156,6 +157,8 @@ private:
 
 class ReasonsList : public QComboBox
 {
+    Q_OBJECT
+
 public:
     ReasonsList(QWidget* parent  = nullptr) :
         QComboBox(parent),
@@ -253,28 +256,34 @@ public:
         //QRect r(p, QSize(500,600));
         //ui->reasons_list->view()->adjustSize();
         //ui->reasons_list->view()->
-        //this->setView(list_view);
+        this->setView(list_view);
         //view()->setItemDelegate(new ReasonsDelegate (this));
         //view()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
         //ui->reasons_list->view()->setMaximumHeight(600);
-        this->setStyleSheet(
-        "QComboBox QAbstractItemView { \
-            background-color: rgb(100,0,0); \
-            color rgb (100, 0, 0); \
-        }"
-                    );
+        //this->setItemDelegate(new ReasonsDelegate (this));
+//        this->setStyleSheet(
+//        "QComboBox QAbstractItemView { \
+//            background-color: rgb(100,0,0); \
+//            color rgb (100, 0, 0); \
+//            min-width: 444; \
+//        }"
+//                    );
+
+        //QWidget w = QWidget ()
+
+        //this->view()->setTextElideMode(Qt::ElideRight);
+        //qDebug() << this->view()->viewport()->rect().bottomRight();
     }
 
     void showPopup() override
     {
-        QPoint p = QPoint(rect().bottomLeft());
-        QRect r(p, QSize(500,600));
+        QPoint p = QPoint(rect().topLeft());
+        QRect r(p, QSize(444,444));
         update(r);
-
 
         this->view()->setMaximumWidth(444);
 
-        this->setMaximumSize(444,800);
+        this->setMaximumSize(444,444);
         //qDebug() << this->frameSize();
 
         //qDebug() << "coord" << this->view()->rect().size();

@@ -392,6 +392,7 @@ bool StationModel::addStation(QByteArray &stmac, ap_probe &apProbe)
         }
     }
 
+    // ap alread exists
     for (ap_info *ap : m_apInfo)
     {
         if (ap->essid == apProbe.essid)
@@ -401,6 +402,7 @@ bool StationModel::addStation(QByteArray &stmac, ap_probe &apProbe)
         }
     }
 
+    // add new ap
     if (!apFound)
     {
         apInfo = new ap_info();

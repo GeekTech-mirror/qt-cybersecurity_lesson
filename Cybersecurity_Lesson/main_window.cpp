@@ -79,11 +79,6 @@ Main_Window::~Main_Window ()
 /*
  * Menu Navigation
  */
-void Main_Window::on_man_in_the_middle_button_clicked ()
-{
-    ui->Stacked_Widget->setCurrentIndex(1);
-}
-
 void Main_Window::on_wifi_deauther_button_clicked()
 {
     ui->Stacked_Widget->setCurrentIndex(2);
@@ -132,7 +127,6 @@ void Main_Window::setup_main_menu (void)
     // Set Main Menu Button Fonts
     ui->rubber_ducky_button->setFont (Main_Window::button_font);
     ui->wifi_deauther_button->setFont (Main_Window::button_font);
-    ui->man_in_the_middle_button->setFont (Main_Window::button_font);
     ui->war_driving_button->setFont (Main_Window::button_font);
 }
 

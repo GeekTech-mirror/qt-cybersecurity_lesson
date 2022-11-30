@@ -15,18 +15,12 @@ QString CustomStyleSheets::combobox_dropdown (void)
     QString stylesheet =
     "QListView { \
         color: rgb(%1,%2,%3); \
-        \
-    } \
-    QTextEdit, QListView { \
-        background: black; \
-        background-color: black; \
-        background-attachment: fixed; \
     }";
     stylesheet = stylesheet.arg(CustomColors::frame_font_color().red())
                            .arg(CustomColors::frame_font_color().green())
                            .arg(CustomColors::frame_font_color().blue());
 
-    qDebug() << stylesheet;
+    //qDebug() << stylesheet;
     return stylesheet;
 }
 

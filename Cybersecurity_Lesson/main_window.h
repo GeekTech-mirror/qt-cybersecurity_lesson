@@ -34,8 +34,6 @@ private slots:
 
     void on_wifi_deauther_button_clicked();
 
-    void on_man_in_the_middle_button_clicked();
-
     void on_war_driving_button_clicked();
 
     void on_action_home_triggered();

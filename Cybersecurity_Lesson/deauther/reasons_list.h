@@ -11,6 +11,9 @@
 #include <QStyledItemDelegate>
 #include <QWidget>
 
+#include "custom_stylesheets.h"
+
+
 // Handle word wrap and pop-up size for Deauth Resons
 // QComboBox
 class ReasonsDelegate : public QStyledItemDelegate
@@ -49,6 +52,7 @@ public:
 
             //Word wrap the text, 'elide' it if it goes past a pre-determined maximum
             QString newText = painter->fontMetrics().elidedText(text, Qt::ElideRight, widthUsed);
+            qDebug() << option.rect.bottomRight();
             painter->drawText( option.rect, (Qt::TextWrapAnywhere|Qt::TextWordWrap|Qt::AlignTop|Qt::AlignLeft), newText );
             painter->restore();
         }
@@ -153,9 +157,12 @@ private:
 
 class ReasonsList : public QComboBox
 {
+    Q_OBJECT
+
 public:
-    ReasonsList(QWidget* parent  = nullptr)
-    : QComboBox(parent)
+    ReasonsList(QWidget* parent  = nullptr) :
+        QComboBox(parent),
+        stylesheets (new CustomStyleSheets)
     {
         //ui->reasons_list = ReasonsList();
 
@@ -227,6 +234,15 @@ public:
         list_view->setMaximumWidth(444);
         list_view->setMaximumHeight(800);
         list_view->setFont (QFont("Sans Serif", 14, QFont::Normal));
+        list_view->setStyleSheet(stylesheets->combobox_dropdown());
+
+//        int lineCount = 10;
+//        QSize extraSize = QSize(this->rect().width(), lineCount * this->rect().height());
+//        QRect extraRect = QRect(this->rect().topLeft(), extraSize);
+//        //extraRect.setSize(extraSize);
+//        list_view->setFrameRect(extraRect);
+//        list_view->viewport().rec
+        //list_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
         //list_view->setItemDelegate(new ReasonsDelegate (ui->reasons_list));
         //list_view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
@@ -244,24 +260,39 @@ public:
         //view()->setItemDelegate(new ReasonsDelegate (this));
         //view()->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
         //ui->reasons_list->view()->setMaximumHeight(600);
+        //this->setItemDelegate(new ReasonsDelegate (this));
+//        this->setStyleSheet(
+//        "QComboBox QAbstractItemView { \
+//            background-color: rgb(100,0,0); \
+//            color rgb (100, 0, 0); \
+//            min-width: 444; \
+//        }"
+//                    );
+
+        //QWidget w = QWidget ()
+
+        //this->view()->setTextElideMode(Qt::ElideRight);
+        //qDebug() << this->view()->viewport()->rect().bottomRight();
     }
 
     void showPopup() override
     {
-        QPoint p = QPoint(rect().bottomLeft());
-        QRect r(p, QSize(500,600));
+        QPoint p = QPoint(rect().topLeft());
+        QRect r(p, QSize(444,444));
         update(r);
-
 
         this->view()->setMaximumWidth(444);
 
-        this->setMaximumSize(444,800);
+        this->setMaximumSize(444,444);
         //qDebug() << this->frameSize();
 
         //qDebug() << "coord" << this->view()->rect().size();
 
         QComboBox::showPopup();
     }
+
+private:
+    CustomStyleSheets *stylesheets;
 };
 
 #endif // REASONS_LIST_H

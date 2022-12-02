@@ -9,8 +9,22 @@ CustomStyleSheets::CustomStyleSheets()
 {
 }
 
+QString CustomStyleSheets::combobox_dropdown (void)
+{
+    // set font color for dropdowns
+    QString stylesheet =
+    "QListView { \
+        color: rgb(%1,%2,%3); \
+    }";
+    stylesheet = stylesheet.arg(CustomColors::frame_font_color().red())
+                           .arg(CustomColors::frame_font_color().green())
+                           .arg(CustomColors::frame_font_color().blue());
 
-QString CustomStyleSheets::vertical_scrollbar ()
+    //qDebug() << stylesheet;
+    return stylesheet;
+}
+
+QString CustomStyleSheets::vertical_scrollbar (void)
 {
     // add space on either side of the scroll handle
     QString stylesheet =

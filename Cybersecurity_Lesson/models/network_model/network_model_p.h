@@ -13,7 +13,6 @@ class NetworkModelPrivate
 public:
     NetworkModelPrivate ();
 
-
     NetworkItem *getItem (const QModelIndex &index, const NetworkModel *dd) const
     {
         if (index.isValid()) {

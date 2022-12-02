@@ -33,7 +33,8 @@ private slots:
 
     void cmd_s_z_clicked();
 
-
+    QByteArray encode_script (QStringList &duck_script, QJsonObject &lang);
+    void duckytools(QJsonObject &lang);
     void save_to_file();
 
 private:

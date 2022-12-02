@@ -25,8 +25,7 @@ DELAY 100
 
 REM Mount rubberduck (remove error checking for simplicity)
 REM For robust mounting see https://forums.hak5.org/topic/29747-payload-copy-file-to-desktop-payload/
-STRING for /f "tokens=3 delims= " %%A in ('echo list volume ^| diskpart ^| 
-findstr "DUCKY"') do (set DUCKYdrive=%%A:)
+STRING for /f "tokens=3 delims= " %%A in ('echo list volume ^| diskpart ^| findstr "DUCKY"') do (set DUCKYdrive=%%A:)
 ENTER
 DELAY 100
 

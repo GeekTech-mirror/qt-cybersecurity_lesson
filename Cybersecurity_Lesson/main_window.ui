@@ -92,7 +92,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>40</height>
+            <height>30</height>
            </size>
           </property>
          </spacer>
@@ -102,7 +102,7 @@
           <property name="minimumSize">
            <size>
             <width>419</width>
-            <height>100</height>
+            <height>125</height>
            </size>
           </property>
           <property name="font">
@@ -124,7 +124,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>40</height>
+            <height>30</height>
            </size>
           </property>
          </spacer>
@@ -134,7 +134,7 @@
           <property name="minimumSize">
            <size>
             <width>419</width>
-            <height>100</height>
+            <height>125</height>
            </size>
           </property>
           <property name="font">
@@ -156,7 +156,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>40</height>
+            <height>30</height>
            </size>
           </property>
          </spacer>
@@ -166,7 +166,7 @@
           <property name="minimumSize">
            <size>
             <width>419</width>
-            <height>100</height>
+            <height>125</height>
            </size>
           </property>
           <property name="font">

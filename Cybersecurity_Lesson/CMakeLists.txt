@@ -92,7 +92,7 @@ set(LIBDIR "/usr/lib/cybersecurity_lesson")
 
 install(TARGETS Cybersecurity_Lesson DESTINATION bin)
 
-install(DIRECTORY . DESTINATION src)
+install(DIRECTORY . DESTINATION src/Cybersecurity_Lesson)
 
 #add_subdirectory(networkmanager-qt)
 

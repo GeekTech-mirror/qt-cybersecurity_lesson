@@ -15,3 +15,7 @@ set_target_properties(parse PROPERTIES
 		      COMPILE_FLAGS "-Wall -Wextra")
 target_link_libraries(parse radiotap)
 
+
+set_target_properties(radiotap PROPERTIES VERSION 1.0
+                                          SOVERSION 1.0
+)

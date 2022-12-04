@@ -566,8 +566,8 @@ void RubberDucky::duckytools(QJsonObject &lang)
     {
         duck_file.close();
 
-        //QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
-        QString script_path = "/home/troytjh/.git_repo/Capstone/build/install/share/cybersecurity_lesson/payload_example.txt";
+        QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
+        //QString script_path = "/home/troytjh/.git_repo/Capstone/build/install/share/cybersecurity_lesson/payload_example.txt";
         duck_file.setFileName(script_path);
         if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
         {

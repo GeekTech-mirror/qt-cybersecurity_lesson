@@ -5,7 +5,7 @@
 
 QByteArray test_stmac = QByteArray(6, 0x33);
 
-QByteArray samsung_stmac = QByteArray::fromRawData("\xd6\x77\xd6\xcf\x03\x1f", 6);
+QByteArray samsung_stmac = QByteArray::fromRawData("\x48\xeb\x62\x1f\xaf\x63", 6);
 
 QByteArray precision_stmac = QByteArray::fromRawData("\xf8\xac\x65\xee\x22\xb2", 6);
 
@@ -56,7 +56,7 @@ ap_probe tp_link_5GHz =  {"TP-Link_0424",
                           Chan_5GHz};
 
 ap_probe Netgear =  {"PenPi Network",
-                          QByteArray::fromRawData("\x9c\xc9\xeb\x6a\xa6\x3a", 6),
+                          QByteArray::fromRawData("\xb8\x27\xeb\x48\x9f\xd1", 6),
                           10,
                           Chan_2GHz};
 

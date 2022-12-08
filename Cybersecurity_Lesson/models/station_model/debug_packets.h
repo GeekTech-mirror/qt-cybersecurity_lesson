@@ -5,7 +5,7 @@
 
 QByteArray test_stmac = QByteArray(6, 0x33);
 
-QByteArray samsung_stmac = QByteArray::fromRawData("\x42\x4f\xdd\x33\x97\xc3", 6);
+QByteArray samsung_stmac = QByteArray::fromRawData("\xd6\x77\xd6\xcf\x03\x1f", 6);
 
 QByteArray precision_stmac = QByteArray::fromRawData("\xf8\xac\x65\xee\x22\xb2", 6);
 

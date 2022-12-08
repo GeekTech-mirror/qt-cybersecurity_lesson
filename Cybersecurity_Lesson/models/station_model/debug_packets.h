@@ -55,7 +55,7 @@ ap_probe tp_link_5GHz =  {"TP-Link_0424",
                           161,
                           Chan_5GHz};
 
-ap_probe Netgear =  {"NETGEAR28",
+ap_probe Netgear =  {"PenPi Network",
                           QByteArray::fromRawData("\x9c\xc9\xeb\x6a\xa6\x3a", 6),
                           10,
                           Chan_2GHz};

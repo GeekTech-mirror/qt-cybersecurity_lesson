@@ -240,7 +240,7 @@ void Deauther::deauther_attack ()
     pcap_send_t1.setInterval (200);
 
     static QTimer pcap_send_t2;
-    pcap_send_t2.setInterval (300);
+    pcap_send_t2.setInterval (500);
 
     /* Find current row of station view */
     QModelIndex index = ui->station_view->currentIndex();

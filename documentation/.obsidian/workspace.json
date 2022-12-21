@@ -1,0 +1,152 @@
+{
+  "main": {
+    "id": "ab5adfcee8fef1cb",
+    "type": "split",
+    "children": [
+      {
+        "id": "8e34daba06ffb2b7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3011bb60ed4aa2fd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Yocto/Recipes.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "7e6a3a7198a81d00",
+    "type": "split",
+    "children": [
+      {
+        "id": "39f88de1a7db7dec",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "386a2ab9dd31a0ec",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "2e9baedc33be2c2e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "c573ea2ed80c241d",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "c7e9d526dc6bcd44",
+    "type": "split",
+    "children": [
+      {
+        "id": "8c509e8daab3c221",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bc8e610e14e9aaf1",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Yocto/Recipes.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "099cd7bd476c682b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Yocto/Recipes.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "c8c77732dce2c907",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "45603442a82197de",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Yocto/Recipes.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "3011bb60ed4aa2fd",
+  "lastOpenFiles": [
+    "Cybersecurity_Lesson/Main_Window/Main_Window.md",
+    "Cybersecurity_Lesson/Main_Window/abstract-connections.png",
+    "Cybersecurity_Lesson/Main_Window/2022-12-09.md",
+    "Cybersecurity_Lesson/War_Driving/War_Driving.pdf",
+    "Cybersecurity_Lesson/War_Driving/wardriving.png",
+    "Cybersecurity_Lesson/Wi-Fi_Deauther/Deauther.md",
+    "Cybersecurity_Lesson/War_Driving/War_Driving.md",
+    "Cybersecurity_Lesson/Rubber_Ducky/Rubber_Ducky.md",
+    "Yocto/Recipes.md",
+    "Yocto/meta-geektech.md"
+  ]
+}

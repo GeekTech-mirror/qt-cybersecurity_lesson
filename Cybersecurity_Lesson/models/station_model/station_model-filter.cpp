@@ -108,7 +108,7 @@ void StationModel::create_pcapThread (pcap_t *handle)
         // test packets
         addAccessPoint(tp_link_2GHz);
         addAccessPoint(tp_link_5GHz);
-        addStation(samsung_stmac, tp_link_2GHz);
+        addStation(samsung_stmac, Netgear);
 
         addAccessPoint(Netgear);
         addStation(precision_stmac, Netgear);

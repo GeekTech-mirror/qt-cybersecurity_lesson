@@ -72,3 +72,5 @@ Thumbs.db
 
 CMakeLists.txt.user
 CMakeLists.txt.user.*
+
+/build

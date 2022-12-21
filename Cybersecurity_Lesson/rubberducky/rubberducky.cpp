@@ -187,7 +187,7 @@ void RubberDucky::cmd_copy_image_clicked()
     clear_current_line();
 
     insert_command("STRING");
-    insert_command("copy");
+    insert_command("ccopy");
     insert_command("%DUCKYdrive%payload-img.png");
     insert_command("%userprofile%\\Desktop\\payload-img.png");
 
@@ -200,11 +200,13 @@ void RubberDucky::cmd_mount_usb_clicked()
     clear_current_line();
 
     insert_command("STRING");
-    insert_command("for /f \"tokens=3 delims= \" %%A in");
-    insert_command("(\'echo list volume ^| diskpart ^| findstr \"DUCKY\"\')");
-    insert_command("do (set DUCKYdrive=%%A:)");
-
+    insert_command("for /f %d in");
+    insert_command("(\'wmic volume get driveletter^, label^|findstr \"DUCKY\"\')");
+    insert_command("do @set DUCKYdrive=%d");
     insert_newline();
+    insert_command("ENTER");
+    insert_newline();
+    insert_command("STRING exit");
 }
 
 
@@ -566,8 +568,8 @@ void RubberDucky::duckytools(QJsonObject &lang)
     {
         duck_file.close();
 
-        //QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
-        QString script_path = "/home/troytjh/.git_repo/Capstone/build/install/share/cybersecurity_lesson/payload_example.txt";
+        QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
+        //QString script_path = "/home/troytjh/.git_repo/Capstone/build/install/share/cybersecurity_lesson/payload_example.txt";
         duck_file.setFileName(script_path);
         if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
         {

@@ -4,12 +4,12 @@
 struct ScrollBar_Metrics
 {
     // ScrollBar
-    const int width = 22;
-    const int padding = 6; // distance between handle and border (floating handle)
+    const int width = 39;
+    const int padding = 8; // distance between handle and border (floating handle)
 
     // Handle
     const int handle_minimum = 30;
-    const int handle_radius = 4;
+    const int handle_radius = 10;
 
     // TreeView Settings
     int treeview_scrollbar_padding = 35;

@@ -1,3 +1,6 @@
+# Debugging
+include(CMakePrintHelpers)
+
 cmake_minimum_required(VERSION 3.5)
 
 project(Cybersecurity_Lesson VERSION 0.51 LANGUAGES CXX)
@@ -10,6 +13,8 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_INSTALL_DATADIR "share")
 
 # Dependencies
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
@@ -31,7 +36,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Cybersecurity_Lesson
         MANUAL_FINALIZATION
         ${CYBERSECURITY_SRCS}
-    )
+)
+
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Cybersecurity_Lesson APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
@@ -39,7 +45,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 else()
     if(ANDROID)
         add_library(Cybersecurity_Lesson SHARED
-                    ${CYBERSECURITY_SRCS})
+                    ${CYBERSECURITY_SRCS}
+        )
 # Define properties for Android with Qt 6 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
@@ -58,6 +65,7 @@ target_link_libraries(Cybersecurity_Lesson PRIVATE Qt${QT_VERSION_MAJOR}::Networ
 # Third-party Libs
 target_link_libraries(Cybersecurity_Lesson PRIVATE NetworkManagerQt)
 target_link_libraries(Cybersecurity_Lesson PRIVATE radiotap)
+target_link_libraries(Cybersecurity_Lesson PRIVATE KF5Solid)
 #target_link_libraries(Cybersecurity_Lesson PRIVATE PolkitQt${QT_VERSION_MAJOR}-1::Core
 #                                                   PolkitQt${QT_VERSION_MAJOR}-1::Gui
 #                                                   PolkitQt${QT_VERSION_MAJOR}-1::Agent)

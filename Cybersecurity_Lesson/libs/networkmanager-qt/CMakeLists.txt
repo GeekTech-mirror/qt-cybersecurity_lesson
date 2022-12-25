@@ -233,10 +233,8 @@ install(FILES
 
 install(EXPORT NetworkManagerQtTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE NetworkManagerQtTargets.cmake)
 
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/networkmanagerqt_version.h
-
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NetworkManagerQt COMPONENT Devel
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/networkmanagerqt_version.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/NetworkManagerQt COMPONENT Devel
 )
 
 feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)

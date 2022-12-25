@@ -1,5 +1,5 @@
-#ifndef GB_H
-#define GB_H
+#ifndef LANG_GB_H
+#define LANG_GB_H
 
 #include <QJsonArray>
 #include <QJsonDocument>

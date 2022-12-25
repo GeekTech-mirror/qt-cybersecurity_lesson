@@ -90,7 +90,10 @@ target_include_directories(NetworkManagerQt INTERFACE "$<INSTALL_INTERFACE:${CMA
 # for examples to build
 target_include_directories(NetworkManagerQt PUBLIC "$<BUILD_INTERFACE:${NetworkManagerQt_BINARY_DIR};${CMAKE_CURRENT_SOURCE_DIR}/settings;${CMAKE_CURRENT_BINARY_DIR}>")
 
-target_link_libraries(NetworkManagerQt PUBLIC Qt${QT_MAJOR_VERSION}::Core Qt${QT_MAJOR_VERSION}::Network Qt${QT_MAJOR_VERSION}::DBus PkgConfig::NetworkManager PkgConfig::Gio)
+target_link_libraries(NetworkManagerQt PUBLIC Qt${QT_MAJOR_VERSION}::Core
+                                              Qt${QT_MAJOR_VERSION}::Network
+                                              Qt${QT_MAJOR_VERSION}::DBus
+                                              PkgConfig::NetworkManager PkgConfig::Gio)
 
 set_target_properties(NetworkManagerQt PROPERTIES VERSION ${NETWORKMANAGERQT_VERSION}
                                                    SOVERSION ${NETWORKMANAGERQT_SOVERSION}

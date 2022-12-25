@@ -64,6 +64,16 @@ Main_Window::Main_Window (QWidget *parent)
     }
     delete timeout;
 
+//    QList<Solid::Device> devices = Solid::Device::listFromType(Solid::DeviceInterface::StorageAccess);
+//    foreach (Solid::Device device, devices)
+//    {
+//        Solid::StorageAccess *sa = device.as<Solid::StorageAccess>();
+//        if (!sa->filePath().isEmpty())
+//        {
+//            qDebug() << "StorageAccess:" << sa->filePath().toLocal8Bit().data() << Qt::endl;
+//        }
+//    }
+
     // alternative to current layout
     //connect(ui->rubber_ducky_button, &QPushButton::clicked,
     //        this, [&]{ ui->Stacked_Widget->setCurrentIndex(1); });

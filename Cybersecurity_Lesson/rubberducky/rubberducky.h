@@ -1,6 +1,8 @@
 #ifndef RUBBERDUCKY_H
 #define RUBBERDUCKY_H
 
+#include <Solid/StorageAccess>
+
 #include <QStringListModel>
 #include <QWidget>
 
@@ -33,9 +35,13 @@ private slots:
 
     void cmd_s_z_clicked();
 
+    void save_to_file();
+    void prepare_ducky();
+
     QByteArray encode_script (QStringList &duck_script, QJsonObject &lang);
     void duckytools(QJsonObject &lang);
-    void save_to_file();
+
+    void copy_to_pico (QString srcpath, QObject *sender, Solid::ErrorType error);
 
 private:
     Ui::RubberDucky *ui;
@@ -48,6 +54,8 @@ private:
     QString rubberducky_stylesheet();
 
     void setup_cmd_buttons();
+
+    void copy_folder (QString srcpath, QString destpath);
 
 protected:
     bool eventFilter (QObject *object, QEvent *event) override;

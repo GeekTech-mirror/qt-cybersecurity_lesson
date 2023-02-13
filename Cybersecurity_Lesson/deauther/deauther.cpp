@@ -60,7 +60,6 @@ Deauther::Deauther(QWidget *parent) :
     connect (send_animation_t, &QTimer::timeout,
              this, [&]() {send_animation(ui->packet_sent);});
 
-
     /* Pseudo Code for Deathor */
 
     // Connect to network

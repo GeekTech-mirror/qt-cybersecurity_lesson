@@ -2,6 +2,7 @@
 #define DEAUTHER_P_H
 
 #include <QtGui>
+#include <QComboBox>
 #include <QListView>
 #include <QMetaType>
 #include <QPainter>
@@ -45,6 +46,67 @@ public:
 
     void setup_reasons_list (Ui::Deauther *ui)
     {
+        CustomComboBox *cb = ui->reasons_list;
+
+        cb->addItem ("0x01 - Unspecified reason");
+
+        cb->addItem ("0x02 - Previous authentication no longer valid");
+
+        cb->addItem ("0x03 - Deauthenticated because sending station "
+                     "is leaving");
+
+        cb->addItem ("0x04 - Disassociated due to inactivity");
+
+        cb->addItem ("0x05 - Disassociated because WAP device is unable "
+                     "to handle currently associated STAs");
+
+        cb->addItem ("0x06 - Class 2 frame received from "
+                     "nonauthenticated STA");
+
+        cb->addItem ("0x07 - Class 3 frame received from nonassociated STA");
+
+        cb->addItem ("0x08 - Disassociated because sending STA is "
+                     "leaving or has left Basic Service Set (BSS)");
+
+        cb->addItem ("0x09 - STA requesting (re)association is not "
+                     "authenticated with responding STA");
+
+        cb->addItem ("0x0a - Disassociated because the information "
+                     "in the Supported Channels element is "
+                     "unacceptable");
+
+        cb->addItem ("0x0b - Disassociated because the information "
+                     "in the Supported Channels element is "
+                     "unacceptable");
+
+        cb->addItem ("0x0c - Disassociated due to BSS Transition Management");
+
+        cb->addItem ("0x0d - Invalid element, that is, an element defined "
+                     "in this standard for which the content does "
+                     "not meet the specifications in Clause 8");
+
+        cb->addItem ("0x0e - Message integrity code (MIC) failure");
+
+        cb->addItem ("0x0f - 4-Way Handshake timeout");
+
+        cb->addItem ("0x10 - Group Key Handshake timeout");
+
+        cb->addItem ("0x11 - Element in 4-Way Handshake different from "
+                     "(Re)Association Request/Probe Request/Becon Frame");
+
+        cb->addItem ("0x12 - Invalid group cipher");
+
+        cb->addItem ("0x13 - Invalid pairwise cipher");
+
+        cb->addItem ("0x14 - Invalid AKMP");
+
+        cb->addItem ("0x15 - Unsupported RSNE version");
+
+        cb->addItem ("0x16 - Invalid RSNE capabilities");
+
+        cb->addItem ("0x17 - IEEE 802.1X authentication failed");
+
+        cb->addItem ("0x18 - Cipher suite rejected because of the security policy");
 
     }
 

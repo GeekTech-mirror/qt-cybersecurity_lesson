@@ -108,7 +108,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QComboBox" name="iface_list">
+    <widget class="CustomComboBox" name="iface_list">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -123,7 +123,7 @@
     </widget>
    </item>
    <item>
-    <widget class="ReasonsList" name="reasons_list">
+    <widget class="CustomComboBox" name="reasons_list">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -272,9 +272,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ReasonsList</class>
+   <class>CustomComboBox</class>
    <extends>QComboBox</extends>
-   <header>reasons_list.h</header>
+   <header>custom_combobox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

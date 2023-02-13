@@ -9,7 +9,8 @@ CustomStyleSheets::CustomStyleSheets()
 {
 }
 
-QString CustomStyleSheets::combobox_dropdown (void)
+
+QString CustomStyleSheets::combobox_popup (void)
 {
     // set font color for dropdowns
     QString stylesheet =
@@ -20,9 +21,16 @@ QString CustomStyleSheets::combobox_dropdown (void)
                            .arg(CustomColors::frame_font_color().green())
                            .arg(CustomColors::frame_font_color().blue());
 
+    stylesheet +=
+    "QListView::item { \
+        padding: %1px; \
+    }";
+    stylesheet = stylesheet.arg(combobox_padding);
+
     //qDebug() << stylesheet;
     return stylesheet;
 }
+
 
 QString CustomStyleSheets::vertical_scrollbar (void)
 {
@@ -349,6 +357,23 @@ QString CustomStyleSheets::vertical_scrollbar_quirk (void)
 
     return stylesheet;
 }
+
+
+QString CustomStyleSheets::horizontal_scrollbar_quirk (void)
+{
+    QString stylesheet =
+    "QScrollBar::add-line:horizontal { \
+         border-right: 1px solid rgba(%5,%6,%7,%8); \
+    }";
+
+    stylesheet = stylesheet.arg(CustomColors::outer_frame_border_color().red())
+            .arg(CustomColors::outer_frame_border_color().green())
+            .arg(CustomColors::outer_frame_border_color().blue())
+            .arg(CustomColors::outer_frame_border_color().alpha());
+
+    return stylesheet;
+}
+
 
 void CustomStyleSheets::setHeaderHeight(int height)
 {

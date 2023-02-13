@@ -21,6 +21,8 @@ public:
     explicit WarDriving(QWidget *parent = nullptr);
     ~WarDriving();
 
+    void stop_wardriving();
+
 private:
     Ui::WarDriving *ui;
 

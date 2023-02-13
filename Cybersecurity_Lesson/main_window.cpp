@@ -106,6 +106,8 @@ void Main_Window::on_war_driving_button_clicked ()
 
 void Main_Window::on_action_home_triggered ()
 {
+    ui->War_Driving_Widget->stop_wardriving();
+
     ui->Stacked_Widget->setCurrentIndex (0);
 }
 

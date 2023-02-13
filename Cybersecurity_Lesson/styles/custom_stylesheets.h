@@ -11,12 +11,16 @@ class CustomStyleSheets
 public:
     CustomStyleSheets ();
 
-    QString combobox_dropdown (void);
+    QString combobox_popup (void);
+
     QString vertical_scrollbar (void);
     QString horizontal_scrollbar (void);
+
     QString listview_scrollbar (void);
     QString treeview_scrollbar (int);
+
     QString vertical_scrollbar_quirk (void);
+    QString horizontal_scrollbar_quirk (void);
 
 
 private:

@@ -483,6 +483,15 @@ void NetworkModel::stop_scan()
 }
 
 
+void NetworkModel::clear_data()
+{
+    while (rowCount())
+    {
+        removeWirelessNetwork(0);
+    }
+}
+
+
 void NetworkModel::export_data()
 {
     QString path = QDir::homePath() % "/wardriving.csv";
@@ -514,10 +523,7 @@ void NetworkModel::export_data()
         stream << Qt::endl;
     }
 
-    while (rowCount())
-    {
-        removeWirelessNetwork(0);
-    }
+    clear_data();
 
     /*
     for (int i=0; i < script_model->rowCount(); ++i)

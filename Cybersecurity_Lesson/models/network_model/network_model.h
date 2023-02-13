@@ -61,6 +61,7 @@ public:
     void start_scan();
     void stop_scan();
 
+    void clear_data();
     void export_data();
 
 

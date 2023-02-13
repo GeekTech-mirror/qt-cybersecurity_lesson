@@ -61,11 +61,8 @@ void WarDriving::setup_network_view (void)
     ui->network_view->setSortingEnabled (true);
 
 
-    // Set treeview header font
+    // Set treeview fonts
     ui->network_view->header()->setFont(QFont("LiberationSans", 18, QFont::Bold));
-
-
-    // Set treeview font
     ui->network_view->setFont (QFont("LiberationSerif", 16, QFont::Normal));
 
 
@@ -81,7 +78,8 @@ void WarDriving::setup_network_view (void)
     ui->network_view->setStyleSheet (treeview_stylesheet
                                      % stylesheets->vertical_scrollbar_quirk());
 
-    // install filter to correct horizontal scrollbar quirks
+    // install filter to correct horizontal and vertical scrollbar borders
+    ui->network_view->verticalScrollBar()->installEventFilter(this);
     ui->network_view->horizontalScrollBar()->installEventFilter(this);
 }
 
@@ -94,7 +92,9 @@ void WarDriving::setup_network_view (void)
 **/
 bool WarDriving::eventFilter(QObject *object, QEvent *event)
 {
-    if (event->type() == QEvent::Hide)
+    if (event->type() == QEvent::Hide
+        && object == ui->network_view->horizontalScrollBar()
+        && ui->network_view->verticalScrollBar()->isVisible())
     {
         QString update_scrollbar;
 
@@ -104,10 +104,53 @@ bool WarDriving::eventFilter(QObject *object, QEvent *event)
 
         ui->network_view->setStyleSheet (update_scrollbar);
     }
-    else if (event->type() == QEvent::Show)
+    else if (event->type() == QEvent::Show
+             && object == ui->network_view->horizontalScrollBar()
+             && ui->network_view->verticalScrollBar()->isVisible())
     {
         ui->network_view->setStyleSheet (treeview_stylesheet);
     }
+    else if (event->type() == QEvent::Show
+             && object == ui->network_view->verticalScrollBar()
+             && ui->network_view->horizontalScrollBar()->isVisible())
+    {
+        ui->network_view->setStyleSheet (treeview_stylesheet);
+    }
+    else if (event->type() == QEvent::Show
+             && object == ui->network_view->verticalScrollBar()
+             && !ui->network_view->horizontalScrollBar()->isVisible())
+    {
+        QString update_scrollbar;
+
+        update_scrollbar =
+                treeview_stylesheet
+                % stylesheets->vertical_scrollbar_quirk();
+
+        ui->network_view->setStyleSheet (update_scrollbar);
+    }
+    else if (event->type() == QEvent::Show
+             && object == ui->network_view->horizontalScrollBar())
+    {
+        QString update_scrollbar;
+
+        update_scrollbar =
+                treeview_stylesheet
+                % stylesheets->horizontal_scrollbar_quirk();
+
+        ui->network_view->setStyleSheet (update_scrollbar);
+    }
+
+
 
     return QWidget::eventFilter (object, event);
+}
+
+
+void WarDriving::stop_wardriving (void)
+{
+    network_model->stop_scan();
+
+    network_model->clear_data();
+
+    ui->network_scan_icon->setIcon (network_model->getScanIcon());
 }

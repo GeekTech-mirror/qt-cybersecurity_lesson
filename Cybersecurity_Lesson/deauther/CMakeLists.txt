@@ -3,7 +3,7 @@ set(WIFI_DEAUTHER_SRCS
     deauther.h
     deauther_p.h
     deauther.ui
-    reasons_list.h
+    custom_combobox.h
 )
 
 add_library(WiFi_Deauther STATIC ${WIFI_DEAUTHER_SRCS})

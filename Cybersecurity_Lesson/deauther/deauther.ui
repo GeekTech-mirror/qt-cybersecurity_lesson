@@ -253,6 +253,9 @@
        <pointsize>16</pointsize>
       </font>
      </property>
+     <property name="verticalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
     </widget>
    </item>
    <item>

@@ -6,6 +6,8 @@
 #include <QItemDelegate>
 #include <QListView>
 #include <QPainter>
+#include <QScrollBar>
+#include <QScroller>
 #include <QStyle>
 #include <QWidget>
 
@@ -30,6 +32,9 @@ public:
         list_view->setFont (QFont("Sans Serif", 14, QFont::Normal));
         list_view->setStyleSheet(stylesheets->combobox_popup());
 
+        list_view->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+        QScroller::grabGesture(list_view, QScroller::TouchGesture);
+
         this->setView(list_view);
     }
 
@@ -50,6 +55,9 @@ public:
 
         popup->setMaximumWidth(popup_w);
         popup->setMaximumHeight(popup_h);
+
+
+        //QScroller::grabGesture(popup, QScroller::LeftMouseButtonGesture);
 
         //popup->move(popup->x(), popup->y()+popup->height());
         //popup->resize (QSize(444, 660));

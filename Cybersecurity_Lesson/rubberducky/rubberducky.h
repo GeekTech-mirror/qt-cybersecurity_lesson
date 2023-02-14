@@ -55,6 +55,7 @@ private:
 
     void setup_cmd_buttons();
 
+    void mount_pico(QString srcpath);
     void copy_folder (QString srcpath, QString destpath);
 
 protected:

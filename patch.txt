@@ -1,0 +1,237 @@
+diff --git a/Cybersecurity_Lesson/rubberducky/rubberducky-encoder.cpp b/Cybersecurity_Lesson/rubberducky/rubberducky-encoder.cpp
+index e725b8e8..377bc634 100644
+--- a/Cybersecurity_Lesson/rubberducky/rubberducky-encoder.cpp
++++ b/Cybersecurity_Lesson/rubberducky/rubberducky-encoder.cpp
+@@ -193,8 +193,22 @@ QByteArray RubberDucky::encode_script (QStringList &duck_script, QJsonObject &la
+ 
+ void RubberDucky::duckytools(QJsonObject &lang)
+ {
++    QString script_path;
++    QString bin_path;
++    QStringList documentpaths = QDir::searchPaths("documentpaths");
++    for (QString &path : documentpaths)
++    {
++        QDir dir(path);
++        if (dir.exists())
++        {
++            script_path = dir.absoluteFilePath("payload.txt");
++            bin_path = dir.absoluteFilePath("payload.dd");
++            break;
++        }
++    }
++
+     /* open ducky script file*/
+-    QString script_path = QDir::homePath() % "/payload.txt";
++    //QString script_path = QDir::homePath() % "/payload.txt";
+     QFile duck_file (script_path);
+     if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
+     {
+@@ -206,14 +220,26 @@ void RubberDucky::duckytools(QJsonObject &lang)
+         );
+     }
+ 
+-    // If the saved script is blank use demo script
++    /* if the saved script is blank use example script */
+     if (duck_file.size() <= 1)
+     {
+         duck_file.close();
+ 
+-        QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
++        /* locate example payload */
++        QStringList datapaths = QDir::searchPaths("datapaths");
++        for (QString &path : datapaths)
++        {
++            QDir dir(path);
++            if (dir.exists("payload_example.txt"))
++            {
++                script_path = dir.absoluteFilePath("payload_example.txt");
++                duck_file.setFileName(script_path);
++                break;
++            }
++        }
++
++        //QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
+         //QString script_path = "/home/troytjh/.git_repo/Capstone/build/install/share/cybersecurity_lesson/payload_example.txt";
+-        duck_file.setFileName(script_path);
+         if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
+         {
+             QMessageBox::warning
+@@ -241,7 +267,7 @@ void RubberDucky::duckytools(QJsonObject &lang)
+ 
+ 
+     /* write encoded ducky script to file */
+-    QString bin_path = QDir::homePath() % "/payload.bin";
++    //QString bin_path = duck_script. % "/payload.bin";
+     QFile duck_bin (bin_path);
+     if (!duck_bin.open (QFileDevice::WriteOnly))
+     {
+@@ -259,6 +285,8 @@ void RubberDucky::duckytools(QJsonObject &lang)
+     duck_bin.close();
+ 
+ 
++    mount_pico(script_path);
++
+     /* display pop-up */
+     int offset_x = 20;
+     int offset_y = -15;
+diff --git a/Cybersecurity_Lesson/rubberducky/rubberducky.cpp b/Cybersecurity_Lesson/rubberducky/rubberducky.cpp
+index 5fdcd76f..02e6266e 100644
+--- a/Cybersecurity_Lesson/rubberducky/rubberducky.cpp
++++ b/Cybersecurity_Lesson/rubberducky/rubberducky.cpp
+@@ -30,6 +30,16 @@ RubberDucky::RubberDucky(QWidget *parent) :
+ {
+     ui->setupUi(this);
+ 
++    // set search path for documents
++    QStringList standard_documentpaths =
++            QStandardPaths::standardLocations (
++                QStandardPaths::DocumentsLocation
++            );
++    for (QString &documentpath : standard_documentpaths)
++    {
++        QDir::addSearchPath("documentpaths", documentpath);
++    }
++
+     // set search path for raspberry pi pico setup files
+     QDir::addSearchPath("datapaths", CMAKE_DATADIR);   // install data directory
+     QDir::addSearchPath("datapaths", "./rubberducky"); // build data directory
+@@ -38,9 +48,9 @@ RubberDucky::RubberDucky(QWidget *parent) :
+             QStandardPaths::standardLocations (
+                 QStandardPaths::AppDataLocation
+             );
+-    for (QString &datadir : standard_datapaths)
++    for (QString &datapath : standard_datapaths)
+     {
+-        QDir::addSearchPath("datapaths", datadir);
++        QDir::addSearchPath("datapaths", datapath);
+     }
+ 
+ 
+@@ -101,10 +111,22 @@ RubberDucky::~RubberDucky()
+ 
+ void RubberDucky::save_to_file()
+ {
+-    QString path = QDir::homePath() % "/payload.txt";
+-    QFile file (path);
++    QString scriptpath;
++    QStringList documentpaths = QDir::searchPaths("documentpaths");
++    for (QString &path : documentpaths)
++    {
++        QDir dir(path);
++        if (dir.exists())
++        {
++            scriptpath = dir.absoluteFilePath("payload.txt");
++            break;
++        }
++    }
+ 
+-    if (!file.open (QFileDevice::ReadWrite | QFileDevice::Text))
++    // QString path =  QDir::homePath() % "/payload.txt";
++    QFile script_file (scriptpath);
++
++    if (!script_file.open (QFileDevice::ReadWrite | QFileDevice::Text))
+     {
+         QMessageBox::warning
+         (
+@@ -114,10 +136,10 @@ void RubberDucky::save_to_file()
+         );
+     }
+ 
+-    file.resize (0);
++    script_file.resize (0);
+     for (int i=0; i < script_model->rowCount(); ++i)
+     {
+-        QTextStream stream (&file);
++        QTextStream stream (&script_file);
+         stream << script_list->at(i) << Qt::endl;
+     }
+ 
+@@ -129,7 +151,7 @@ void RubberDucky::save_to_file()
+ 
+     QRect rect = ui->tooltip_area->geometry();
+ 
+-    QToolTip::showText (p, "Saved to\n" % path, this, rect, 3000);
++    QToolTip::showText (p, "Saved to\n" % scriptpath, this, rect, 3000);
+ }
+ 
+ 
+@@ -148,6 +170,7 @@ void RubberDucky::prepare_ducky()
+         if (dir.exists("pico_files"))
+         {
+             srcpath = dir.absoluteFilePath("pico_files");
++            break;
+         }
+     }
+ 
+@@ -158,6 +181,12 @@ void RubberDucky::prepare_ducky()
+ 
+     }
+ 
++    /* mount pico and copy source path to pico */
++    mount_pico(srcpath);
++}
++
++void RubberDucky::mount_pico(QString srcpath)
++{
+     /* mount usb */
+     QList<Solid::Device> devices =
+             Solid::Device::listFromType (
+@@ -186,7 +215,7 @@ void RubberDucky::prepare_ducky()
+                     &Solid::StorageAccess::setupDone,
+                     this,
+                     [&, srcpath](Solid::ErrorType error)
+-                    { copy_to_pico(srcpath, sender(), error);  });
++                    { copy_to_pico(srcpath, sender(), error); });
+ 
+             return;
+         }
+@@ -201,7 +230,6 @@ void RubberDucky::prepare_ducky()
+             return;
+         }
+ 
+-        prepare_ducky();
+         copy_folder (srcpath, pico_mnt);
+     }
+ }
+@@ -223,8 +251,29 @@ void RubberDucky::copy_to_pico (QString srcpath, QObject *sender, Solid::ErrorTy
+     copy_folder(srcpath, pico_mnt);
+ }
+ 
++
++
+ void RubberDucky::copy_folder (QString srcpath, QString destpath)
+ {
++    /* copy payload */
++    QFileInfo src_info(srcpath);
++    if (src_info.isFile()
++        && QDir(destpath).exists())
++    {
++        QString src = srcpath;
++        QString dest = destpath + "/" + "payload.dd";
++        if (QFile::exists(dest))
++        {
++            QFile::remove(dest);
++        }
++
++        QFile::copy (src, dest);
++
++        return;
++    }
++
++
++    /* copy directory */
+     QDir srcdir(srcpath);
+     QDir destdir(destpath);
+ 
+diff --git a/Cybersecurity_Lesson/rubberducky/rubberducky.h b/Cybersecurity_Lesson/rubberducky/rubberducky.h
+index 63b0c8ac..0b500f73 100644
+--- a/Cybersecurity_Lesson/rubberducky/rubberducky.h
++++ b/Cybersecurity_Lesson/rubberducky/rubberducky.h
+@@ -55,6 +55,7 @@ private:
+ 
+     void setup_cmd_buttons();
+ 
++    void mount_pico(QString srcpath);
+     void copy_folder (QString srcpath, QString destpath);
+ 
+ protected:

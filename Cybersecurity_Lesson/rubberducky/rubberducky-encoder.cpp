@@ -193,8 +193,22 @@ QByteArray RubberDucky::encode_script (QStringList &duck_script, QJsonObject &la
 
 void RubberDucky::duckytools(QJsonObject &lang)
 {
+    QString script_path;
+    QString bin_path;
+    QStringList documentpaths = QDir::searchPaths("documentpaths");
+    for (QString &path : documentpaths)
+    {
+        QDir dir(path);
+        if (dir.exists())
+        {
+            script_path = dir.absoluteFilePath("payload.txt");
+            bin_path = dir.absoluteFilePath("payload.dd");
+            break;
+        }
+    }
+
     /* open ducky script file*/
-    QString script_path = QDir::homePath() % "/payload.txt";
+    //QString script_path = QDir::homePath() % "/payload.txt";
     QFile duck_file (script_path);
     if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
     {
@@ -206,14 +220,26 @@ void RubberDucky::duckytools(QJsonObject &lang)
         );
     }
 
-    // If the saved script is blank use demo script
+    /* if the saved script is blank use example script */
     if (duck_file.size() <= 1)
     {
         duck_file.close();
 
-        QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
+        /* locate example payload */
+        QStringList datapaths = QDir::searchPaths("datapaths");
+        for (QString &path : datapaths)
+        {
+            QDir dir(path);
+            if (dir.exists("payload_example.txt"))
+            {
+                script_path = dir.absoluteFilePath("payload_example.txt");
+                duck_file.setFileName(script_path);
+                break;
+            }
+        }
+
+        //QString script_path = "/usr/share/cybersecurity_lesson/payload_example.txt";
         //QString script_path = "/home/troytjh/.git_repo/Capstone/build/install/share/cybersecurity_lesson/payload_example.txt";
-        duck_file.setFileName(script_path);
         if (!duck_file.open (QFileDevice::ReadOnly | QFileDevice::Text))
         {
             QMessageBox::warning
@@ -241,7 +267,7 @@ void RubberDucky::duckytools(QJsonObject &lang)
 
 
     /* write encoded ducky script to file */
-    QString bin_path = QDir::homePath() % "/payload.bin";
+    //QString bin_path = duck_script. % "/payload.bin";
     QFile duck_bin (bin_path);
     if (!duck_bin.open (QFileDevice::WriteOnly))
     {
@@ -258,6 +284,8 @@ void RubberDucky::duckytools(QJsonObject &lang)
     duck_file.close();
     duck_bin.close();
 
+
+    mount_pico(script_path);
 
     /* display pop-up */
     int offset_x = 20;

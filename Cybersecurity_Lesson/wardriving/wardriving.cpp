@@ -1,4 +1,5 @@
 #include <QScrollBar>
+#include <QScroller>
 #include <QStringBuilder>
 
 #include "wardriving.h"
@@ -81,66 +82,86 @@ void WarDriving::setup_network_view (void)
     // install filter to correct horizontal and vertical scrollbar borders
     ui->network_view->verticalScrollBar()->installEventFilter(this);
     ui->network_view->horizontalScrollBar()->installEventFilter(this);
+
+    //QScroller::grabGesture(ui->network_view, QScroller::LeftMouseButtonGesture);
+    QScroller::grabGesture(ui->network_view, QScroller::TouchGesture);
 }
 
 
-/* Filter to fix vertical scrollbar border when horizontal scrollbar appears
+/* Filters to fix vertical/horizontal scrollbar border when scrollbars appear
 **
 ** Add bottom border to vertical scrollbar, on horizontal scrollbar hide
 **
 ** Remove bottom border to vertical scrollbar on horizontal scrollbar appear
 **/
+void WarDriving::setStylesheetOnly()
+{
+    ui->network_view->setStyleSheet (treeview_stylesheet);
+}
+
+void WarDriving::setVerticalScrollBarQuirk()
+{
+    QString update_scrollbar =
+            treeview_stylesheet
+            % stylesheets->vertical_scrollbar_quirk();
+
+    ui->network_view->setStyleSheet (update_scrollbar);
+}
+
+void WarDriving::setHorizontalScrollbarQuirk()
+{
+    QString update_scrollbar =
+            treeview_stylesheet
+            % stylesheets->horizontal_scrollbar_quirk();
+
+    ui->network_view->setStyleSheet (update_scrollbar);
+}
+
 bool WarDriving::eventFilter(QObject *object, QEvent *event)
 {
-    if (event->type() == QEvent::Hide
-        && object == ui->network_view->horizontalScrollBar()
-        && ui->network_view->verticalScrollBar()->isVisible())
+    bool isHorizontalScrollBar =
+        (object == ui->network_view->horizontalScrollBar()) ? true : false;
+
+    bool isVerticalScrollBar =
+        (object == ui->network_view->verticalScrollBar()) ? true : false;
+
+    bool isHorizontalScrollBarVisible =
+        (ui->network_view->horizontalScrollBar()->isVisible()) ? true : false;
+
+    bool isVerticalScrollBarVisible =
+        (ui->network_view->verticalScrollBar()->isVisible()) ? true : false;
+
+
+    if (event->type() == QEvent::Hide)
     {
-        QString update_scrollbar;
-
-        update_scrollbar =
-                treeview_stylesheet
-                % stylesheets->vertical_scrollbar_quirk();
-
-        ui->network_view->setStyleSheet (update_scrollbar);
+        if (isHorizontalScrollBar
+            && isVerticalScrollBarVisible)
+        {
+            setVerticalScrollBarQuirk();
+        }
     }
-    else if (event->type() == QEvent::Show
-             && object == ui->network_view->horizontalScrollBar()
-             && ui->network_view->verticalScrollBar()->isVisible())
+    else if (event->type() == QEvent::Show)
     {
-        ui->network_view->setStyleSheet (treeview_stylesheet);
+        if (isHorizontalScrollBar
+            && isVerticalScrollBarVisible)
+        {
+            setStylesheetOnly();
+        }
+        else if (isVerticalScrollBar
+                 && isHorizontalScrollBarVisible)
+        {
+            setStylesheetOnly();
+        }
+        else if (isVerticalScrollBar
+                 && !isHorizontalScrollBarVisible)
+        {
+            setVerticalScrollBarQuirk();
+        }
+        else if (isHorizontalScrollBar)
+        {
+            setHorizontalScrollbarQuirk();
+        }
     }
-    else if (event->type() == QEvent::Show
-             && object == ui->network_view->verticalScrollBar()
-             && ui->network_view->horizontalScrollBar()->isVisible())
-    {
-        ui->network_view->setStyleSheet (treeview_stylesheet);
-    }
-    else if (event->type() == QEvent::Show
-             && object == ui->network_view->verticalScrollBar()
-             && !ui->network_view->horizontalScrollBar()->isVisible())
-    {
-        QString update_scrollbar;
-
-        update_scrollbar =
-                treeview_stylesheet
-                % stylesheets->vertical_scrollbar_quirk();
-
-        ui->network_view->setStyleSheet (update_scrollbar);
-    }
-    else if (event->type() == QEvent::Show
-             && object == ui->network_view->horizontalScrollBar())
-    {
-        QString update_scrollbar;
-
-        update_scrollbar =
-                treeview_stylesheet
-                % stylesheets->horizontal_scrollbar_quirk();
-
-        ui->network_view->setStyleSheet (update_scrollbar);
-    }
-
-
 
     return QWidget::eventFilter (object, event);
 }

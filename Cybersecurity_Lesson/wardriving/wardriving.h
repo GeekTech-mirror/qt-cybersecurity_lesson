@@ -32,7 +32,11 @@ private:
     NetworkModel *network_model;
     NetworkSort *network_sort;
 
-    void setup_network_view (void);
+    void setup_network_view();
+
+    void setStylesheetOnly();
+    void setVerticalScrollBarQuirk();
+    void setHorizontalScrollbarQuirk();
 
 
 protected:

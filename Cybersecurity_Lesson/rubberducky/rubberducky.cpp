@@ -10,6 +10,7 @@
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QScrollBar>
+#include <QScroller>
 #include <QStandardPaths>
 #include <QStorageInfo>
 #include <QStringBuilder>
@@ -30,6 +31,16 @@ RubberDucky::RubberDucky(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // set search path for documents
+    QStringList standard_documentpaths =
+            QStandardPaths::standardLocations (
+                QStandardPaths::DocumentsLocation
+            );
+    for (QString &documentpath : standard_documentpaths)
+    {
+        QDir::addSearchPath("documentpaths", documentpath);
+    }
+
     // set search path for raspberry pi pico setup files
     QDir::addSearchPath("datapaths", CMAKE_DATADIR);   // install data directory
     QDir::addSearchPath("datapaths", "./rubberducky"); // build data directory
@@ -38,9 +49,9 @@ RubberDucky::RubberDucky(QWidget *parent) :
             QStandardPaths::standardLocations (
                 QStandardPaths::AppDataLocation
             );
-    for (QString &datadir : standard_datapaths)
+    for (QString &datapath : standard_datapaths)
     {
-        QDir::addSearchPath("datapaths", datadir);
+        QDir::addSearchPath("datapaths", datapath);
     }
 
 
@@ -54,6 +65,8 @@ RubberDucky::RubberDucky(QWidget *parent) :
     // Set listview font
     QFont script_font = QFont("DejavuSans", 14, QFont::Normal);
     script_font.setWordSpacing(8);
+
+    QToolTip::setFont(script_font);
     ui->script_view->setFont (script_font);
 
     // install filter to correct horizontal scrollbar quirks
@@ -65,12 +78,11 @@ RubberDucky::RubberDucky(QWidget *parent) :
 
     ui->script_view->setModel(script_model);
 
+    QScroller::grabGesture(ui->script_view, QScroller::TouchGesture);
+
+    // setup command buttons
     setup_cmd_buttons();
 
-
-    QToolTip::setFont(script_font);
-
-    // Set cmd ui to first page
     ui->CMD_Widget->setCurrentIndex (0);
 
     // Ensures page is set correctly
@@ -101,10 +113,22 @@ RubberDucky::~RubberDucky()
 
 void RubberDucky::save_to_file()
 {
-    QString path = QDir::homePath() % "/payload.txt";
-    QFile file (path);
+    QString scriptpath;
+    QStringList documentpaths = QDir::searchPaths("documentpaths");
+    for (QString &path : documentpaths)
+    {
+        QDir dir(path);
+        if (dir.exists())
+        {
+            scriptpath = dir.absoluteFilePath("payload.txt");
+            break;
+        }
+    }
 
-    if (!file.open (QFileDevice::ReadWrite | QFileDevice::Text))
+    // QString path =  QDir::homePath() % "/payload.txt";
+    QFile script_file (scriptpath);
+
+    if (!script_file.open (QFileDevice::ReadWrite | QFileDevice::Text))
     {
         QMessageBox::warning
         (
@@ -114,10 +138,10 @@ void RubberDucky::save_to_file()
         );
     }
 
-    file.resize (0);
+    script_file.resize (0);
     for (int i=0; i < script_model->rowCount(); ++i)
     {
-        QTextStream stream (&file);
+        QTextStream stream (&script_file);
         stream << script_list->at(i) << Qt::endl;
     }
 
@@ -129,7 +153,7 @@ void RubberDucky::save_to_file()
 
     QRect rect = ui->tooltip_area->geometry();
 
-    QToolTip::showText (p, "Saved to\n" % path, this, rect, 3000);
+    QToolTip::showText (p, "Saved to\n" % scriptpath, this, rect, 3000);
 }
 
 
@@ -148,6 +172,7 @@ void RubberDucky::prepare_ducky()
         if (dir.exists("pico_files"))
         {
             srcpath = dir.absoluteFilePath("pico_files");
+            break;
         }
     }
 
@@ -158,6 +183,12 @@ void RubberDucky::prepare_ducky()
 
     }
 
+    /* mount pico and copy source path to pico */
+    mount_pico(srcpath);
+}
+
+void RubberDucky::mount_pico(QString srcpath)
+{
     /* mount usb */
     QList<Solid::Device> devices =
             Solid::Device::listFromType (
@@ -186,7 +217,7 @@ void RubberDucky::prepare_ducky()
                     &Solid::StorageAccess::setupDone,
                     this,
                     [&, srcpath](Solid::ErrorType error)
-                    { copy_to_pico(srcpath, sender(), error);  });
+                    { copy_to_pico(srcpath, sender(), error); });
 
             return;
         }
@@ -201,7 +232,6 @@ void RubberDucky::prepare_ducky()
             return;
         }
 
-        prepare_ducky();
         copy_folder (srcpath, pico_mnt);
     }
 }
@@ -223,8 +253,29 @@ void RubberDucky::copy_to_pico (QString srcpath, QObject *sender, Solid::ErrorTy
     copy_folder(srcpath, pico_mnt);
 }
 
+
+
 void RubberDucky::copy_folder (QString srcpath, QString destpath)
 {
+    /* copy payload */
+    QFileInfo src_info(srcpath);
+    if (src_info.isFile()
+        && QDir(destpath).exists())
+    {
+        QString src = srcpath;
+        QString dest = destpath + "/" + "payload.dd";
+        if (QFile::exists(dest))
+        {
+            QFile::remove(dest);
+        }
+
+        QFile::copy (src, dest);
+
+        return;
+    }
+
+
+    /* copy directory */
     QDir srcdir(srcpath);
     QDir destdir(destpath);
 

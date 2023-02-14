@@ -1,4 +1,5 @@
 #include <QScrollBar>
+#include <QScroller>
 #include <QStringBuilder>
 #include <QStringListModel>
 #include <QTimer>
@@ -133,6 +134,9 @@ void Deauther::setup_station_view (void)
 
     // install filter to correct horizontal scrollbar quirks
     ui->station_view->horizontalScrollBar()->installEventFilter(this);
+
+
+    QScroller::grabGesture(ui->station_view, QScroller::TouchGesture);
 }
 
 

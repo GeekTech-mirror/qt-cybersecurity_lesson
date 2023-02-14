@@ -33,7 +33,8 @@
 /* Constructor */
 NetworkModel::NetworkModel (const QVector<ItemRole> &roles, QObject *parent)
     : QAbstractItemModel (parent),
-      m_scanHandler (new NetworkScan (this))
+      m_scanHandler (new NetworkScan (this)),
+      m_scanIcon (":/icons/network/24/network_scan_inactive.svg")
 {
     // Create header titles based on column roles
     QVector<QString> rootData;

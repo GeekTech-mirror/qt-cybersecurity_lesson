@@ -50,16 +50,20 @@ private:
     QStringList *script_list;
 
     CustomStyleSheets *stylesheets;
-    QString listview_stylesheet;
+    //QString listview_stylesheet;
     QString rubberducky_stylesheet();
 
+    void setup_search_paths();
+
     void setup_cmd_buttons();
+
+    void setup_rubberducky_theme();
 
     void mount_pico(QString srcpath);
     void copy_folder (QString srcpath, QString destpath);
 
 protected:
-    bool eventFilter (QObject *object, QEvent *event) override;
+    //bool eventFilter (QObject *object, QEvent *event) override;
 };
 
 #endif // RUBBERDUCKY_H

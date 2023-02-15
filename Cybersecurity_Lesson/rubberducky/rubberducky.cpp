@@ -1,10 +1,16 @@
-#include <Solid/Device>
-#include <Solid/DeviceNotifier>
-#include <Solid/StorageAccess>
-#include <Solid/StorageDrive>
+/* RubberDucky Attack
+** File: rubberducky.cpp
+** --------
+** Creates a ducky script and moves
+** the script to the Raspberry Pi Pico
+** --------
+*/
 
+/* KDE Framework */
+#include <Solid/Device>
+
+/* Qt include files */
 #include <QDir>
-#include <QErrorMessage>
 #include <QFile>
 #include <QFileInfoList>
 #include <QJsonObject>
@@ -12,12 +18,12 @@
 #include <QScrollBar>
 #include <QScroller>
 #include <QStandardPaths>
-#include <QStorageInfo>
 #include <QStringBuilder>
 #include <QTextStream>
 #include <QToolTip>
 #include <QTimer>
 
+/* local includes */
 #include "rubberducky.h"
 #include "ui_rubberducky.h"
 
@@ -31,48 +37,14 @@ RubberDucky::RubberDucky(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // set search path for documents
-    QStringList standard_documentpaths =
-            QStandardPaths::standardLocations (
-                QStandardPaths::DocumentsLocation
-            );
-    for (QString &documentpath : standard_documentpaths)
-    {
-        QDir::addSearchPath("documentpaths", documentpath);
-    }
+    setup_search_paths();
 
-    // set search path for raspberry pi pico setup files
-    QDir::addSearchPath("datapaths", CMAKE_DATADIR);   // install data directory
-    QDir::addSearchPath("datapaths", "./rubberducky"); // build data directory
+    setup_rubberducky_theme();
 
-    QStringList standard_datapaths =
-            QStandardPaths::standardLocations (
-                QStandardPaths::AppDataLocation
-            );
-    for (QString &datapath : standard_datapaths)
-    {
-        QDir::addSearchPath("datapaths", datapath);
-    }
+    setup_cmd_buttons();
 
 
-    // Set listview scrollbar colors
-    listview_stylesheet = QString(stylesheets->listview_scrollbar());
-    ui->script_view->setStyleSheet (listview_stylesheet
-                                    % stylesheets->vertical_scrollbar_quirk());
-
-    this->setStyleSheet(rubberducky_stylesheet());
-
-    // Set listview font
-    QFont script_font = QFont("DejavuSans", 14, QFont::Normal);
-    script_font.setWordSpacing(8);
-
-    QToolTip::setFont(script_font);
-    ui->script_view->setFont (script_font);
-
-    // install filter to correct horizontal scrollbar quirks
-    ui->script_view->horizontalScrollBar()->installEventFilter(this);
-
-    // Set up script window
+    // set up script window
     script_list->append("");
     script_model->setStringList(*script_list);
 
@@ -80,12 +52,10 @@ RubberDucky::RubberDucky(QWidget *parent) :
 
     QScroller::grabGesture(ui->script_view, QScroller::TouchGesture);
 
-    // setup command buttons
-    setup_cmd_buttons();
 
+    // ensures attack starts on first page of commands
     ui->CMD_Widget->setCurrentIndex (0);
 
-    // Ensures page is set correctly
     QTimer *timeout = new QTimer();
     timeout->setSingleShot(true);
     timeout->setInterval(500);
@@ -108,6 +78,70 @@ RubberDucky::RubberDucky(QWidget *parent) :
 RubberDucky::~RubberDucky()
 {
     delete ui;
+}
+
+
+
+void RubberDucky::setup_search_paths()
+{
+    // set search path for documents
+    QStringList docpaths =
+            QStandardPaths::standardLocations
+            (
+                QStandardPaths::DocumentsLocation
+            );
+
+    for (QString &path : docpaths)
+    {
+        QDir::addSearchPath("documentpaths", path);
+    }
+
+    // set search path for raspberry pi pico setup files
+    QDir::addSearchPath("datapaths", CMAKE_DATADIR);   // install data directory
+    QDir::addSearchPath("datapaths", "./rubberducky"); // build data directory
+
+    QStringList datapaths =
+            QStandardPaths::standardLocations
+            (
+                QStandardPaths::AppDataLocation
+            );
+
+    for (QString &path : datapaths)
+    {
+        QDir::addSearchPath("datapaths", path);
+    }
+}
+
+
+void RubberDucky::setup_rubberducky_theme()
+{
+    // RubberDucky stylesheets
+    //listview_stylesheet = QString(stylesheets->listview_scrollbar());
+    ui->script_view->setStyleSheet (stylesheets->listview_scrollbar()
+                                    % stylesheets->vertical_scrollbar_quirk());
+
+    this->setStyleSheet(rubberducky_stylesheet());
+
+    // RubberDucky fonts
+    QFont script_font = QFont("DejavuSans", 14, QFont::Normal);
+    script_font.setWordSpacing(8);
+
+    QToolTip::setFont(script_font);
+    ui->script_view->setFont (script_font);
+}
+
+
+QString RubberDucky::rubberducky_stylesheet()
+{
+    // Set background color and button font color
+    QString stylesheet =
+    "QListView { color: rgb(233, 235, 244); } \
+     QToolTip { color: rgb(233, 235, 244); }";
+
+    stylesheet +=
+    "QListView::item { padding: 5px; }";
+
+    return stylesheet;
 }
 
 
@@ -186,6 +220,7 @@ void RubberDucky::prepare_ducky()
     /* mount pico and copy source path to pico */
     mount_pico(srcpath);
 }
+
 
 void RubberDucky::mount_pico(QString srcpath)
 {
@@ -316,43 +351,5 @@ void RubberDucky::copy_folder (QString srcpath, QString destpath)
         }
     }
 
-}
-
-
-QString RubberDucky::rubberducky_stylesheet()
-{
-    // Set background color and button font color
-    QString stylesheet =
-    "QListView { color: rgb(233, 235, 244); } \
-     QToolTip { color: rgb(233, 235, 244); }";
-
-    return stylesheet;
-}
-
-
-/* Filter to fix vertical scrollbar border when horizontal scrollbar appears
-**
-** Add bottom border to vertical scrollbar, on horizontal scrollbar hide
-**
-** Remove bottom border to vertical scrollbar on horizontal scrollbar appear
-**/
-bool RubberDucky::eventFilter(QObject *object, QEvent *event)
-{
-    if (event->type() == QEvent::Hide)
-    {
-        QString update_scrollbar;
-
-        update_scrollbar =
-                listview_stylesheet
-                % stylesheets->vertical_scrollbar_quirk();
-
-        ui->script_view->setStyleSheet (update_scrollbar);
-    }
-    else if (event->type() == QEvent::Show)
-    {
-        ui->script_view->setStyleSheet (listview_stylesheet);
-    }
-
-    return QWidget::eventFilter (object, event);
 }
 

@@ -38,10 +38,14 @@ private slots:
     void save_to_file();
     void prepare_ducky();
 
-    QByteArray encode_script (QStringList &duck_script, QJsonObject &lang);
     void duckytools(QJsonObject &lang);
 
     void copy_to_pico (QString srcpath, QObject *sender, Solid::ErrorType error);
+
+    QByteArray encode_script (QStringList &duck_script, QJsonObject &lang);
+    void parse_instruction (const QString &cmd, const QString &instruction,
+                            QByteArray *encoded_script, const QJsonObject& lang);
+    QByteArray delay_bytes(uint delay);
 
 private:
     Ui::RubberDucky *ui;
@@ -59,8 +63,8 @@ private:
 
     void setup_rubberducky_theme();
 
-    void mount_pico(QString srcpath);
-    void copy_folder (QString srcpath, QString destpath);
+    void mount_pico(QString &srcpath);
+    void copy_folder (QString &srcpath, QString &destpath);
 
 protected:
     //bool eventFilter (QObject *object, QEvent *event) override;

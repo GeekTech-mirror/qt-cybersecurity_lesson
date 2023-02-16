@@ -25,6 +25,7 @@
 
 /* local includes */
 #include "rubberducky.h"
+//#include "languages.h"
 #include "ui_rubberducky.h"
 
 
@@ -161,7 +162,6 @@ void RubberDucky::save_to_file()
 
     // QString path =  QDir::homePath() % "/payload.txt";
     QFile script_file (scriptpath);
-
     if (!script_file.open (QFileDevice::ReadWrite | QFileDevice::Text))
     {
         QMessageBox::warning
@@ -222,11 +222,12 @@ void RubberDucky::prepare_ducky()
 }
 
 
-void RubberDucky::mount_pico(QString srcpath)
+void RubberDucky::mount_pico(QString &srcpath)
 {
     /* mount usb */
     QList<Solid::Device> devices =
-            Solid::Device::listFromType (
+            Solid::Device::listFromType
+            (
                 Solid::DeviceInterface::StorageAccess
             );
     for (Solid::Device &device : devices)
@@ -257,7 +258,7 @@ void RubberDucky::mount_pico(QString srcpath)
             return;
         }
 
-        /* pico is already mounted */
+        /* if pico is already mounted */
         /* copy ducky files to raspberry pi pico */
         if (!QDir(pico_mnt).exists()
             || pico_mnt.isEmpty())
@@ -271,11 +272,11 @@ void RubberDucky::mount_pico(QString srcpath)
     }
 }
 
+
 void RubberDucky::copy_to_pico (QString srcpath, QObject *sender, Solid::ErrorType error)
 {
     /* find storage device from signal */
-    Solid::StorageAccess *access =
-            qobject_cast<Solid::StorageAccess *>(sender);
+    Solid::StorageAccess *access = qobject_cast<Solid::StorageAccess *>(sender);
     QString pico_mnt = access->filePath();
     if (error)
     {
@@ -290,7 +291,7 @@ void RubberDucky::copy_to_pico (QString srcpath, QObject *sender, Solid::ErrorTy
 
 
 
-void RubberDucky::copy_folder (QString srcpath, QString destpath)
+void RubberDucky::copy_folder (QString &srcpath, QString &destpath)
 {
     /* copy payload */
     QFileInfo src_info(srcpath);

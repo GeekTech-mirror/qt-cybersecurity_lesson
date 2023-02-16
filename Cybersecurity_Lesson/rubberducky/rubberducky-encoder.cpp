@@ -1,3 +1,13 @@
+/* RubberDucky Attack
+** File: rubberducky.cpp
+** --------
+** Encode ducky script for hack5 bad usb
+**
+** Move payload to bad usb
+** --------
+*/
+
+/* Qt include files */
 #include <QDir>
 #include <QFile>
 #include <QJsonArray>
@@ -7,6 +17,7 @@
 #include <QStringBuilder>
 #include <QToolTip>
 
+/* local includes*/
 #include "rubberducky.h"
 #include "ui_rubberducky.h"
 
@@ -14,180 +25,177 @@
 QByteArray RubberDucky::encode_script (QStringList &duck_script, QJsonObject &lang)
 {
     /* parse script */
+    QByteArray encoded_script;
+    int default_delay = 0;
+
     QStringList parsed_line;
     QString cmd, instruction;
     QString cmd_prev, instruction_prev;
-
-    QByteArray encoded_script;
-    int default_delay = 0;
     for (QString &line : duck_script)
     {
+        parsed_line = line.split(' ');
+
         if (!(line.size() > 0))
             continue;
 
-        if (line.startsWith("REM") || line.startsWith("rem"))
+        if (line.startsWith("REM", Qt::CaseInsensitive))
+        {
             continue;
+        }
 
         // preserve previous command
         cmd_prev = cmd;
         instruction_prev = instruction;
 
         // seperate command and instruction
-        parsed_line = line.split(' ');
-        if (parsed_line.size() >= 2)
-        {
-            cmd = line.section(' ', 0, 0);
-            instruction = line.section(' ', 1);
-        }
-        else
-        {
-            cmd = line.section(' ', 0, 0);
-        }
+        cmd = parsed_line.takeFirst();
+        instruction = parsed_line.join(' ');
 
-        // parse commands
-        bool isInteger = false;
-        if (!QString::compare(cmd, "DEFAULT_DELAY")
-             || !QString::compare(cmd, "DEFAULTDELAY"))
-        {
-            default_delay = instruction.toInt(&isInteger);
 
-            if (!isInteger)
+        qDebug() << cmd << instruction;
+
+        if (cmd.startsWith("DEFAULT_DELAY", Qt::CaseInsensitive)
+            || cmd.startsWith("DEFAULTDELAY", Qt::CaseInsensitive))
+        {
+
+            bool isInt = false;
+            default_delay = instruction.toInt(&isInt);
+
+            if (!isInt)
+            {
                 return QByteArray();
+            }
 
-            instruction.clear();
             continue;
         }
-
-        int repeat_cnt = 1;
-        if (!QString::compare(cmd, "repeat", Qt::CaseInsensitive)
-             || !QString::compare(cmd, "replay", Qt::CaseInsensitive))
+        else if (cmd.startsWith("REPEAT", Qt::CaseInsensitive)
+                 || cmd.startsWith("REPLAY", Qt::CaseInsensitive))
         {
-            repeat_cnt = instruction.toInt(&isInteger);
+            bool isInt = false;
+            int repeat_cnt = instruction.toInt(&isInt);
 
-            if (!isInteger)
+            if (!isInt)
+            {
                 return QByteArray();
+            }
+
+            if (repeat_cnt == 0)
+            {
+                repeat_cnt = 1;
+            }
 
             cmd = cmd_prev;
             instruction = instruction_prev;
-        }
 
-        QJsonValue json_value;
-        QStringList key_string;
-        QByteArray key_code;
-        QByteArray key_param;
-        for (int i=0; i<repeat_cnt; ++i)
+            for (int i=0; i<repeat_cnt; ++i)
+            {
+                parse_instruction (cmd, instruction, &encoded_script, lang);
+            }
+        }
+        else
         {
-            if (!QString::compare(cmd, "STRING"))
-            {
-                for (QChar &c : instruction)
-                {
-                    json_value = lang.value(c);
-                    key_string = json_value.toString().split(',');
-
-                    if (key_string.isEmpty())
-                    {
-                        qWarning() << "Warning: Malformed script" << Qt::endl;
-                    }
-
-                    for (QString &code : key_string)
-                    {
-                        key_code.append(code.toUInt(nullptr, 16));
-                    }
-
-                    encoded_script.append(key_code.at(2));
-                    encoded_script.append(key_code.at(0));
-
-                    key_code.clear();
-                }
-
-                instruction.clear();
-            }
-            else if (!QString::compare(cmd, "DELAY"))
-            {
-                QString delay;
-                uint delay_val = instruction.toUInt();
-                while (delay_val > 0)
-                {
-                    if (delay_val > 255)
-                    {
-                        delay.append("00FF");
-
-                        delay_val -= 255;
-                    }
-                    else
-                    {
-                        delay.append("00");
-                        delay.append(QString::number(delay_val,16));
-                        delay_val = 0;
-                    }
-                }
-
-                // retain delay padding (00)
-                encoded_script.append(QByteArray::fromHex(delay.toUtf8()));
-
-                instruction.clear();
-            }
-            else if (lang.keys().contains(cmd))
-            {
-                json_value = lang.value(cmd);
-                key_string = json_value.toString().split(',');
-
-                for (QString &code : key_string)
-                {
-                    key_code.append(code.toUInt(nullptr, 16));
-                }
-
-                if (!instruction.isEmpty())
-                {
-                    json_value = lang.value(instruction);
-                    key_string = json_value.toString().split(',');
-
-                    for (QString &code : key_string)
-                    {
-                        key_param.append(code.toUInt(nullptr, 16));
-                    }
-                    key_code[0] |= key_param[0];
-                    key_code[2] |= key_param[2];
-
-                    instruction.clear();
-                }
-
-                encoded_script.append(key_code.at(2));
-                encoded_script.append(key_code.at(0));
-            }
-
-            key_code.clear();
-            key_param.clear();
+            parse_instruction(cmd, instruction, &encoded_script, lang);
         }
+
 
         if (default_delay)
         {
-            QString delay;
-            uint delay_val = default_delay;
-            while (delay_val > 0)
-            {
-                if (delay_val > 255)
-                {
-                    delay.append("00FF");
-
-                    delay_val -= 255;
-                }
-                else
-                {
-                    delay.append("00");
-                    delay.append(QString::number(delay_val,16));
-                    delay_val = 0;
-                }
-            }
-
-            // retain delay padding (00)
-            encoded_script.append(QByteArray::fromHex(delay.toUtf8()));
-
-            instruction.clear();
+            encoded_script.append(delay_bytes(default_delay));
         }
     }
 
     return encoded_script;
+}
+
+
+void  RubberDucky::parse_instruction (const QString &cmd,
+                                      const QString &instruction,
+                                      QByteArray *encoded_script,
+                                      const QJsonObject& lang)
+{
+    static QJsonValue json_value;
+    static QStringList key_string;
+    static QByteArray key_code, key_param;
+
+    if (!QString::compare(cmd, "STRING"))
+    {
+        for (const QChar &c : instruction)
+        {
+            json_value = lang.value(c);
+            key_string = json_value.toString().split(',');
+
+            if (key_string.isEmpty())
+            {
+                qWarning() << "Warning: Malformed script" << Qt::endl;
+            }
+
+            for (QString &code : key_string)
+            {
+                key_code.append(code.toUInt(nullptr, 16));
+            }
+
+            encoded_script->append(key_code.at(2));
+            encoded_script->append(key_code.at(0));
+
+            key_code.clear();
+        }
+    }
+    else if (!QString::compare(cmd, "DELAY"))
+    {
+        encoded_script->append(delay_bytes(instruction.toUInt()));
+    }
+    else if (lang.keys().contains(cmd))
+    {
+        json_value = lang.value(cmd);
+        key_string = json_value.toString().split(',');
+
+        for (QString &code : key_string)
+        {
+            key_code.append(code.toUInt(nullptr, 16));
+        }
+
+        if (!instruction.isEmpty())
+        {
+            json_value = lang.value(instruction);
+            key_string = json_value.toString().split(',');
+
+            for (QString &code : key_string)
+            {
+                key_param.append(code.toUInt(nullptr, 16));
+            }
+            key_code[0] |= key_param[0];
+            key_code[2] |= key_param[2];
+        }
+
+        encoded_script->append(key_code.at(2));
+        encoded_script->append(key_code.at(0));
+    }
+
+    key_code.clear();
+    key_param.clear();
+}
+
+
+QByteArray RubberDucky::delay_bytes(uint delay)
+{
+    QString delay_bytes;
+    while (delay > 0)
+    {
+        if (delay > 255)
+        {
+            delay_bytes.append("00FF");
+
+            delay -= 255;
+        }
+        else
+        {
+            delay_bytes.append("00");
+            delay_bytes.append(QString::number(delay,16));
+            delay = 0;
+        }
+    }
+
+    return QByteArray::fromHex(delay_bytes.toUtf8());
 }
 
 

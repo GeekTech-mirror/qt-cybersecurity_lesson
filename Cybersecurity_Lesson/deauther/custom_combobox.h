@@ -24,6 +24,9 @@ public:
         QComboBox(parent),
         stylesheets (new CustomStyleSheets)
     {
+        max_w = parent->width();
+        max_h = parent->height();
+
         // add word wrap to drop down list
         QListView *list_view = new QListView();
         list_view->setWordWrap(true);
@@ -40,9 +43,9 @@ public:
 
     void showPopup() override
     {
-        int cb_y = this->mapToGlobal(this->rect().topLeft()).y();
-        int popup_h = max_h - cb_y;      // stop before the tool bar
-        int popup_w = this->width();     // use combobox width
+        int cb_y = this->mapToParent(this->rect().topLeft()).y();
+        int popup_h = max_h - cb_y - popup_offset_y;  // stop before the tool bar
+        int popup_w = this->width();                  // use combobox width
 
         // reset list to open from beginning
         this->setCurrentIndex(0);
@@ -56,18 +59,23 @@ public:
         popup->setMaximumWidth(popup_w);
         popup->setMaximumHeight(popup_h);
 
+        qDebug() << popup->height() << popup->width();
 
         //QScroller::grabGesture(popup, QScroller::LeftMouseButtonGesture);
 
-        //popup->move(popup->x(), popup->y()+popup->height());
+        int popup_y = this->mapToGlobal(this->rect().topLeft()).y();
+        popup->move(popup->x(), popup_y);
         //popup->resize (QSize(444, 660));
     }
 
 private:
     CustomStyleSheets *stylesheets;
 
-    int max_w = 444;
-    int max_h = 724;
+    int max_w;// = 444;
+    int max_h;//= 724;
+
+    int popup_offset_y = 10;
+
 };
 
 #endif // REASONS_LIST_H

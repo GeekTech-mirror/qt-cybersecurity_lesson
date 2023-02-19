@@ -14,7 +14,7 @@
 #include "custom_stylesheets.h"
 
 
-// Handle word wrap and pop-up size for Deauth Reasons
+// Handle word wrapping and pop-up size for Deauth Reasons
 class CustomComboBox : public QComboBox
 {
     Q_OBJECT
@@ -27,7 +27,7 @@ public:
         max_w = parent->width();
         max_h = parent->height();
 
-        // add word wrap to drop down list
+        // add word wrapping to drop down list
         QListView *list_view = new QListView();
         list_view->setWordWrap(true);
         list_view->setMaximumWidth(max_w);
@@ -61,8 +61,6 @@ public:
 
         qDebug() << popup->height() << popup->width();
 
-        //QScroller::grabGesture(popup, QScroller::LeftMouseButtonGesture);
-
         int popup_y = this->mapToGlobal(this->rect().topLeft()).y();
         popup->move(popup->x(), popup_y);
         //popup->resize (QSize(444, 660));
@@ -74,6 +72,7 @@ private:
     int max_w;// = 444;
     int max_h;//= 724;
 
+    // stop the popup list X pixels from tool bar
     int popup_offset_y = 10;
 
 };
